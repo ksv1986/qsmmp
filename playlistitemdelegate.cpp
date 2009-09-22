@@ -54,7 +54,7 @@ QSizeF PlaylistDelegate::doTextLayout(int lineWidth, QTextLayout *textLayout) co
 	return QSizeF(widthUsed, height);
 }
 
-void PlaylistDelegate::drawDisplay(QPainter *p, const QStyleOptionViewItem &option, const QRect &rect, const QString &text) const {
+/*void PlaylistDelegate::drawDisplay(QPainter *p, const QStyleOptionViewItem &option, const QRect &rect, const QString &text) const {
 	Q_ASSERT(p);
 	if (text.isEmpty())
 		return;
@@ -110,4 +110,10 @@ void PlaylistDelegate::drawDisplay(QPainter *p, const QStyleOptionViewItem &opti
 	textLayout.draw(p, textRect.topLeft(), QVector<QTextLayout::FormatRange>(), textRect);
 	// Draw time text on the right
 	p->drawText(QRect(textRect.right()+timeMargin, textRect.y(), timeWidth, textRect.height()), myTime);
+}
+*/
+
+QSize PlaylistDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+        return QSize(200, 5);
 }

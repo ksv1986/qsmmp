@@ -27,8 +27,9 @@ class QTextLayout;
 class PlaylistDelegate : public QItemDelegate {
 public:
 	PlaylistDelegate(QObject *);
-	void drawDisplay(QPainter *, const QStyleOptionViewItem &, const QRect &, const QString &) const;
+        //void drawDisplay(QPainter *, const QStyleOptionViewItem &, const QRect &, const QString &) const;
 
+        QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 private:
 	QString replaceNewLine(QString) const;
 	QSizeF doTextLayout(int, QTextLayout *) const;

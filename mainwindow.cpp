@@ -21,6 +21,8 @@
 #include <QHBoxLayout>
 #include <QSlider>
 #include <QLabel>
+#include <QDirModel>
+#include <QDebug>
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
 #include <qmmpui/general.h>
@@ -32,6 +34,7 @@
 #include "abstractplaylistmodel.h"
 #include "playlistitemdelegate.h"
 #include "mainwindow.h"
+#include "settingsdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -51,15 +54,38 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionStop, SIGNAL(triggered()), m_player, SLOT(stop()));
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
+    connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
-    ui.listView->setItemDelegate(new PlaylistDelegate(this));
-    ui.listView->setModel(m);
-    connect(m_model, SIGNAL(listChanged()), ui.listView, SLOT(reset()));
-    connect(ui.listView, SIGNAL(doubleClicked (const QModelIndex &)),
+    const int rowHeight = fontMetrics().height() + 2;
+    ui.tableView->verticalHeader()->setDefaultSectionSize(rowHeight);
+
+    ui.tableView->verticalHeader()->setStyleSheet(
+     "QHeaderView::section {"
+        "padding-bottom: 0px;"
+        "padding-top: 0px;"
+        "padding-left: 0px;"
+        "padding-right: 1px;"
+        "margin: 0px;"
+     "}"
+    );
+
+    ui.tableView->setModel(m);
+    model = new QDirModel(QStringList()<<"*.mp3"<<"*.wma", QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot, QDir::DirsFirst, ui.treeView);
+
+    ui.treeView->setModel(model);
+    ui.treeView->setRootIndex(model->index("/mnt/data/music/"));
+    ui.treeView->hideColumn(1);
+    ui.treeView->hideColumn(2);
+    ui.treeView->hideColumn(3);
+    connect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
+    connect(ui.tableView, SIGNAL(doubleClicked (const QModelIndex &)),
                                 SLOT (playSelected(const QModelIndex &)));
+
+    connect(ui.treeView, SIGNAL(doubleClicked (const QModelIndex &)),
+            SLOT(addDirectory(const QModelIndex &)));
 
     m_slider = new QSlider (Qt::Horizontal, this);
     m_label = new QLabel(this);
@@ -68,6 +94,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui.toolBar->addWidget(m_label);
 
     connect(m_slider, SIGNAL(sliderReleased()), SLOT(seek()));
+}
+
+void MainWindow::settings()
+{
+    SettingsDialog settings;
+    settings.exec();
+}
+
+void MainWindow::addDirectory(const QModelIndex &index)
+{
+    m_model->addDirectory(model->fileInfo(index).absolutePath());
 }
 
 MainWindow::~MainWindow()

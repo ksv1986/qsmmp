@@ -26,6 +26,7 @@
 
 class QSlider;
 class QLabel;
+class QDirModel;
 
 class PlayListModel;
 class MediaPlayer;
@@ -47,6 +48,8 @@ private slots:
     void seek();
     void showState(Qmmp::State);
     void showBitrate(int);
+    void addDirectory(const QModelIndex &index);
+    void settings();
 
 private:
 
@@ -56,6 +59,7 @@ private:
     QSlider *m_slider;
     QLabel *m_label;
     SoundCore *m_core;
+    QDirModel *model;
 
 };
 

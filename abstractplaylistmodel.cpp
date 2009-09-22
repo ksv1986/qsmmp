@@ -32,7 +32,7 @@ AbstractPlaylistModel::~AbstractPlaylistModel(){}
 
 int AbstractPlaylistModel::columnCount (const QModelIndex &) const
 {
-    return 2;
+    return 4;
 }
 
 QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
@@ -40,7 +40,15 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
     if(role == Qt::DisplayRole && index.row () < m_pl->count())
     {
         PlayListItem *item = m_pl->item(index.row ());
-        return QString("%1. %2 |%3").arg(index.row () + 1).arg(item->text()).arg(formatTime(item->length()));
+
+        if (index.column() == 0)
+            return item->artist();
+        if (index.column() == 1)
+            return item->title();
+        if (index.column() == 2)
+            return item->year();
+        if (index.column() == 3)
+            return item->album();
     }
     else if(role == Qt::FontRole)
     {
@@ -52,7 +60,29 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
     else
         return QVariant();
 }
-
+QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if(role == Qt::DisplayRole && orientation == Qt::Horizontal)
+    {
+        if (section == 0)
+            return tr("Artist");
+        if (section == 1)
+            return tr("Title");
+        if (section == 2)
+            return tr("Year");
+        if (section == 3)
+            return tr("Album");
+    }
+    else if (role == Qt::DisplayRole)
+    {
+        return section;
+    }
+    else if (role == Qt::FontRole)
+    {
+        return QFont();
+    }
+    return QVariant();
+}
 /*QModelIndex AbstractPlaylistModel::index(int row, int column, const QModelIndex &parent) const
 {
     return QModelIndex();
@@ -63,7 +93,7 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
     return QModelIndex();
 }*/
 
-int AbstractPlaylistModel::rowCount(const QModelIndex &parent) const
+int AbstractPlaylistModel::rowCount(const QModelIndex &/*parent*/) const
 {
     return m_pl->count();
 }
