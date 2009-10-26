@@ -23,6 +23,9 @@
 #include <QLabel>
 #include <QDirModel>
 #include <QDebug>
+#include <QKeyEvent>
+#include <QList>
+#include <QModelIndex>
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
 #include <qmmpui/general.h>
@@ -30,6 +33,7 @@
 #include <qmmpui/playlistformat.h>
 #include <qmmpui/filedialog.h>
 #include <qmmpui/playlistmodel.h>
+#include <qmmpui/playlistitem.h>
 #include <qmmpui/mediaplayer.h>
 #include "abstractplaylistmodel.h"
 #include "playlistitemdelegate.h"
@@ -55,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
+    connect(ui.actionSelectAll, SIGNAL(triggered()), ui.tableView, SLOT(selectAll()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
@@ -72,8 +77,13 @@ MainWindow::MainWindow(QWidget *parent)
      "}"
     );
 
+    ui.tableView->setDragEnabled(true);
+    ui.tableView->setAcceptDrops(true);
+    ui.tableView->setDragDropMode(QAbstractItemView::InternalMove);
+
     ui.tableView->setModel(m);
-    model = new QDirModel(QStringList()<<"*.mp3"<<"*.wma", QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot, QDir::DirsFirst, ui.treeView);
+
+    model = new QDirModel(QStringList()<<"*.mp3"<<"*.wma"<<"*.flac", QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot, QDir::DirsFirst, ui.treeView);
 
     ui.treeView->setModel(model);
     ui.treeView->setRootIndex(model->index("/mnt/data/music/"));
@@ -81,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
     connect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
+    connect(ui.actionRemove, SIGNAL(triggered()), m_model, SLOT(removeSelected()));
     connect(ui.tableView, SIGNAL(doubleClicked (const QModelIndex &)),
                                 SLOT (playSelected(const QModelIndex &)));
 
@@ -96,6 +107,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_slider, SIGNAL(sliderReleased()), SLOT(seek()));
 }
 
+void MainWindow::removeSelected()
+{
+    qDebug() << "removeSelected()";
+    QList<PlayListItem*> list = m_model->getSelectedItems();
+    qDebug() << list.count();
+    QList<PlayListItem*>::iterator i;
+    for(i = list.begin(); i!= list.end(); ++i)
+    {
+	qDebug() << (*i)->title();
+    }
+}
+
 void MainWindow::settings()
 {
     SettingsDialog settings;
@@ -104,7 +127,14 @@ void MainWindow::settings()
 
 void MainWindow::addDirectory(const QModelIndex &index)
 {
-    m_model->addDirectory(model->fileInfo(index).absolutePath());
+    if (model->fileInfo(index).isDir())
+    {
+	QString path = model->fileInfo(index).absoluteFilePath();
+	qDebug() << QString("addDirectory('%1')").arg(path);
+	m_model->addDirectory(path);
+    }
+    else
+	m_model->addFile(model->fileInfo(index).absoluteFilePath());
 }
 
 MainWindow::~MainWindow()

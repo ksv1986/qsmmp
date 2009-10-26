@@ -50,6 +50,7 @@ private slots:
     void showBitrate(int);
     void addDirectory(const QModelIndex &index);
     void settings();
+    void removeSelected();
 
 private:
 

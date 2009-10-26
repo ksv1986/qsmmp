@@ -20,12 +20,14 @@
 
 #include <QFont>
 #include <QChar>
+#include <QFileInfo>
 #include <qmmpui/playlistitem.h>
 #include "abstractplaylistmodel.h"
 
 AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, QObject *parent) : QAbstractTableModel(parent)
 {
     m_pl = pl;
+    connect(m_pl, SIGNAL(listChanged()), this, SLOT(listChanged()));
 }
 
 AbstractPlaylistModel::~AbstractPlaylistModel(){}
@@ -33,6 +35,11 @@ AbstractPlaylistModel::~AbstractPlaylistModel(){}
 int AbstractPlaylistModel::columnCount (const QModelIndex &) const
 {
     return 4;
+}
+
+void AbstractPlaylistModel::listChanged()
+{
+    reset();
 }
 
 QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
@@ -57,8 +64,7 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
             font.setBold(TRUE);
         return font;
     }
-    else
-        return QVariant();
+    return QVariant();
 }
 QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -101,4 +107,18 @@ int AbstractPlaylistModel::rowCount(const QModelIndex &/*parent*/) const
 QString AbstractPlaylistModel::formatTime(qint64 time) const
 {
     return QString("%1:%2").arg(time/60).arg(time%60,2,10,QChar('0'));
+}
+
+void AbstractPlaylistModel::addItem(const QString& path)
+{
+    QFileInfo file(path);
+    if (file.isDir())
+    {
+	m_pl->addDirectory(path);
+    }
+    else
+    {
+	m_pl->addFile(path);
+    }
+    this->reset();
 }

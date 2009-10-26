@@ -3,12 +3,16 @@ SOURCES += main.cpp \
     abstractplaylistmodel.cpp \
     playlistitemdelegate.cpp \
     settingsdialog.cpp \
-    settings.cpp
+    settings.cpp \
+    mytableview.cpp \
+    mytreeview.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     playlistitemdelegate.h \
     settingsdialog.h \
-    settings.h
+    settings.h \
+    mytreeview.h \
+    mytableview.h
 TEMPLATE = app
 CONFIG += warn_on \
     thread \

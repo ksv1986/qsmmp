@@ -38,7 +38,9 @@ public:
     //virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     //virtual QModelIndex parent(const QModelIndex &child) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-
+    void addItem(const QString& path);
+public slots:
+    void listChanged();
 private:
     QString formatTime(qint64 time) const;
     PlayListModel *m_pl;
