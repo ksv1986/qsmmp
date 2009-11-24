@@ -21,6 +21,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSystemTrayIcon>
+#include <QMenu>
 #include <qmmp/qmmp.h>
 #include <ui_mainwindow.h>
 
@@ -51,8 +53,11 @@ private slots:
     void addDirectory(const QModelIndex &index);
     void settings();
     void removeSelected();
+    void closeEvent(QCloseEvent *event);
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
+    void createTrayIcon();
 
     PlayListModel *m_model;
     Ui::MainWindow ui;
@@ -61,7 +66,8 @@ private:
     QLabel *m_label;
     SoundCore *m_core;
     QDirModel *model;
-
+    QSystemTrayIcon *trayIcon;
+    QMenu *trayIconMenu;
 };
 
 #endif

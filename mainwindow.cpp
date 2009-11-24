@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui.setupUi(this);
     //qmmp objects
+    createTrayIcon();
     m_player = new MediaPlayer(this);
     m_core = new SoundCore(this);
     m_model = new PlayListModel(this);
@@ -60,9 +61,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.tableView, SLOT(selectAll()));
+    connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+	     this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
     const int rowHeight = fontMetrics().height() + 2;
     ui.tableView->verticalHeader()->setDefaultSectionSize(rowHeight);
@@ -105,7 +109,34 @@ MainWindow::MainWindow(QWidget *parent)
     ui.toolBar->addWidget(m_label);
 
     connect(m_slider, SIGNAL(sliderReleased()), SLOT(seek()));
+
+    trayIcon->setVisible(true);
+    trayIcon->show();
 }
+
+void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+ {
+     switch (reason) {
+     case QSystemTrayIcon::Trigger:
+     case QSystemTrayIcon::DoubleClick:
+	 if (isVisible())
+	    hide();
+	 else
+	    show();
+	 break;
+     case QSystemTrayIcon::MiddleClick:
+     default:
+	 ;
+     }
+ }
+
+ void MainWindow::closeEvent(QCloseEvent *event)
+ {
+     if (trayIcon->isVisible()) {
+	 hide();
+	 event->ignore();
+     }
+ }
 
 void MainWindow::removeSelected()
 {
@@ -180,15 +211,18 @@ void MainWindow::showState(Qmmp::State state)
     switch((int) state)
     {
     case Qmmp::Playing:
+	trayIcon->setIcon(QIcon(":/images/play.png"));
         ui.statusbar->showMessage(tr("Playing"));
         if(m_label->text() != "--:--/--:--")
             showBitrate(m_core->bitrate());
         break;
     case Qmmp::Paused:
+	trayIcon->setIcon(QIcon(":/images/pause.png"));
         ui.statusbar->showMessage(tr("Paused"));
         break;
     case Qmmp::Stopped:
          ui.statusbar->showMessage(tr("Stopped"));
+	trayIcon->setIcon(QIcon(":/images/stop.png"));
         m_label->setText("--:--/--:--");
         m_slider->setValue(0);
         break;
@@ -202,3 +236,19 @@ void MainWindow::showBitrate(int)
                                     .arg(m_core->precision())
                                     .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
 }
+
+ void MainWindow::createTrayIcon()
+ {
+     trayIconMenu = new QMenu(this);
+     trayIconMenu->addAction(ui.actionPrevious);
+     trayIconMenu->addAction(ui.actionPlay);
+     trayIconMenu->addAction(ui.actionPause);
+     trayIconMenu->addAction(ui.actionStop);
+     trayIconMenu->addAction(ui.actionNext);
+     trayIconMenu->addSeparator();
+     trayIconMenu->addAction(ui.actionQuit);
+
+     trayIcon = new QSystemTrayIcon(this);
+     trayIcon->setContextMenu(trayIconMenu);
+     trayIcon->setIcon(QIcon(":/images/stop.png"));
+ }
