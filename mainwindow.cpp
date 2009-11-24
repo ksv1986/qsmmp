@@ -125,6 +125,12 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 	    show();
 	 break;
      case QSystemTrayIcon::MiddleClick:
+	 if (m_core->state() == Qmmp::Paused
+	     || m_core->state() == Qmmp::Stopped)
+	     m_player->play();
+	 else if(m_core->state() == Qmmp::Playing)
+	     m_core->pause();
+	 break;
      default:
 	 ;
      }
@@ -221,8 +227,8 @@ void MainWindow::showState(Qmmp::State state)
         ui.statusbar->showMessage(tr("Paused"));
         break;
     case Qmmp::Stopped:
-         ui.statusbar->showMessage(tr("Stopped"));
 	trayIcon->setIcon(QIcon(":/images/stop.png"));
+	ui.statusbar->showMessage(tr("Stopped"));
         m_label->setText("--:--/--:--");
         m_slider->setValue(0);
         break;

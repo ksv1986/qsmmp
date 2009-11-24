@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>728</width>
-    <height>465</height>
+    <width>726</width>
+    <height>463</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -51,7 +51,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>728</width>
+     <width>726</width>
      <height>25</height>
     </rect>
    </property>
@@ -102,6 +102,9 @@
    <addaction name="actionNext"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
