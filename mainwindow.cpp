@@ -21,11 +21,14 @@
 #include <QHBoxLayout>
 #include <QSlider>
 #include <QLabel>
-#include <QDirModel>
+#include <QFileSystemModel>
 #include <QDebug>
 #include <QKeyEvent>
 #include <QList>
 #include <QModelIndex>
+#include <QDockWidget>
+#include <QSettings>
+
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
 #include <qmmpui/general.h>
@@ -35,8 +38,8 @@
 #include <qmmpui/playlistmodel.h>
 #include <qmmpui/playlistitem.h>
 #include <qmmpui/mediaplayer.h>
+
 #include "abstractplaylistmodel.h"
-#include "playlistitemdelegate.h"
 #include "mainwindow.h"
 #include "settingsdialog.h"
 
@@ -61,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.tableView, SLOT(selectAll()));
-    connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(ui.actionQuit, SIGNAL(triggered()), this, SLOT(quit()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
@@ -87,7 +90,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui.tableView->setModel(m);
 
-    model = new QDirModel(QStringList()<<"*.mp3"<<"*.wma"<<"*.flac", QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot, QDir::DirsFirst, ui.treeView);
+    model = new QFileSystemModel(ui.treeView);
+    model->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
+    model->setNameFilters(QStringList()<<"*.mp3"<<"*.wma"<<"*.flac");
+    model->setRootPath("/mnt/data/music/");
 
     ui.treeView->setModel(model);
     ui.treeView->setRootIndex(model->index("/mnt/data/music/"));
@@ -112,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     trayIcon->setVisible(true);
     trayIcon->show();
+
 }
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -125,8 +132,7 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 	    show();
 	 break;
      case QSystemTrayIcon::MiddleClick:
-	 if (m_core->state() == Qmmp::Paused
-	     || m_core->state() == Qmmp::Stopped)
+	 if (m_core->state() == Qmmp::Paused || m_core->state() == Qmmp::Stopped)
 	     m_player->play();
 	 else if(m_core->state() == Qmmp::Playing)
 	     m_core->pause();
@@ -135,6 +141,16 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 	 ;
      }
  }
+
+void MainWindow::quit()
+{
+    QSettings settings("qsmmp", "qsmmp");
+    settings.beginGroup("mainwindow");
+    settings.setValue("hidden", this->isHidden());
+    settings.endGroup();
+
+    qApp->quit();
+}
 
  void MainWindow::closeEvent(QCloseEvent *event)
  {

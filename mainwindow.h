@@ -28,7 +28,7 @@
 
 class QSlider;
 class QLabel;
-class QDirModel;
+class QFileSystemModel;
 
 class PlayListModel;
 class MediaPlayer;
@@ -55,6 +55,7 @@ private slots:
     void removeSelected();
     void closeEvent(QCloseEvent *event);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void quit();
 
 private:
     void createTrayIcon();
@@ -65,7 +66,7 @@ private:
     QSlider *m_slider;
     QLabel *m_label;
     SoundCore *m_core;
-    QDirModel *model;
+    QFileSystemModel *model;
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
 };

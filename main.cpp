@@ -18,16 +18,20 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
-
-
 #include <QApplication>
+#include <QSettings>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     MainWindow mw;
-    mw.show();
+
+    QSettings settings("qsmmp", "qsmmp");
+    settings.beginGroup("mainwindow");
+    bool hidden = settings.value("hidden", false).toBool();
+    settings.endGroup();
+    if(!hidden)
+	mw.show();
     return app.exec();
 }
