@@ -15,7 +15,7 @@ TEMPLATE = app
 CONFIG += warn_on \
     thread \
     qt
-TARGET = qmmp_ui_example
+TARGET = qsmmp
 LIBS += -lqmmp \
     -lqmmpui
 FORMS += mainwindow.ui \
