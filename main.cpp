@@ -21,17 +21,14 @@
 #include <QApplication>
 #include <QSettings>
 #include "mainwindow.h"
+#include "settings.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     MainWindow mw;
 
-    QSettings settings("qsmmp", "qsmmp");
-    settings.beginGroup("mainwindow");
-    bool hidden = settings.value("hidden", false).toBool();
-    settings.endGroup();
-    if(!hidden)
+    if(!Settings::instance().hidden())
 	mw.show();
     return app.exec();
 }

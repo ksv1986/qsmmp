@@ -42,6 +42,7 @@
 #include "abstractplaylistmodel.h"
 #include "mainwindow.h"
 #include "settingsdialog.h"
+#include "settings.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -55,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_player->initialize(m_core, m_model);
     new PlaylistParser(this);
     //connections
+    connect(ui.actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui.actionPlay, SIGNAL(triggered()), m_player, SLOT(play()));
     connect(ui.actionPause, SIGNAL(triggered()), m_core, SLOT(pause()));
     connect(ui.actionNext, SIGNAL(triggered()), m_player, SLOT(next()));
@@ -62,6 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionStop, SIGNAL(triggered()), m_player, SLOT(stop()));
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
+    connect(ui.actionRemove, SIGNAL(triggered()), this, SLOT(removeSelected()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.tableView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), this, SLOT(quit()));
@@ -87,12 +90,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui.tableView->setDragEnabled(true);
     ui.tableView->setAcceptDrops(true);
     ui.tableView->setDragDropMode(QAbstractItemView::InternalMove);
+    ui.tableView->resizeColumnsToContents();
 
     ui.tableView->setModel(m);
 
     model = new QFileSystemModel(ui.treeView);
     model->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
     model->setNameFilters(QStringList()<<"*.mp3"<<"*.wma"<<"*.flac");
+    model->setNameFilterDisables(false);
+    model->setReadOnly(true);
     model->setRootPath("/mnt/data/music/");
 
     ui.treeView->setModel(model);
@@ -101,7 +107,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
     connect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
-    connect(ui.actionRemove, SIGNAL(triggered()), m_model, SLOT(removeSelected()));
     connect(ui.tableView, SIGNAL(doubleClicked (const QModelIndex &)),
                                 SLOT (playSelected(const QModelIndex &)));
 
@@ -119,6 +124,15 @@ MainWindow::MainWindow(QWidget *parent)
     trayIcon->setVisible(true);
     trayIcon->show();
 
+}
+void MainWindow::removeSelected()
+{
+    m_model->removeSelected();
+    // after removeSelected() call selection of table view will be cleared
+    // but in the model it will contain 1 element
+    // TODO: is it worth to implement proper behaviour with QItemSelectionModel?
+    foreach(int row, m_model->getSelectedRows())
+	ui.tableView->selectRow(row);
 }
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -144,10 +158,7 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void MainWindow::quit()
 {
-    QSettings settings("qsmmp", "qsmmp");
-    settings.beginGroup("mainwindow");
-    settings.setValue("hidden", this->isHidden());
-    settings.endGroup();
+    Settings::instance().setHidden(this->isHidden());
 
     qApp->quit();
 }
@@ -159,18 +170,6 @@ void MainWindow::quit()
 	 event->ignore();
      }
  }
-
-void MainWindow::removeSelected()
-{
-    qDebug() << "removeSelected()";
-    QList<PlayListItem*> list = m_model->getSelectedItems();
-    qDebug() << list.count();
-    QList<PlayListItem*>::iterator i;
-    for(i = list.begin(); i!= list.end(); ++i)
-    {
-	qDebug() << (*i)->title();
-    }
-}
 
 void MainWindow::settings()
 {
@@ -210,6 +209,8 @@ void MainWindow::playSelected(const QModelIndex &i)
     m_player->stop();
     m_model->setCurrent(i.row());
     m_player->play();
+    foreach(int row, m_model->getSelectedRows())
+	ui.tableView->selectRow(row);
 }
 
 void MainWindow::updatePosition(qint64 pos)

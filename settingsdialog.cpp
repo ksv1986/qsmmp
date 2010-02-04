@@ -1,11 +1,13 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
+#include "settings.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::SettingsDialog)
 {
     m_ui->setupUi(this);
+    m_ui->collectionRootDirectoryLineEdit->setText(Settings::instance().rootFSCollectionDirectory());
 }
 
 SettingsDialog::~SettingsDialog()
@@ -23,4 +25,11 @@ void SettingsDialog::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void SettingsDialog::accept()
+{
+    QDialog::accept();
+
+    Settings::instance().setRootFSCollectionDirectory(m_ui->collectionRootDirectoryLineEdit->text());
 }

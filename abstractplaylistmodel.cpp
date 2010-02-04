@@ -48,13 +48,15 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
     {
         PlayListItem *item = m_pl->item(index.row ());
 
-        if (index.column() == 0)
+	if (index.column() == 0)
+	    return item->track();
+	if (index.column() == 1)
             return item->artist();
-        if (index.column() == 1)
+	if (index.column() == 2)
             return item->title();
-        if (index.column() == 2)
+	if (index.column() == 3)
             return item->year();
-        if (index.column() == 3)
+	if (index.column() == 4)
             return item->album();
     }
     else if(role == Qt::FontRole)
@@ -70,13 +72,15 @@ QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientat
 {
     if(role == Qt::DisplayRole && orientation == Qt::Horizontal)
     {
-        if (section == 0)
+	if (section == 0)
+	    return tr("Track");
+	if (section == 1)
             return tr("Artist");
-        if (section == 1)
+	if (section == 2)
             return tr("Title");
-        if (section == 2)
+	if (section == 3)
             return tr("Year");
-        if (section == 3)
+	if (section == 4)
             return tr("Album");
     }
     else if (role == Qt::DisplayRole)
@@ -89,15 +93,6 @@ QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientat
     }
     return QVariant();
 }
-/*QModelIndex AbstractPlaylistModel::index(int row, int column, const QModelIndex &parent) const
-{
-    return QModelIndex();
-}*/
-
-/*QModelIndex AbstractPlaylistModel::parent(const QModelIndex &child) const
-{
-    return QModelIndex();
-}*/
 
 int AbstractPlaylistModel::rowCount(const QModelIndex &/*parent*/) const
 {

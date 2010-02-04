@@ -6,6 +6,7 @@
 class QDragMoveEvent;
 class QDragEnterEvent;
 class QDropEvent;
+class QMouseEvent;
 
 class MyTableView : public QTableView
 {
@@ -15,6 +16,13 @@ public:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+
+private:
+    int m_anchor_row;
+    int m_pressed_row;
+    bool m_select_on_release;
 };
 
 #endif // MYTABLEVIEW_H
