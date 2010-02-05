@@ -18,6 +18,7 @@ public:
     void dragMoveEvent(QDragMoveEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void selectAll();
 
 private:
     int m_anchor_row;

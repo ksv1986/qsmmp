@@ -46,6 +46,17 @@ void MyTableView::dropEvent(QDropEvent* event)
     }
 }
 
+void MyTableView::selectAll()
+{
+    QTableView::selectAll();
+
+    AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
+    for(int i=0; i<playlist->count(); ++i)
+    {
+	playlist->setSelected(i, true);
+    }
+}
+
 void MyTableView::mousePressEvent(QMouseEvent *e)
 {
     AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
