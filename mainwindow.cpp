@@ -43,6 +43,8 @@
 #include "mainwindow.h"
 #include "settingsdialog.h"
 #include "settings.h"
+#include "configdialog.h"
+#include "volumetoolbutton.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -66,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
     connect(ui.actionRemove, SIGNAL(triggered()), this, SLOT(removeSelected()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
+    connect(ui.actionQmmpSettings, SIGNAL(triggered()), this, SLOT(settingsQmmp()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.tableView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), this, SLOT(quit()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
@@ -99,10 +102,10 @@ MainWindow::MainWindow(QWidget *parent)
     model->setNameFilters(QStringList()<<"*.mp3"<<"*.wma"<<"*.flac");
     model->setNameFilterDisables(false);
     model->setReadOnly(true);
-    model->setRootPath("/mnt/data/music/");
+    model->setRootPath(Settings::instance().rootFSCollectionDirectory());
 
     ui.treeView->setModel(model);
-    ui.treeView->setRootIndex(model->index("/mnt/data/music/"));
+    ui.treeView->setRootIndex(model->index(Settings::instance().rootFSCollectionDirectory()));
     ui.treeView->hideColumn(1);
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
@@ -112,6 +115,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui.treeView, SIGNAL(doubleClicked (const QModelIndex &)),
             SLOT(addDirectory(const QModelIndex &)));
+
+    VolumeToolButton *volumeButton = new VolumeToolButton(this);
+    connect(volumeButton, SIGNAL(volumeChanged(int)), this, SLOT(changeVolume(int)));
+    volumeButton->setText("volume");
+    ui.toolBar->addWidget(volumeButton);
 
     m_slider = new QSlider (Qt::Horizontal, this);
     m_label = new QLabel(this);
@@ -125,6 +133,11 @@ MainWindow::MainWindow(QWidget *parent)
     trayIcon->show();
 
 }
+void MainWindow::changeVolume(int delta)
+{
+    m_core->setVolume(m_core->leftVolume() + delta/12, m_core->rightVolume() + delta/12);
+}
+
 void MainWindow::removeSelected()
 {
     m_model->removeSelected();
@@ -158,23 +171,27 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void MainWindow::quit()
 {
-    Settings::instance().setHidden(this->isHidden());
-
     qApp->quit();
 }
 
- void MainWindow::closeEvent(QCloseEvent *event)
- {
-     if (trayIcon->isVisible()) {
-	 hide();
-	 event->ignore();
-     }
- }
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (trayIcon->isVisible()) {
+	hide();
+	event->ignore();
+    }
+}
 
 void MainWindow::settings()
 {
     SettingsDialog settings;
     settings.exec();
+}
+
+void MainWindow::settingsQmmp()
+{
+    ConfigDialog dialog;
+    dialog.exec();
 }
 
 void MainWindow::addDirectory(const QModelIndex &index)

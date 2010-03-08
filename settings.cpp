@@ -24,8 +24,6 @@ Settings::~Settings()
     settings.beginGroup("player");
     settings.setValue("fscollection", _rootFSCollectionDirectory);
     settings.endGroup();
-
-    qDebug() << "~Settings()";
 }
 
 const QString& Settings::rootFSCollectionDirectory()

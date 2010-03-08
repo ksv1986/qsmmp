@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Qmmp User Interface Example</string>
+   <string>Qsmmp</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -78,6 +78,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionSettings"/>
+    <addaction name="actionQmmpSettings"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -259,6 +260,11 @@
   <action name="actionAboutQt">
    <property name="text">
     <string>About Qt</string>
+   </property>
+  </action>
+  <action name="actionQmmpSettings">
+   <property name="text">
+    <string>Qmmp settings</string>
    </property>
   </action>
  </widget>

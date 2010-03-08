@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009 by Ilya Kotov                                      *
+ *   Copyright (C) 2007-2008 by Ilya Kotov                                 *
  *   forkotov02@hotmail.ru                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,59 +17,62 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef CONFIGDIALOG_H
+#define CONFIGDIALOG_H
 
-#include <QMainWindow>
-#include <QSystemTrayIcon>
-#include <QMenu>
-#include <qmmp/qmmp.h>
-#include <ui_mainwindow.h>
+#include <QDialog>
+#include <QTreeWidgetItem>
 
-class QSlider;
-class QLabel;
-class QFileSystemModel;
-
-class PlayListModel;
-class MediaPlayer;
-class SoundCore;
+#include "ui_configdialog.h"
 
 
-class MainWindow : public QMainWindow
+/**
+	@author Ilya Kotov <forkotov02@hotmail.ru>
+*/
+class QFileInfo;
+
+class InputPluginItem;
+class OutputPluginItem;
+class VisualPluginItem;
+class EffectPluginItem;
+class GeneralPluginItem;
+
+class ConfigDialog : public QDialog
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
+    ConfigDialog(QWidget *parent = 0);
 
-    ~MainWindow();
+    ~ConfigDialog();
 
 private slots:
-    void addFiles();
-    void playSelected(const QModelIndex &i);
-    void updatePosition(qint64 pos);
-    void seek();
-    void showState(Qmmp::State);
-    void showBitrate(int);
-    void addDirectory(const QModelIndex &index);
-    void settings();
-    void settingsQmmp();
-    void removeSelected();
-    void closeEvent(QCloseEvent *event);
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
-    void quit();
-    void changeVolume(int delta);
-private:
-    void createTrayIcon();
+    void changePage(QListWidgetItem *current, QListWidgetItem *previous);
+    void setPlFont();
+    void setMainFont();
+    void showPluginSettings();
+    void showPluginInfo();
+    void addTitleString(QAction *);
+    void saveSettings();
+    void updateButtons();
+    void updateDialogButton(int);
+    void showFileDialogInfo();
 
-    PlayListModel *m_model;
-    Ui::MainWindow ui;
-    MediaPlayer *m_player;
-    QSlider *m_slider;
-    QLabel *m_label;
-    SoundCore *m_core;
-    QFileSystemModel *model;
-    QSystemTrayIcon *trayIcon;
-    QMenu *trayIconMenu;
+private:
+    void readSettings();
+    void loadPluginsInfo();
+    void loadFonts();
+    void createMenus();
+
+
+    QList <QFileInfo> m_skinList;
+    Ui::ConfigDialog ui;
+    QPixmap pixmap;
+
+    QList <InputPluginItem*> m_inputPluginItems;
+    QList <OutputPluginItem*> m_outputPluginItems;
+    QList <VisualPluginItem*> m_visualPluginItems;
+    QList <EffectPluginItem*> m_effectPluginItems;
+    QList <GeneralPluginItem*> m_generalPluginItems;
 };
 
 #endif
