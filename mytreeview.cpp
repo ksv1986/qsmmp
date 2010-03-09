@@ -32,6 +32,8 @@ void MyTreeView::startDrag()
     if (index.isValid())
     {
 	QDirModel *dirModel = qobject_cast<QDirModel*>(model());
+	if(dirModel == NULL)
+	    return;
 	QString path = dirModel->filePath(index);
 	QMimeData *mimeData = new QMimeData();
 	mimeData->setUrls(QList<QUrl>()<<QUrl(path));
