@@ -116,9 +116,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.treeView, SIGNAL(doubleClicked (const QModelIndex &)),
             SLOT(addDirectory(const QModelIndex &)));
 
-    VolumeToolButton *volumeButton = new VolumeToolButton(this);
+    VolumeToolButton *volumeButton = new VolumeToolButton(this, m_core->leftVolume(), 0, 100);
     connect(volumeButton, SIGNAL(volumeChanged(int)), this, SLOT(changeVolume(int)));
-    volumeButton->setText("volume");
     ui.toolBar->addWidget(volumeButton);
 
     m_slider = new QSlider (Qt::Horizontal, this);
@@ -135,7 +134,7 @@ MainWindow::MainWindow(QWidget *parent)
 }
 void MainWindow::changeVolume(int delta)
 {
-    m_core->setVolume(m_core->leftVolume() + delta/12, m_core->rightVolume() + delta/12);
+    m_core->setVolume(m_core->leftVolume() + delta, m_core->rightVolume() + delta);
 }
 
 void MainWindow::removeSelected()

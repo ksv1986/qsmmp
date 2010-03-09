@@ -39,7 +39,6 @@ void MyTreeView::startDrag()
 	mimeData->setUrls(QList<QUrl>()<<QUrl(path));
 	QDrag *drag = new QDrag(this);
 	drag->setMimeData(mimeData);
-	//drag->setPixmap(QPixmap(":/images/person.png"));
 	drag->start(Qt::CopyAction);
 
     }
