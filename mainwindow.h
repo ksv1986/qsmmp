@@ -55,8 +55,8 @@ private slots:
     void settingsQmmp();
     void removeSelected();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
-    void quit();
     void changeVolume(int delta);
+    void lockFSCollectionRoot(bool checked);
 private:
     void createTrayIcon();
 

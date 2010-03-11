@@ -70,12 +70,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
     connect(ui.actionQmmpSettings, SIGNAL(triggered()), this, SLOT(settingsQmmp()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.tableView, SLOT(selectAll()));
-    connect(ui.actionQuit, SIGNAL(triggered()), this, SLOT(quit()));
+    connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 	     this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(ui.lockButton, SIGNAL(clicked(bool)), this, SLOT(lockFSCollectionRoot(bool)));
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
     const int rowHeight = fontMetrics().height() + 2;
     ui.tableView->verticalHeader()->setDefaultSectionSize(rowHeight);
@@ -103,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
     model->setNameFilterDisables(false);
     model->setReadOnly(true);
     model->setRootPath(Settings::instance().rootFSCollectionDirectory());
+    ui.fsCollectionPathLabel->setText(model->rootPath());
 
     ui.treeView->setModel(model);
     ui.treeView->setRootIndex(model->index(Settings::instance().rootFSCollectionDirectory()));
@@ -132,9 +134,27 @@ MainWindow::MainWindow(QWidget *parent)
     trayIcon->show();
 
 }
+
 void MainWindow::changeVolume(int delta)
 {
     m_core->setVolume(m_core->leftVolume() + delta, m_core->rightVolume() + delta);
+}
+
+void MainWindow::lockFSCollectionRoot(bool checked)
+{
+    if(!checked)
+    {
+	ui.lockButton->setText(tr("Lock"));
+	model->setRootPath("/");
+    }
+    else
+    {
+	ui.lockButton->setText(tr("Unlock"));
+	model->setRootPath(model->filePath(ui.treeView->currentIndex()));
+    }
+    ui.fsCollectionPathLabel->setText(model->rootPath());
+    ui.treeView->setRootIndex(model->index(model->rootPath()));
+    Settings::instance().setRootFSCollectionDirectory(model->rootPath());
 }
 
 void MainWindow::removeSelected()
@@ -167,11 +187,6 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 	 ;
      }
  }
-
-void MainWindow::quit()
-{
-    qApp->quit();
-}
 
 void MainWindow::settings()
 {
