@@ -38,6 +38,7 @@
 #include <qmmpui/playlistmodel.h>
 #include <qmmpui/playlistitem.h>
 #include <qmmpui/mediaplayer.h>
+#include <qmmpui/generalhandler.h>
 
 #include "abstractplaylistmodel.h"
 #include "mainwindow.h"
@@ -51,12 +52,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui.setupUi(this);
     //qmmp objects
-    createTrayIcon();
     m_player = new MediaPlayer(this);
     m_core = new SoundCore(this);
     m_model = new PlayListModel(this);
     m_player->initialize(m_core, m_model);
     new PlaylistParser(this);
+    m_generalHandler = new GeneralHandler(this);
     //connections
     connect(ui.actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui.actionPlay, SIGNAL(triggered()), m_player, SLOT(play()));
@@ -74,8 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
-    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-	     this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
     connect(ui.lockButton, SIGNAL(clicked(bool)), this, SLOT(lockFSCollectionRoot(bool)));
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
     const int rowHeight = fontMetrics().height() + 2;
@@ -119,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
             SLOT(addDirectory(const QModelIndex &)));
 
     VolumeToolButton *volumeButton = new VolumeToolButton(this, m_core->leftVolume(), 0, 100);
+    // should be connected in both ways
     connect(volumeButton, SIGNAL(volumeChanged(int)), this, SLOT(changeVolume(int)));
     ui.toolBar->addWidget(volumeButton);
 
@@ -130,9 +130,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_slider, SIGNAL(sliderReleased()), SLOT(seek()));
 
-    trayIcon->setVisible(true);
-    trayIcon->show();
-
+    connect(m_generalHandler, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
+    connect(m_generalHandler, SIGNAL(exitCalled()), qApp, SLOT(quit()));
 }
 
 void MainWindow::changeVolume(int delta)
@@ -167,25 +166,9 @@ void MainWindow::removeSelected()
 	ui.tableView->selectRow(row);
 }
 
-void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+void MainWindow::toggleVisibility()
  {
-     switch (reason) {
-     case QSystemTrayIcon::Trigger:
-     case QSystemTrayIcon::DoubleClick:
-	 if (isVisible())
-	    hide();
-	 else
-	    show();
-	 break;
-     case QSystemTrayIcon::MiddleClick:
-	 if (m_core->state() == Qmmp::Paused || m_core->state() == Qmmp::Stopped)
-	     m_player->play();
-	 else if(m_core->state() == Qmmp::Playing)
-	     m_core->pause();
-	 break;
-     default:
-	 ;
-     }
+    setVisible(!isVisible());
  }
 
 void MainWindow::settings()
@@ -257,17 +240,14 @@ void MainWindow::showState(Qmmp::State state)
     switch((int) state)
     {
     case Qmmp::Playing:
-	trayIcon->setIcon(QIcon(":/images/play.png"));
         ui.statusbar->showMessage(tr("Playing"));
         if(m_label->text() != "--:--/--:--")
             showBitrate(m_core->bitrate());
         break;
     case Qmmp::Paused:
-	trayIcon->setIcon(QIcon(":/images/pause.png"));
         ui.statusbar->showMessage(tr("Paused"));
         break;
     case Qmmp::Stopped:
-	trayIcon->setIcon(QIcon(":/images/stop.png"));
 	ui.statusbar->showMessage(tr("Stopped"));
         m_label->setText("--:--/--:--");
         m_slider->setValue(0);
@@ -282,19 +262,3 @@ void MainWindow::showBitrate(int)
                                     .arg(m_core->precision())
                                     .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
 }
-
- void MainWindow::createTrayIcon()
- {
-     trayIconMenu = new QMenu(this);
-     trayIconMenu->addAction(ui.actionPrevious);
-     trayIconMenu->addAction(ui.actionPlay);
-     trayIconMenu->addAction(ui.actionPause);
-     trayIconMenu->addAction(ui.actionStop);
-     trayIconMenu->addAction(ui.actionNext);
-     trayIconMenu->addSeparator();
-     trayIconMenu->addAction(ui.actionQuit);
-
-     trayIcon = new QSystemTrayIcon(this);
-     trayIcon->setContextMenu(trayIconMenu);
-     trayIcon->setIcon(QIcon(":/images/stop.png"));
- }

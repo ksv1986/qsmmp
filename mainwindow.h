@@ -33,7 +33,7 @@ class QFileSystemModel;
 class PlayListModel;
 class MediaPlayer;
 class SoundCore;
-
+class GeneralHandler;
 
 class MainWindow : public QMainWindow
 {
@@ -54,11 +54,10 @@ private slots:
     void settings();
     void settingsQmmp();
     void removeSelected();
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void changeVolume(int delta);
     void lockFSCollectionRoot(bool checked);
+    void toggleVisibility();
 private:
-    void createTrayIcon();
 
     PlayListModel *m_model;
     Ui::MainWindow ui;
@@ -66,9 +65,8 @@ private:
     QSlider *m_slider;
     QLabel *m_label;
     SoundCore *m_core;
+    GeneralHandler *m_generalHandler;
     QFileSystemModel *model;
-    QSystemTrayIcon *trayIcon;
-    QMenu *trayIconMenu;
 };
 
 #endif

@@ -69,7 +69,6 @@ ConfigDialog::ConfigDialog ( QWidget *parent )
     connect (ui.pluginsTab, SIGNAL(currentChanged(int)), SLOT(updateButtons()));
     connect (ui.fileDialogComboBox, SIGNAL (currentIndexChanged (int)), SLOT(updateDialogButton(int)));
     connect (ui.fdInformationButton, SIGNAL (clicked()), SLOT(showFileDialogInfo()));
-    ui.listWidget->setIconSize (QSize (69,29));
     readSettings();
     loadPluginsInfo();
     loadFonts();
@@ -397,9 +396,8 @@ void ConfigDialog::showPluginSettings()
     {
         int row = ui.generalPluginTable->currentRow ();
         if ( m_generalPluginItems.isEmpty() || row < 0 )
-            return;
-	// TODO: check why it fails fails here
-	//GeneralHandler::instance()->showSettings(m_generalPluginItems.at(row)->factory(), this);
+	    return;
+	GeneralHandler::instance()->showSettings(m_generalPluginItems.at(row)->factory(), this);
         break;
     }
     }
