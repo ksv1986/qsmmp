@@ -173,14 +173,6 @@ void MainWindow::quit()
     qApp->quit();
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    if (trayIcon->isVisible()) {
-	hide();
-	event->ignore();
-    }
-}
-
 void MainWindow::settings()
 {
     SettingsDialog settings;

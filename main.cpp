@@ -28,6 +28,9 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     MainWindow mw;
 
+    if (QSystemTrayIcon::isSystemTrayAvailable())
+	    QApplication::setQuitOnLastWindowClosed(false);
+
     if(!Settings::instance().hidden())
 	mw.show();
     return app.exec();

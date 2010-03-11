@@ -54,7 +54,6 @@ private slots:
     void settings();
     void settingsQmmp();
     void removeSelected();
-    void closeEvent(QCloseEvent *event);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void quit();
     void changeVolume(int delta);
