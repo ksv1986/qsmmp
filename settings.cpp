@@ -2,6 +2,8 @@
 #include <QSettings>
 #include <QDebug>
 
+#include <qmmp/qmmp.h>
+
 #include "settings.h"
 
 Settings& Settings::instance()
@@ -17,11 +19,11 @@ Settings::Settings()
 
 Settings::~Settings()
 {
-    QSettings settings("qsmmp", "qsmmp");
-    settings.beginGroup("mainwindow");
-    settings.setValue("hidden", _hidden);
+    QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+    settings.beginGroup("MainWindow");
+    settings.setValue("_startHidden", _startHidden);
     settings.endGroup();
-    settings.beginGroup("player");
+    settings.beginGroup("qsmmp");
     settings.setValue("fscollection", _rootFSCollectionDirectory);
     settings.endGroup();
 }
@@ -38,16 +40,13 @@ void Settings::setRootFSCollectionDirectory(QString directory)
 
 void Settings::load()
 {
-    QSettings settings("qsmmp", "qsmmp");
-    settings.beginGroup("mainwindow");
-    _hidden = settings.value("hidden", false).toBool();
+    QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
+    settings.beginGroup("MainWindow");
+    _startHidden = settings.value("start_hidden", false).toBool();
+    _hideOnClose = settings.value("hide_on_close", false).toBool();
     settings.endGroup();
-    settings.beginGroup("player");
-    _rootFSCollectionDirectory = settings.value("fscollection", "/mnt/data/music/").toString();
-    settings.endGroup();
-}
 
-void Settings::setHidden(bool hidden)
-{
-    _hidden = hidden;
+    settings.beginGroup("qsmmp");
+    _rootFSCollectionDirectory = settings.value("fscollection", "/").toString();
+    settings.endGroup();
 }

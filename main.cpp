@@ -29,9 +29,7 @@ int main(int argc, char *argv[])
     MainWindow mw;
 
     if (QSystemTrayIcon::isSystemTrayAvailable())
-	QApplication::setQuitOnLastWindowClosed(false);
+	QApplication::setQuitOnLastWindowClosed(!Settings::instance().hideOnClose());
 
-    if(!Settings::instance().hidden())
-	mw.show();
     return app.exec();
 }

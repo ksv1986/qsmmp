@@ -67,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionStop, SIGNAL(triggered()), m_player, SLOT(stop()));
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
+    connect(ui.clearButton, SIGNAL(clicked()), ui.actionClear, SLOT(trigger()));
     connect(ui.actionRemove, SIGNAL(triggered()), this, SLOT(removeSelected()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
     connect(ui.actionQmmpSettings, SIGNAL(triggered()), this, SLOT(settingsQmmp()));
@@ -99,7 +100,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     model = new QFileSystemModel(ui.treeView);
     model->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
-    model->setNameFilters(QStringList()<<"*.mp3"<<"*.wma"<<"*.flac");
+
+    QStringList list = Decoder::filters();
+    QStringList filters;
+    QRegExp rx("(\\*.\\w+)[\\s\\)]");
+    foreach(QString str, list){
+	int pos = 0;
+
+	while ((pos = rx.indexIn(str, pos)) != -1) {
+	    filters << rx.cap(1);
+	    pos += rx.matchedLength();
+	}
+    }
+    model->setNameFilters(filters);
     model->setNameFilterDisables(false);
     model->setReadOnly(true);
     model->setRootPath(Settings::instance().rootFSCollectionDirectory());
@@ -132,6 +145,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_generalHandler, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
     connect(m_generalHandler, SIGNAL(exitCalled()), qApp, SLOT(quit()));
+
+    setVisible(!Settings::instance().startHidden() || !m_generalHandler->visibilityControl());
 }
 
 void MainWindow::changeVolume(int delta)
