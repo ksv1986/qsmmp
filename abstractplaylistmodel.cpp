@@ -34,7 +34,7 @@ AbstractPlaylistModel::~AbstractPlaylistModel(){}
 
 int AbstractPlaylistModel::columnCount (const QModelIndex &) const
 {
-    return 4;
+    return 5;
 }
 
 void AbstractPlaylistModel::listChanged()
@@ -53,7 +53,7 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
 	if (index.column() == 1)
             return item->artist();
 	if (index.column() == 2)
-            return item->title();
+	    return item->title().isEmpty() ? item->url() : item->title();
 	if (index.column() == 3)
             return item->year();
 	if (index.column() == 4)
@@ -73,7 +73,7 @@ QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientat
     if(role == Qt::DisplayRole && orientation == Qt::Horizontal)
     {
 	if (section == 0)
-	    return tr("Track");
+	    return tr("#");
 	if (section == 1)
             return tr("Artist");
 	if (section == 2)

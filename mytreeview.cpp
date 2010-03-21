@@ -1,11 +1,14 @@
 #include <QDirModel>
 #include <QUrl>
 #include <QApplication>
+#include <QHeaderView>
+
 #include "mytreeview.h"
 
 MyTreeView::MyTreeView(QWidget *parent = 0)
 	: QTreeView(parent)
 {
+    this->header()->hide();
 }
 
 

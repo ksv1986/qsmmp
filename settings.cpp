@@ -1,6 +1,7 @@
 #include <QString>
 #include <QSettings>
 #include <QDebug>
+#include <QStringList>
 
 #include <qmmp/qmmp.h>
 
@@ -25,6 +26,7 @@ Settings::~Settings()
     settings.endGroup();
     settings.beginGroup("qsmmp");
     settings.setValue("fscollection", _rootFSCollectionDirectory);
+    settings.setValue("playlistColumns", _playlistVisibleColumns);
     settings.endGroup();
 }
 
@@ -38,6 +40,12 @@ void Settings::setRootFSCollectionDirectory(QString directory)
     _rootFSCollectionDirectory = directory;
 }
 
+void Settings::setPlaylistVisibleColumns(QStringList columns)
+{
+    _playlistVisibleColumns.clear();
+    _playlistVisibleColumns.append(columns);
+}
+
 void Settings::load()
 {
     QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
@@ -48,5 +56,6 @@ void Settings::load()
 
     settings.beginGroup("qsmmp");
     _rootFSCollectionDirectory = settings.value("fscollection", "/").toString();
+    _playlistVisibleColumns = settings.value("playlistColumns", QStringList()).toStringList();
     settings.endGroup();
 }

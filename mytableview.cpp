@@ -4,14 +4,92 @@
 #include <QEvent>
 #include <QDebug>
 #include <QUrl>
+#include <QHeaderView>
+#include <QAction>
+#include <QMap>
 
 #include "mytableview.h"
 #include "mytreeview.h"
 #include "abstractplaylistmodel.h"
+#include "settings.h"
 
 MyTableView::MyTableView(QWidget *parent=0)
 	: QTableView(parent)
 {
+    setAlternatingRowColors(true);
+    QHeaderView* header = horizontalHeader();
+    header->setMovable(true);
+}
+
+MyTableView::~MyTableView()
+{
+    QMap<int, QString> map;
+    for( int i = 0; i < model()->columnCount(); i++ )
+    {
+	if(!isColumnHidden(i))
+	{
+	    QString column = model()->headerData( i, Qt::Horizontal ).toString();
+	    int pos = horizontalHeader()->sectionPosition(i);
+	    map[pos] = column;
+	}
+    }
+    Settings::instance().setPlaylistVisibleColumns(map.values());
+}
+
+void MyTableView::setup()
+{
+    QStringList columns = Settings::instance().playlistVisibleColumns();
+    if(columns.count() > 0)
+    {
+	// setting up column visibility
+	for( int i = 0; i < model()->columnCount(); i++ )
+	{
+	    QString column = model()->headerData( i, Qt::Horizontal ).toString();
+	    if(columns.contains(column))
+		showColumn(i);
+	    else
+		hideColumn(i);
+	}
+	// setting up column order
+	for(int i = 0; i<columns.count(); i++)
+	{
+	    int index;
+	    for(index = 0; index < model()->columnCount(); index++)
+	    {
+		QString column = model()->headerData( index, Qt::Horizontal ).toString();
+		if(column == columns[i])
+		    break;
+	    }
+	    int vi = horizontalHeader()->visualIndex(index);
+	    horizontalHeader()->moveSection(vi, i + 1);
+	}
+    }
+
+    QHeaderView* header = horizontalHeader();
+    header->setContextMenuPolicy( Qt::ActionsContextMenu );
+
+    for( int i = 0; i < model()->columnCount(); i++ )
+    {
+	QAction *action = new QAction( model()->headerData( i, Qt::Horizontal ).toString(), header );
+	header->addAction( action );
+	m_columnActions.append( action );
+	action->setCheckable( true );
+	if( !isColumnHidden( i ) )
+	    action->setChecked( true );
+	connect( action, SIGNAL( toggled(bool) ), this, SLOT(toggleColumn(bool) ) );
+    }
+}
+
+void MyTableView::toggleColumn(bool toggled)
+{
+    int index = m_columnActions.indexOf(qobject_cast< QAction* >(sender()));
+    if( index != -1 )
+    {
+	if(toggled)
+	    showColumn(index);
+	else
+	    hideColumn(index);
+    }
 }
 
 void MyTableView::dragEnterEvent(QDragEnterEvent* event)

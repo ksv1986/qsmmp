@@ -94,9 +94,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui.tableView->setDragEnabled(true);
     ui.tableView->setAcceptDrops(true);
     ui.tableView->setDragDropMode(QAbstractItemView::InternalMove);
-    ui.tableView->resizeColumnsToContents();
 
     ui.tableView->setModel(m);
+    ui.tableView->setup();
+    ui.tableView->setColumnWidth(0, 30);
+    ui.tableView->setColumnWidth(1, 100);
+    ui.tableView->setColumnWidth(2, 200);
+    ui.tableView->setColumnWidth(3, 45);
 
     model = new QFileSystemModel(ui.treeView);
     model->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);

@@ -2,12 +2,14 @@
 #define SETTINGS_H
 
 class QString;
+class QStringList;
 
 class Settings
 {
     QString _rootFSCollectionDirectory;
     bool _startHidden;
     bool _hideOnClose;
+    QStringList _playlistVisibleColumns;
 
     Settings();
     Settings& operator=(Settings&) { return *this; }
@@ -26,6 +28,9 @@ public:
 
     void setHideOnClose(bool hideOnClose) { _hideOnClose = hideOnClose; };
     bool hideOnClose() { return _hideOnClose; }
+
+    void setPlaylistVisibleColumns(QStringList columns);
+    QStringList playlistVisibleColumns() { return _playlistVisibleColumns; }
 };
 
 #endif // SETTINGS_H
