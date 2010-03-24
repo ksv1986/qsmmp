@@ -1,7 +1,6 @@
 SOURCES += main.cpp \
     mainwindow.cpp \
     abstractplaylistmodel.cpp \
-    settingsdialog.cpp \
     settings.cpp \
     mytableview.cpp \
     mytreeview.cpp \
@@ -10,7 +9,6 @@ SOURCES += main.cpp \
     volumetoolbutton.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
-    settingsdialog.h \
     settings.h \
     mytreeview.h \
     mytableview.h \
@@ -25,7 +23,6 @@ TARGET = qsmmp
 LIBS += -lqmmp \
     -lqmmpui
 FORMS += mainwindow.ui \
-    settingsdialog.ui \
     configdialog.ui
 RESOURCES += stuff.qrc
 INCLUDEPATH += /usr/include/

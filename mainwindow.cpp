@@ -42,7 +42,6 @@
 
 #include "abstractplaylistmodel.h"
 #include "mainwindow.h"
-#include "settingsdialog.h"
 #include "settings.h"
 #include "configdialog.h"
 #include "volumetoolbutton.h"
@@ -70,7 +69,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.clearButton, SIGNAL(clicked()), ui.actionClear, SLOT(trigger()));
     connect(ui.actionRemove, SIGNAL(triggered()), this, SLOT(removeSelected()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
-    connect(ui.actionQmmpSettings, SIGNAL(triggered()), this, SLOT(settingsQmmp()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.tableView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
@@ -191,12 +189,6 @@ void MainWindow::toggleVisibility()
  }
 
 void MainWindow::settings()
-{
-    SettingsDialog settings;
-    settings.exec();
-}
-
-void MainWindow::settingsQmmp()
 {
     ConfigDialog dialog;
     dialog.exec();
