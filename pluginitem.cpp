@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Ilya Kotov                                 *
+ *   Copyright (C) 2010 by Ilya Kotov                                      *
  *   forkotov02@hotmail.ru                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,139 +21,168 @@
 #include <QSettings>
 #include <QDir>
 
+#include <qmmp/inputsourcefactory.h>
 #include <qmmp/decoderfactory.h>
 #include <qmmp/outputfactory.h>
 #include <qmmp/visualfactory.h>
 #include <qmmp/effectfactory.h>
 #include <qmmp/effect.h>
 #include <qmmp/soundcore.h>
+#include <qmmp/enginefactory.h>
+#include <qmmp/abstractengine.h>
 #include <qmmpui/generalfactory.h>
 #include <qmmpui/general.h>
 #include <qmmpui/generalhandler.h>
 
 #include "pluginitem.h"
 
-/*Input*/
-InputPluginItem::InputPluginItem(QObject *parent, DecoderFactory *fact)
-        : QObject(parent)
-{
-    m_factory = fact;
-}
 
-InputPluginItem::~InputPluginItem()
-{}
-
-bool InputPluginItem::isSelected()
+PluginItem::PluginItem(QTreeWidgetItem *parent, InputSourceFactory *factory, const QString &path)
+    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), TRANSPORT)
 {
-    return Decoder::isEnabled(m_factory);
-}
-
-DecoderFactory* InputPluginItem::factory()
-{
-    return m_factory;
-}
-
-void InputPluginItem::setSelected(bool select)
-{
-    Decoder::setEnabled(m_factory, select);
-}
-
-/*Output*/
-OutputPluginItem::OutputPluginItem(QObject *parent, OutputFactory *fact): QObject(parent)
-{
-    m_factory = fact;
+    m_has_about = factory->properties().hasAbout;
+    m_has_config = factory->properties().hasSettings;
+    m_factory = factory;
 }
 
 
-OutputPluginItem::~OutputPluginItem()
-{}
-
-void OutputPluginItem::select()
+PluginItem::PluginItem(QTreeWidgetItem *parent, DecoderFactory *factory, const QString &path)
+    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), DECODER)
 {
-    Output::setCurrentFactory(m_factory);
+    setCheckState(0, Decoder::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
+    m_has_about = factory->properties().hasAbout;
+    m_has_config = factory->properties().hasSettings;
+    m_factory = factory;
 }
 
-bool OutputPluginItem::isSelected()
+PluginItem::PluginItem(QTreeWidgetItem *parent, EngineFactory *factory, const QString &path)
+    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), ENGINE)
 {
-    return Output::currentFactory() == m_factory;
+    setCheckState(0, AbstractEngine::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
+    m_has_about = factory->properties().hasAbout;
+    m_has_config = factory->properties().hasSettings;
+    m_factory = factory;
 }
 
-OutputFactory *OutputPluginItem::factory()
+PluginItem::PluginItem(QTreeWidgetItem *parent, EffectFactory *factory, const QString &path)
+    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), EFFECT)
 {
-    return m_factory;
+    setCheckState(0, Effect::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
+    m_has_about = factory->properties().hasAbout;
+    m_has_config = factory->properties().hasSettings;
+    m_factory = factory;
 }
 
-/*Visual*/
-VisualPluginItem::VisualPluginItem(QObject *parent, VisualFactory *fact): QObject(parent)
+PluginItem::PluginItem(QTreeWidgetItem *parent, VisualFactory *factory, const QString &path)
+    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), VISUAL)
 {
-    m_factory = fact;
+    setCheckState(0, Visual::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
+    m_has_about = factory->properties().hasAbout;
+    m_has_config = factory->properties().hasSettings;
+    m_factory = factory;
 }
 
-
-VisualPluginItem::~VisualPluginItem()
-{}
-
-void VisualPluginItem::select(bool on)
+PluginItem::PluginItem(QTreeWidgetItem *parent, GeneralFactory *factory, const QString &path)
+    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), GENERAL)
 {
-    Visual::setEnabled(m_factory, on);
+    setCheckState(0, General::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
+    m_has_about = factory->properties().hasAbout;
+    m_has_config = factory->properties().hasSettings;
+    m_factory = factory;
 }
 
-bool VisualPluginItem::isSelected()
+PluginItem::~PluginItem()
 {
-    return Visual::isEnabled(m_factory);
+
 }
 
-VisualFactory *VisualPluginItem::factory()
+bool PluginItem::hasAbout() const
 {
-    return m_factory;
+    return m_has_about;
+}
+bool PluginItem::hasSettings() const
+{
+    return m_has_config;
 }
 
-/*Effect*/
-EffectPluginItem::EffectPluginItem(QObject *parent, EffectFactory *fact): QObject(parent)
+void PluginItem::showAbout(QWidget *parent)
 {
-    m_factory = fact;
+    switch(type())
+    {
+    case PluginItem::TRANSPORT:
+	static_cast<InputSourceFactory *>(m_factory)->showAbout(parent);
+	break;
+    case PluginItem::DECODER:
+	static_cast<DecoderFactory *>(m_factory)->showAbout(parent);
+	break;
+    case PluginItem::ENGINE:
+	static_cast<EngineFactory *>(m_factory)->showAbout(parent);
+	break;
+    case PluginItem::EFFECT:
+	static_cast<EffectFactory *>(m_factory)->showAbout(parent);
+	break;
+    case PluginItem::VISUAL:
+	static_cast<VisualFactory *>(m_factory)->showAbout(parent);
+	break;
+    case PluginItem::GENERAL:
+	static_cast<GeneralFactory *>(m_factory)->showAbout(parent);
+	break;
+    default:
+	;
+    }
+
 }
 
-
-EffectPluginItem::~EffectPluginItem()
-{}
-
-void EffectPluginItem::select(bool on)
+void PluginItem::showSettings(QWidget *parent)
 {
-    Effect::setEnabled(m_factory, on);
+    switch(type())
+    {
+    case PluginItem::TRANSPORT:
+	static_cast<InputSourceFactory *>(m_factory)->showSettings(parent);
+	break;
+    case PluginItem::DECODER:
+	static_cast<DecoderFactory *>(m_factory)->showSettings (parent);
+	break;
+    case PluginItem::ENGINE:
+	static_cast<EngineFactory *>(m_factory)->showSettings (parent);
+	break;
+    case PluginItem::EFFECT:
+	static_cast<EffectFactory *>(m_factory)->showSettings (parent);
+	break;
+    case PluginItem::VISUAL:
+	Visual::showSettings(static_cast<VisualFactory *>(m_factory), parent);
+	break;
+    case PluginItem::GENERAL:
+	GeneralHandler::instance()->showSettings(static_cast<GeneralFactory *>(m_factory), parent);
+	break;
+    default:
+	;
+    }
 }
 
-bool EffectPluginItem::isSelected()
+void PluginItem::setEnabled(bool enabled)
 {
-    return Effect::isEnabled(m_factory);
+    switch(type())
+    {
+    case PluginItem::TRANSPORT:
+	//dynamic_cast<InputSourceFactory *>(m_factory)
+	break;
+    case PluginItem::DECODER:
+	Decoder::setEnabled(static_cast<DecoderFactory *>(m_factory), enabled);
+	break;
+    case PluginItem::ENGINE:
+	AbstractEngine::setEnabled(static_cast<EngineFactory *>(m_factory), enabled);
+	break;
+    case PluginItem::EFFECT:
+	Effect::setEnabled(static_cast<EffectFactory *>(m_factory), enabled);
+	break;
+    case PluginItem::VISUAL:
+	Visual::setEnabled(static_cast<VisualFactory *>(m_factory), enabled);
+	break;
+    case PluginItem::GENERAL:
+	GeneralHandler::instance()->setEnabled(static_cast<GeneralFactory *>(m_factory), enabled);
+	break;
+    default:
+	;
+    }
 }
-
-EffectFactory *EffectPluginItem::factory()
-{
-    return m_factory;
-}
-
-/*General*/
-GeneralPluginItem::GeneralPluginItem(QObject *parent, GeneralFactory *fact): QObject(parent)
-{
-    m_factory = fact;
-}
-
-GeneralPluginItem::~GeneralPluginItem()
-{}
-
-void GeneralPluginItem::select(bool on)
-{
-    GeneralHandler::instance()->setEnabled(m_factory, on);
-}
-
-bool GeneralPluginItem::isSelected()
-{
-    return General::isEnabled(m_factory);
-}
-
-GeneralFactory *GeneralPluginItem::factory()
-{
-    return m_factory;
-}
-

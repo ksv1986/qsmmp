@@ -31,20 +31,21 @@
 
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
-#include <qmmpui/general.h>
+#include <qmmp/metadatamanager.h>
 #include <qmmpui/playlistparser.h>
 #include <qmmpui/playlistformat.h>
 #include <qmmpui/filedialog.h>
 #include <qmmpui/playlistmodel.h>
 #include <qmmpui/playlistitem.h>
+#include <qmmpui/playlistmanager.h>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/generalhandler.h>
 
 #include "abstractplaylistmodel.h"
 #include "mainwindow.h"
 #include "settings.h"
-#include "configdialog.h"
 #include "volumetoolbutton.h"
+#include "configdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -53,8 +54,9 @@ MainWindow::MainWindow(QWidget *parent)
     //qmmp objects
     m_player = new MediaPlayer(this);
     m_core = new SoundCore(this);
-    m_model = new PlayListModel(this);
-    m_player->initialize(m_core, m_model);
+    PlayListManager *manager = new PlayListManager(this);
+    m_model = manager->currentPlayList();
+    m_player->initialize(m_core, manager);
     new PlaylistParser(this);
     m_generalHandler = new GeneralHandler(this);
     //connections
@@ -103,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent)
     model = new QFileSystemModel(ui.treeView);
     model->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
 
-    QStringList list = Decoder::filters();
+    QStringList list = MetaDataManager::instance()->nameFilters();
     QStringList filters;
     QRegExp rx("(\\*.\\w+)[\\s\\)]");
     foreach(QString str, list){
@@ -214,8 +216,8 @@ void MainWindow::addFiles()
 {
     QString lastDir;
     QStringList filters;
-    filters << tr("All Supported Bitstreams")+" (" + Decoder::nameFilters().join (" ") +")";
-    filters << Decoder::filters();
+    filters << tr("All Supported Bitstreams")+" (" + MetaDataManager::instance()->nameFilters().join (" ") +")";
+    filters << MetaDataManager::instance()->filters();
     FileDialog::popup(this, FileDialog::AddDirsFiles, &lastDir,
                             m_model, SLOT(addFileList(const QStringList&)),
                             tr("Select one or more files to open"), filters.join(";;"));

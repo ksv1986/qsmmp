@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Ilya Kotov                                      *
+ *   Copyright (C) 2008-2010 by Ilya Kotov                                 *
  *   forkotov02@hotmail.ru                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,57 +17,50 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef PLUGINITEM_H
-#define PLUGINITEM_H
+#ifndef POPUPWIDGET_H
+#define POPUPWIDGET_H
 
-#include <QTreeWidgetItem>
+#include <QWidget>
 
+#define DEFAULT_TEMPLATE "<b>%if(%t,%t,%f)</b>\n%if(%p,<br>%p,)\n%if(%a,<br>%a,)"
+
+class QTimer;
+class QLabel;
+class PlayListItem;
+
+namespace PlayListPopup {
 /**
-   @author Ilya Kotov <forkotov02@hotmail.ru>
+    @author Ilya Kotov <forkotov02@hotmail.ru>
 */
-
-class QWidget;
-class InputSourceFactory;
-class DecoderFactory;
-class EngineFactory;
-class OutputFactory;
-class VisualFactory;
-class EffectFactory;
-class GeneralFactory;
-
-class PluginItem : public QTreeWidgetItem
+class PopupWidget : public QWidget
 {
+    Q_OBJECT
 public:
+    PopupWidget(QWidget *parent = 0);
 
-    PluginItem(QTreeWidgetItem *parent, InputSourceFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, DecoderFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, EngineFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, EffectFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, VisualFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, GeneralFactory *factory, const QString &path);
-    ~PluginItem();
+    ~PopupWidget();
 
-    enum PluginType
-    {
-	TRANSPORT = QTreeWidgetItem::UserType,
-	DECODER,
-	ENGINE,
-	EFFECT,
-	VISUAL,
-	GENERAL
-    };
+    void prepare(PlayListItem *item, QPoint pos);
+    void deactivate();
+    PlayListItem *item();
 
-    bool hasAbout() const;
-    bool hasSettings() const;
-    void showAbout(QWidget *parent);
-    void showSettings(QWidget *parent);
-    void setEnabled(bool enabled);
+protected:
+    virtual void mousePressEvent (QMouseEvent *);
+    virtual void mouseMoveEvent (QMouseEvent *);
 
+private slots:
+    void loadCover();
 
 private:
-    bool m_has_about;
-    bool m_has_config;
-    void *m_factory;
+    QTimer *m_timer;
+    QLabel *m_label1;
+    QLabel *m_pixlabel;
+    QString m_template;
+    uint m_pos;
+    int m_coverSize;
+    PlayListItem *m_item;
+
 };
+}
 
 #endif

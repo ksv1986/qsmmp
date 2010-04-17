@@ -4,17 +4,22 @@ SOURCES += main.cpp \
     settings.cpp \
     mytableview.cpp \
     mytreeview.cpp \
-    configdialog.cpp \
     pluginitem.cpp \
-    volumetoolbutton.cpp
+    volumetoolbutton.cpp \
+    configdialog.cpp \
+    popupsettings.cpp \
+    popupwidget.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
     mytreeview.h \
     mytableview.h \
-    configdialog.h \
     pluginitem.h \
-    volumetoolbutton.h
+    volumetoolbutton.h \
+    configdialog.h \
+    popupsettings.h \
+    popupwidget.h \
+    popupwidget.h
 TEMPLATE = app
 CONFIG += warn_on \
     thread \
@@ -23,6 +28,7 @@ TARGET = qsmmp
 LIBS += -lqmmp \
     -lqmmpui
 FORMS += mainwindow.ui \
-    configdialog.ui
+    configdialog.ui \
+    popupsettings.ui
 RESOURCES += stuff.qrc
 INCLUDEPATH += /usr/include/

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Ilya Kotov                                      *
+ *   Copyright (C) 2009 by Ilya Kotov                                      *
  *   forkotov02@hotmail.ru                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,57 +17,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef PLUGINITEM_H
-#define PLUGINITEM_H
+#ifndef SETTINGSDIALOG_H
+#define SETTINGSDIALOG_H
 
-#include <QTreeWidgetItem>
+#include <QDialog>
+#include "ui_popupsettings.h"
+
+class Action;
 
 /**
-   @author Ilya Kotov <forkotov02@hotmail.ru>
+	@author Ilya Kotov <forkotov02@hotmail.ru>
 */
-
-class QWidget;
-class InputSourceFactory;
-class DecoderFactory;
-class EngineFactory;
-class OutputFactory;
-class VisualFactory;
-class EffectFactory;
-class GeneralFactory;
-
-class PluginItem : public QTreeWidgetItem
+class PopupSettings : public QDialog
 {
+Q_OBJECT
 public:
+    PopupSettings(QWidget *parent = 0);
+    ~PopupSettings();
 
-    PluginItem(QTreeWidgetItem *parent, InputSourceFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, DecoderFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, EngineFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, EffectFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, VisualFactory *factory, const QString &path);
-    PluginItem(QTreeWidgetItem *parent, GeneralFactory *factory, const QString &path);
-    ~PluginItem();
 
-    enum PluginType
-    {
-	TRANSPORT = QTreeWidgetItem::UserType,
-	DECODER,
-	ENGINE,
-	EFFECT,
-	VISUAL,
-	GENERAL
-    };
+public slots:
+    virtual void accept();
 
-    bool hasAbout() const;
-    bool hasSettings() const;
-    void showAbout(QWidget *parent);
-    void showSettings(QWidget *parent);
-    void setEnabled(bool enabled);
-
+private slots:
+    void insertExpression(QAction *);
+    void on_resetButton_clicked();
 
 private:
-    bool m_has_about;
-    bool m_has_config;
-    void *m_factory;
+    void createMenu();
+    Ui::PopupSettings ui;
+    QMap<uint, QPushButton*> m_buttons;
 };
 
 #endif
