@@ -18,7 +18,6 @@ HEADERS += mainwindow.h \
     volumetoolbutton.h \
     configdialog.h \
     popupsettings.h \
-    popupwidget.h \
     popupwidget.h
 TEMPLATE = app
 CONFIG += warn_on \
