@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>659</width>
-    <height>450</height>
+    <height>472</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,23 +91,14 @@
         <bool>false</bool>
        </property>
        <property name="currentRow">
-        <number>0</number>
+        <number>-1</number>
        </property>
-       <item>
-        <property name="text">
-         <string>Appearance</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../images/images.qrc">
-          <normaloff>:/interface.png</normaloff>:/interface.png</iconset>
-        </property>
-       </item>
        <item>
         <property name="text">
          <string>Playlist</string>
         </property>
         <property name="icon">
-         <iconset resource="../images/images.qrc">
+         <iconset>
           <normaloff>:/playlist.png</normaloff>:/playlist.png</iconset>
         </property>
        </item>
@@ -116,7 +107,7 @@
          <string>Plugins</string>
         </property>
         <property name="icon">
-         <iconset resource="../images/images.qrc">
+         <iconset>
           <normaloff>:/plugins.png</normaloff>:/plugins.png</iconset>
         </property>
        </item>
@@ -125,7 +116,7 @@
          <string>Advanced</string>
         </property>
         <property name="icon">
-         <iconset resource="../images/images.qrc">
+         <iconset>
           <normaloff>:/advanced.png</normaloff>:/advanced.png</iconset>
         </property>
        </item>
@@ -134,7 +125,7 @@
          <string>Connectivity</string>
         </property>
         <property name="icon">
-         <iconset resource="../images/images.qrc">
+         <iconset>
           <normaloff>:/network.png</normaloff>:/network.png</iconset>
         </property>
        </item>
@@ -143,7 +134,7 @@
          <string>Audio</string>
         </property>
         <property name="icon">
-         <iconset resource="../images/images.qrc">
+         <iconset>
           <normaloff>:/replaygain.png</normaloff>:/replaygain.png</iconset>
         </property>
        </item>
@@ -163,324 +154,6 @@
        <property name="currentIndex">
         <number>0</number>
        </property>
-       <widget class="QWidget" name="widget1">
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item>
-          <widget class="QTabWidget" name="tabWidget">
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <widget class="QWidget" name="tab_4">
-            <attribute name="title">
-             <string>Skins</string>
-            </attribute>
-            <layout class="QGridLayout" name="gridLayout">
-             <item row="0" column="0" colspan="4">
-              <widget class="QListWidget" name="listWidget">
-               <property name="alternatingRowColors">
-                <bool>true</bool>
-               </property>
-               <property name="movement">
-                <enum>QListView::Static</enum>
-               </property>
-               <property name="flow">
-                <enum>QListView::TopToBottom</enum>
-               </property>
-               <property name="viewMode">
-                <enum>QListView::ListMode</enum>
-               </property>
-               <property name="modelColumn">
-                <number>0</number>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0" colspan="2">
-              <widget class="QPushButton" name="skinInstallButton">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Add...</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QPushButton" name="skinReloadButton">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Refresh</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3">
-              <spacer name="horizontalSpacer">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="tab_5">
-            <attribute name="title">
-             <string>Miscellaneous</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <widget class="QGroupBox" name="plGroupBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="title">
-                <string>Fonts</string>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_2">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>80</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Player:</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QLabel" name="mainFontLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Sunken</enum>
-                  </property>
-                  <property name="text">
-                   <string>???</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QToolButton" name="mainFontButton">
-                  <property name="text">
-                   <string>...</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_2">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>80</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Playlist:</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QLabel" name="plFontLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Sunken</enum>
-                  </property>
-                  <property name="text">
-                   <string>???</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QToolButton" name="plFontButton">
-                  <property name="text">
-                   <string>...</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0" colspan="3">
-                 <widget class="QCheckBox" name="useBitmapCheckBox">
-                  <property name="text">
-                   <string>Use bitmap font if available</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="groupBox">
-               <property name="title">
-                <string>View</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_5">
-                <item>
-                 <widget class="QCheckBox" name="skinCursorsCheckBox">
-                  <property name="text">
-                   <string>Use skin cursors</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="alwaysOnTopCheckBox">
-                  <property name="text">
-                   <string>Always on top</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="doubleSizeCheckBox">
-                  <property name="text">
-                   <string>Double size</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="groupBox_7">
-               <property name="title">
-                <string>Transparency</string>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_4">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_3">
-                  <property name="text">
-                   <string>Main window</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QSlider" name="mwTransparencySlider">
-                  <property name="maximum">
-                   <number>90</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QLabel" name="mwTransparencyLabel">
-                  <property name="minimumSize">
-                   <size>
-                    <width>25</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>0</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_9">
-                  <property name="text">
-                   <string>Equalizer</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QSlider" name="eqTransparencySlider">
-                  <property name="maximum">
-                   <number>90</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QLabel" name="eqTransparencyLabel">
-                  <property name="text">
-                   <string>0</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="label_10">
-                  <property name="text">
-                   <string>Playlist</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QSlider" name="plTransparencySlider">
-                  <property name="maximum">
-                   <number>90</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="2">
-                 <widget class="QLabel" name="plTransparencyLabel">
-                  <property name="text">
-                   <string>0</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-         </item>
-        </layout>
-       </widget>
        <widget class="QWidget" name="page">
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
@@ -1253,9 +926,7 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../images/images.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>enableProxyCheckBox</sender>
@@ -1334,54 +1005,6 @@
     <hint type="destinationlabel">
      <x>256</x>
      <y>33</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mwTransparencySlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>mwTransparencyLabel</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>252</x>
-     <y>90</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>283</x>
-     <y>90</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>eqTransparencySlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>eqTransparencyLabel</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>252</x>
-     <y>84</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>84</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plTransparencySlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>plTransparencyLabel</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>252</x>
-     <y>78</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>78</y>
     </hint>
    </hints>
   </connection>

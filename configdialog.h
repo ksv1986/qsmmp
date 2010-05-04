@@ -44,8 +44,6 @@ public:
 
 private slots:
     void on_contentsWidget_currentItemChanged (QListWidgetItem *current, QListWidgetItem *previous);
-    void setPlFont();
-    void setMainFont();
     void on_preferencesButton_clicked();
     void on_informationButton_clicked();
     void addTitleString(QAction *);
@@ -62,7 +60,6 @@ private slots:
 private:
     void readSettings();
     void loadPluginsInfo();
-    void loadFonts();
     void createMenus();
 
 

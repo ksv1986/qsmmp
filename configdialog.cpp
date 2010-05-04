@@ -57,17 +57,13 @@ ConfigDialog::ConfigDialog (QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose, false);
     ui.preferencesButton->setEnabled(false);
     ui.informationButton->setEnabled(false);
-    connect (ui.mainFontButton, SIGNAL (clicked()), SLOT (setMainFont()));
-    connect (ui.plFontButton, SIGNAL (clicked()), SLOT (setPlFont()));
     connect (this, SIGNAL(rejected()),SLOT(saveSettings()));
     connect (ui.fileDialogComboBox, SIGNAL (currentIndexChanged (int)), SLOT(updateDialogButton(int)));
-    ui.listWidget->setIconSize (QSize (105,34));
     ui.replayGainModeComboBox->addItem (tr("Track"), QmmpSettings::REPLAYGAIN_TRACK);
     ui.replayGainModeComboBox->addItem (tr("Album"), QmmpSettings::REPLAYGAIN_ALBUM);
     ui.replayGainModeComboBox->addItem (tr("Disabled"), QmmpSettings::REPLAYGAIN_DISABLED);
     readSettings();
     loadPluginsInfo();
-    loadFonts();
     createMenus();
 }
 
@@ -105,16 +101,9 @@ void ConfigDialog::readSettings()
 
     ui.hiddenCheckBox->setChecked(settings.value("MainWindow/start_hidden", false).toBool());
     ui.hideOnCloseCheckBox->setChecked(settings.value("MainWindow/hide_on_close", false).toBool());
-    //transparency
-    ui.mwTransparencySlider->setValue(100 - settings.value("MainWindow/opacity", 1.0).toDouble()*100);
-    ui.eqTransparencySlider->setValue(100 - settings.value("Equalizer/opacity", 1.0).toDouble()*100);
-    ui.plTransparencySlider->setValue(100 - settings.value("PlayList/opacity", 1.0).toDouble()*100);
     //compatibility
     ui.openboxCheckBox->setChecked(settings.value("General/openbox_compat", false).toBool());
     ui.metacityCheckBox->setChecked(settings.value("General/metacity_compat", false).toBool());
-    //view
-    ui.doubleSizeCheckBox->setChecked(settings.value("General/double_size", false).toBool());
-    ui.alwaysOnTopCheckBox->setChecked(settings.value("General/always_on_top", false).toBool());
     //resume playback
     ui.continuePlaybackCheckBox->setChecked(settings.value("General/resume_on_startup", false).toBool());
     //cover options
@@ -235,53 +224,6 @@ void ConfigDialog::loadPluginsInfo()
     }
 }
 
-void ConfigDialog::loadFonts()
-{
-    QSettings settings (Qmmp::configFile(), QSettings::IniFormat);
-    QString fontname = settings.value ("PlayList/Font").toString();
-    QFont font = QApplication::font();
-    if(!fontname.isEmpty())
-	font.fromString(fontname);
-    ui.plFontLabel->setText (font.family () + " " + QString::number(font.pointSize ()));
-    ui.plFontLabel->setFont(font);
-
-    font = QApplication::font ();
-    fontname = settings.value ("MainWindow/Font").toString();
-    if(!fontname.isEmpty())
-	font.fromString(fontname);
-    ui.mainFontLabel->setText (font.family () + " " + QString::number(font.pointSize ()));
-    ui.mainFontLabel->setFont(font);
-    ui.useBitmapCheckBox->setChecked(settings.value("MainWindow/bitmap_font", false).toBool());
-}
-
-void ConfigDialog::setPlFont()
-{
-    bool ok;
-    QFont font = ui.plFontLabel->font();
-    font = QFontDialog::getFont (&ok, font, this);
-    if (ok)
-    {
-	ui.plFontLabel->setText (font.family () + " " + QString::number(font.pointSize ()));
-	ui.plFontLabel->setFont(font);
-	QSettings settings (Qmmp::configFile(), QSettings::IniFormat);
-	settings.setValue ("PlayList/Font", font.toString());
-    }
-}
-
-void ConfigDialog::setMainFont()
-{
-    bool ok;
-    QFont font = ui.mainFontLabel->font();
-    font = QFontDialog::getFont (&ok, font, this);
-    if (ok)
-    {
-	ui.mainFontLabel->setText (font.family () + " " + QString::number(font.pointSize ()));
-	ui.mainFontLabel->setFont(font);
-	QSettings settings (Qmmp::configFile(), QSettings::IniFormat);
-	settings.setValue ("MainWindow/Font", font.toString());
-    }
-}
-
 void ConfigDialog::on_preferencesButton_clicked()
 {
     QTreeWidgetItem *item = ui.treeWidget->currentItem();
@@ -356,15 +298,9 @@ void ConfigDialog::saveSettings()
 
     settings.setValue ("MainWindow/start_hidden", ui.hiddenCheckBox->isChecked());
     settings.setValue ("MainWindow/hide_on_close", ui.hideOnCloseCheckBox->isChecked());
-    settings.setValue ("MainWindow/opacity", 1.0 -  (double)ui.mwTransparencySlider->value()/100);
-    settings.setValue ("Equalizer/opacity", 1.0 -  (double)ui.eqTransparencySlider->value()/100);
-    settings.setValue ("PlayList/opacity", 1.0 -  (double)ui.plTransparencySlider->value()/100);
     settings.setValue ("General/openbox_compat", ui.openboxCheckBox->isChecked());
     settings.setValue ("General/metacity_compat", ui.metacityCheckBox->isChecked());
     settings.setValue ("General/resume_on_startup",  ui.continuePlaybackCheckBox->isChecked());
-    settings.setValue ("MainWindow/bitmap_font", ui.useBitmapCheckBox->isChecked());
-    settings.setValue ("General/double_size", ui.doubleSizeCheckBox->isChecked());
-    settings.setValue ("General/always_on_top", ui.alwaysOnTopCheckBox->isChecked());
     gs->setCoverSettings(ui.coverIncludeLineEdit->text().split(","),
 			 ui.coverExcludeLineEdit->text().split(","),
 			 ui.coverDepthSpinBox->value(),
