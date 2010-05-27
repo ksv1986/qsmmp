@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009 by Ilya Kotov                                      *
+ *   Copyright (C) 2007-2010 by Ilya Kotov                                 *
  *   forkotov02@hotmail.ru                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,58 +17,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef VISUALMENU_H
+#define VISUALMENU_H
 
-#include <QMainWindow>
-#include <QSystemTrayIcon>
 #include <QMenu>
-#include <qmmp/qmmp.h>
-#include <ui_mainwindow.h>
+#include <QAction>
 
-class QSlider;
-class QLabel;
-class QFileSystemModel;
+class VisualFactory;
 
-class PlayListModel;
-class MediaPlayer;
-class SoundCore;
-class GeneralHandler;
-class VisualMenu;
-
-class MainWindow : public QMainWindow
+/**
+    @author Ilya Kotov <forkotov02@hotmail.ru>
+*/
+class VisualMenu : public QMenu
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
+    VisualMenu(QWidget *parent = 0);
 
-    ~MainWindow();
+    ~VisualMenu();
+
+public slots:
+    void updateActions();
+};
+
+class VisualAction : public QAction
+{
+    Q_OBJECT
+public:
+    VisualAction(VisualFactory *factory, QWidget *parent = 0);
 
 private slots:
-    void addFiles();
-    void playSelected(const QModelIndex &i);
-    void updatePosition(qint64 pos);
-    void seek();
-    void showState(Qmmp::State);
-    void showBitrate(int);
-    void addDirectory(const QModelIndex &index);
-    void settings();
-    void removeSelected();
-    void changeVolume(int delta);
-    void lockFSCollectionRoot(bool checked);
-    void toggleVisibility();
-    void showEQ();
-private:
+    void select(bool);
 
-    PlayListModel *m_model;
-    Ui::MainWindow ui;
-    MediaPlayer *m_player;
-    QSlider *m_slider;
-    QLabel *m_label;
-    SoundCore *m_core;
-    GeneralHandler *m_generalHandler;
-    QFileSystemModel *model;
-    VisualMenu *m_visMenu;
+private:
+    VisualFactory *m_factory;
+
 };
 
 #endif

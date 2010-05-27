@@ -8,7 +8,9 @@ SOURCES += main.cpp \
     volumetoolbutton.cpp \
     configdialog.cpp \
     popupsettings.cpp \
-    popupwidget.cpp
+    popupwidget.cpp \
+    eqdialog.cpp \
+    visualmenu.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
@@ -18,7 +20,9 @@ HEADERS += mainwindow.h \
     volumetoolbutton.h \
     configdialog.h \
     popupsettings.h \
-    popupwidget.h
+    popupwidget.h \
+    visualmenu.h \
+    eqdialog.h
 TEMPLATE = app
 CONFIG += warn_on \
     thread \
@@ -28,6 +32,7 @@ LIBS += -lqmmp \
     -lqmmpui
 FORMS += mainwindow.ui \
     configdialog.ui \
-    popupsettings.ui
+    popupsettings.ui \
+    eqdialog.ui
 RESOURCES += stuff.qrc
 INCLUDEPATH += /usr/include/

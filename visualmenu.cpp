@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009 by Ilya Kotov                                      *
+ *   Copyright (C) 2007-2010 by Ilya Kotov                                 *
  *   forkotov02@hotmail.ru                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,58 +17,47 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QSystemTrayIcon>
-#include <QMenu>
-#include <qmmp/qmmp.h>
-#include <ui_mainwindow.h>
+#include <QAction>
 
-class QSlider;
-class QLabel;
-class QFileSystemModel;
+#include <qmmp/visual.h>
+#include <qmmp/visualfactory.h>
 
-class PlayListModel;
-class MediaPlayer;
-class SoundCore;
-class GeneralHandler;
-class VisualMenu;
+#include "pluginitem.h"
+#include "visualmenu.h"
 
-class MainWindow : public QMainWindow
+VisualMenu::VisualMenu(QWidget *parent) : QMenu(tr("Visualization"), parent)
 {
-Q_OBJECT
-public:
-    MainWindow(QWidget *parent = 0);
+    VisualFactory *factory = 0;
+    foreach(factory, *Visual::factories())
+    {
+        VisualAction *act = new VisualAction(factory, this);
+        addAction(act);
+    }
+}
 
-    ~MainWindow();
+VisualMenu::~VisualMenu()
+{
+}
 
-private slots:
-    void addFiles();
-    void playSelected(const QModelIndex &i);
-    void updatePosition(qint64 pos);
-    void seek();
-    void showState(Qmmp::State);
-    void showBitrate(int);
-    void addDirectory(const QModelIndex &index);
-    void settings();
-    void removeSelected();
-    void changeVolume(int delta);
-    void lockFSCollectionRoot(bool checked);
-    void toggleVisibility();
-    void showEQ();
-private:
+void VisualMenu::updateActions()
+{
+    for(int i = 0; i < Visual::factories()->size(); ++i)
+    {
+        actions()[i]->setChecked(Visual::isEnabled(Visual::factories()->at(i)));
+    }
+}
 
-    PlayListModel *m_model;
-    Ui::MainWindow ui;
-    MediaPlayer *m_player;
-    QSlider *m_slider;
-    QLabel *m_label;
-    SoundCore *m_core;
-    GeneralHandler *m_generalHandler;
-    QFileSystemModel *model;
-    VisualMenu *m_visMenu;
-};
+VisualAction::VisualAction(VisualFactory *factory, QWidget *parent) :
+        QAction(factory->properties().name, parent)
+{
+    setCheckable (true);
+    setChecked (Visual::isEnabled(factory));
+    m_factory = factory;
+    connect(this, SIGNAL(triggered(bool)), SLOT(select(bool)));
+}
 
-#endif
+void VisualAction::select(bool select)
+{
+    Visual::setEnabled(m_factory, select);
+}

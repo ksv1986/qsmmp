@@ -46,6 +46,8 @@
 #include "settings.h"
 #include "volumetoolbutton.h"
 #include "configdialog.h"
+#include "visualmenu.h"
+#include "eqdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -77,10 +79,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
     connect(ui.lockButton, SIGNAL(clicked(bool)), this, SLOT(lockFSCollectionRoot(bool)));
+    connect(ui.actionEqualizer, SIGNAL(triggered()), this, SLOT(showEQ()));
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
+
+    m_visMenu = new VisualMenu(this);
+    ui.actionVisualization->setMenu(m_visMenu);
+    Visual::initialize(this, m_visMenu, SLOT(updateActions()));
+
     const int rowHeight = fontMetrics().height() + 2;
     ui.tableView->verticalHeader()->setDefaultSectionSize(rowHeight);
-
     ui.tableView->verticalHeader()->setStyleSheet(
      "QHeaderView::section {"
         "padding-bottom: 0px;"
@@ -194,6 +201,7 @@ void MainWindow::settings()
 {
     ConfigDialog dialog;
     dialog.exec();
+    m_visMenu->updateActions();
 }
 
 void MainWindow::addDirectory(const QModelIndex &index)
@@ -274,4 +282,13 @@ void MainWindow::showBitrate(int)
     ui.statusbar->showMessage(QString(tr("Playing [%1 kbps/%2 bit/%3]")).arg(m_core->bitrate())
                                     .arg(m_core->precision())
                                     .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
+}
+
+void MainWindow::showEQ()
+{
+    EQDialog dialog(m_core, this);
+    if(dialog.exec() == QDialog::Accepted)
+    {
+	dialog.writeSettings();
+    }
 }

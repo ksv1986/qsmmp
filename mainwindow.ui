@@ -108,6 +108,8 @@
      <string>Tools</string>
     </property>
     <addaction name="actionSettings"/>
+    <addaction name="actionEqualizer"/>
+    <addaction name="actionVisualization"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlaylist"/>
@@ -322,6 +324,16 @@
   <action name="actionAboutQt">
    <property name="text">
     <string>About Qt</string>
+   </property>
+  </action>
+  <action name="actionEqualizer">
+   <property name="text">
+    <string>Equalizer</string>
+   </property>
+  </action>
+  <action name="actionVisualization">
+   <property name="text">
+    <string>Visualization</string>
    </property>
   </action>
  </widget>
