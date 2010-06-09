@@ -28,6 +28,7 @@
 #include <QModelIndex>
 #include <QDockWidget>
 #include <QSettings>
+#include <QInputDialog>
 
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
@@ -56,9 +57,9 @@ MainWindow::MainWindow(QWidget *parent)
     //qmmp objects
     m_player = new MediaPlayer(this);
     m_core = new SoundCore(this);
-    PlayListManager *manager = new PlayListManager(this);
-    m_model = manager->currentPlayList();
-    m_player->initialize(m_core, manager);
+    m_manager = new PlayListManager(this);
+    m_model = m_manager->currentPlayList();
+    m_player->initialize(m_core, m_manager);
     new PlaylistParser(this);
     m_generalHandler = new GeneralHandler(this);
     //connections
@@ -69,18 +70,21 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionPrevious, SIGNAL(triggered()), m_player, SLOT(previous()));
     connect(ui.actionStop, SIGNAL(triggered()), m_player, SLOT(stop()));
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
-    connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
     connect(ui.clearButton, SIGNAL(clicked()), ui.actionClear, SLOT(trigger()));
     connect(ui.actionRemove, SIGNAL(triggered()), this, SLOT(removeSelected()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.tableView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(ui.actionRenamePlaylist, SIGNAL(triggered()), this, SLOT(renamePlaylist()));
+    connect(ui.actionRemovePlaylist, SIGNAL(triggered()), this, SLOT(removePlaylist()));
+    connect(ui.actionNewPlaylist, SIGNAL(triggered()), this, SLOT(newPlaylist()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
     connect(ui.lockButton, SIGNAL(clicked(bool)), this, SLOT(lockFSCollectionRoot(bool)));
     connect(ui.actionEqualizer, SIGNAL(triggered()), this, SLOT(showEQ()));
-    AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
+    connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
+    connect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
 
     m_visMenu = new VisualMenu(this);
     ui.actionVisualization->setMenu(m_visMenu);
@@ -102,6 +106,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui.tableView->setAcceptDrops(true);
     ui.tableView->setDragDropMode(QAbstractItemView::InternalMove);
 
+    AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
     ui.tableView->setModel(m);
     ui.tableView->setup();
     ui.tableView->setColumnWidth(0, 30);
@@ -109,8 +114,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui.tableView->setColumnWidth(2, 200);
     ui.tableView->setColumnWidth(3, 45);
 
-    model = new QFileSystemModel(ui.treeView);
-    model->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
+    m_fsmodel = new QFileSystemModel(ui.treeView);
+    m_fsmodel->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
 
     QStringList list = MetaDataManager::instance()->nameFilters();
     QStringList filters;
@@ -123,18 +128,17 @@ MainWindow::MainWindow(QWidget *parent)
 	    pos += rx.matchedLength();
 	}
     }
-    model->setNameFilters(filters);
-    model->setNameFilterDisables(false);
-    model->setReadOnly(true);
-    model->setRootPath(Settings::instance().rootFSCollectionDirectory());
-    ui.fsCollectionPathLabel->setText(model->rootPath());
+    m_fsmodel->setNameFilters(filters);
+    m_fsmodel->setNameFilterDisables(false);
+    m_fsmodel->setReadOnly(true);
+    m_fsmodel->setRootPath(Settings::instance().rootFSCollectionDirectory());
+    ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
 
-    ui.treeView->setModel(model);
-    ui.treeView->setRootIndex(model->index(Settings::instance().rootFSCollectionDirectory()));
+    ui.treeView->setModel(m_fsmodel);
+    ui.treeView->setRootIndex(m_fsmodel->index(Settings::instance().rootFSCollectionDirectory()));
     ui.treeView->hideColumn(1);
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
-    connect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
     connect(ui.tableView, SIGNAL(doubleClicked (const QModelIndex &)),
                                 SLOT (playSelected(const QModelIndex &)));
 
@@ -154,6 +158,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_slider, SIGNAL(sliderReleased()), SLOT(seek()));
 
+    connect(m_manager, SIGNAL(playListsChanged()), SLOT(updatePlaylists()));
+    updatePlaylists();
+
+    connect(ui.playlistWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(setPlaylist(QModelIndex)));
+    connect(ui.playlistWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(playlistsWidgetContextMenuRequested(QPoint)));
+    connect(ui.playlistWidget, SIGNAL(doubleClicked(QModelIndex)), ui.actionRenamePlaylist, SLOT(trigger()));
+    connect(ui.playlistWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(playlistsWidgetItemChanged(QListWidgetItem*)));
+
     connect(m_generalHandler, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
     connect(m_generalHandler, SIGNAL(exitCalled()), qApp, SLOT(quit()));
 
@@ -170,16 +182,16 @@ void MainWindow::lockFSCollectionRoot(bool checked)
     if(!checked)
     {
 	ui.lockButton->setText(tr("Lock"));
-	model->setRootPath("/");
+	m_fsmodel->setRootPath("/");
     }
     else
     {
 	ui.lockButton->setText(tr("Unlock"));
-	model->setRootPath(model->filePath(ui.treeView->currentIndex()));
+	m_fsmodel->setRootPath(m_fsmodel->filePath(ui.treeView->currentIndex()));
     }
-    ui.fsCollectionPathLabel->setText(model->rootPath());
-    ui.treeView->setRootIndex(model->index(model->rootPath()));
-    Settings::instance().setRootFSCollectionDirectory(model->rootPath());
+    ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
+    ui.treeView->setRootIndex(m_fsmodel->index(m_fsmodel->rootPath()));
+    Settings::instance().setRootFSCollectionDirectory(m_fsmodel->rootPath());
 }
 
 void MainWindow::removeSelected()
@@ -206,14 +218,14 @@ void MainWindow::settings()
 
 void MainWindow::addDirectory(const QModelIndex &index)
 {
-    if (model->fileInfo(index).isDir())
+    if (m_fsmodel->fileInfo(index).isDir())
     {
-	QString path = model->fileInfo(index).absoluteFilePath();
-	qDebug() << QString("addDirectory('%1')").arg(path);
-	m_model->addDirectory(path);
+	m_model->addDirectory(m_fsmodel->fileInfo(index).absoluteFilePath());
     }
     else
-	m_model->addFile(model->fileInfo(index).absoluteFilePath());
+    {
+	m_model->addFile(m_fsmodel->fileInfo(index).absoluteFilePath());
+    }
 }
 
 MainWindow::~MainWindow()
@@ -228,7 +240,7 @@ void MainWindow::addFiles()
     filters << MetaDataManager::instance()->filters();
     FileDialog::popup(this, FileDialog::AddDirsFiles, &lastDir,
                             m_model, SLOT(addFileList(const QStringList&)),
-                            tr("Select one or more files to open"), filters.join(";;"));
+			    tr("Select one or more files to open"), filters.join(";;"));
 }
 
 void MainWindow::playSelected(const QModelIndex &i)
@@ -290,5 +302,93 @@ void MainWindow::showEQ()
     if(dialog.exec() == QDialog::Accepted)
     {
 	dialog.writeSettings();
+    }
+}
+
+void MainWindow::setPlaylist(QModelIndex index)
+{
+    setPlaylist(index.row());
+}
+
+void MainWindow::setPlaylist(int index)
+{
+    if (m_model)
+    {
+	disconnect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
+	disconnect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
+    }
+
+    m_manager->selectPlayList(index);
+    m_model = m_manager->playListAt(index);
+    m_manager->activatePlayList(m_model);
+
+    static_cast<AbstractPlaylistModel*>(ui.tableView->model())->setPlaylist(m_model);
+
+    connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
+    connect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
+    ui.tableView->reset();
+}
+
+void MainWindow::updatePlaylists()
+{
+    ui.playlistWidget->clear();
+    foreach(PlayListModel *model, m_manager->playLists())
+    {
+	ui.playlistWidget->addItem(model->name());
+    }
+    int row = m_manager->indexOf(m_manager->selectedPlayList());
+    ui.playlistWidget->setCurrentRow (row);
+}
+
+void MainWindow::playlistsWidgetContextMenuRequested(QPoint point)
+{
+    QMenu menu(this);
+    menu.addAction(ui.actionNewPlaylist);
+    menu.addAction(ui.actionRemovePlaylist);
+    menu.addAction(ui.actionRenamePlaylist);
+    menu.exec(ui.playlistWidget->mapToGlobal(point));
+}
+
+void MainWindow::renamePlaylist()
+{
+    QListWidgetItem* item = ui.playlistWidget->currentItem();
+    if(item)
+    {	
+	item->setFlags(Qt::ItemIsEditable | item->flags());
+	ui.playlistWidget->editItem(item);
+    }
+}
+
+void MainWindow::playlistsWidgetItemChanged(QListWidgetItem *item)
+{
+    m_manager->playListAt(ui.playlistWidget->row(item))->setName(item->text());
+}
+
+void MainWindow::removePlaylist()
+{
+    int index = ui.playlistWidget->currentIndex().row();
+    PlayListModel *model = m_manager->playListAt(index);
+    if (m_model == model)
+	m_model = NULL;
+
+    m_manager->removePlayList(model);
+
+    if (!m_model)
+    {
+	if (index >= m_manager->playLists().count())
+	    index = m_manager->playLists().count() - 1;
+	setPlaylist(index);
+    }
+}
+
+void MainWindow::newPlaylist()
+{     bool ok;
+    QString text = QInputDialog::getText(this, tr("Enter new playlist name"),
+					 tr("Playlist name:"), QLineEdit::Normal,
+					 tr("My playlist"), &ok);
+    if (ok && !text.isEmpty())
+    {
+	PlayListModel *model = m_manager->createPlayList(text);
+	m_manager->activatePlayList(model);
     }
 }

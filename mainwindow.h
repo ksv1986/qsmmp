@@ -35,6 +35,7 @@ class MediaPlayer;
 class SoundCore;
 class GeneralHandler;
 class VisualMenu;
+class PlayListManager;
 
 class MainWindow : public QMainWindow
 {
@@ -58,7 +59,16 @@ private slots:
     void lockFSCollectionRoot(bool checked);
     void toggleVisibility();
     void showEQ();
+    void setPlaylist(QModelIndex index);
+    void updatePlaylists();
+    void playlistsWidgetContextMenuRequested(QPoint point);
+    void playlistsWidgetItemChanged(QListWidgetItem *item);
+    void renamePlaylist();
+    void removePlaylist();
+    void newPlaylist();
+
 private:
+    void setPlaylist(int index);
 
     PlayListModel *m_model;
     Ui::MainWindow ui;
@@ -67,8 +77,9 @@ private:
     QLabel *m_label;
     SoundCore *m_core;
     GeneralHandler *m_generalHandler;
-    QFileSystemModel *model;
+    QFileSystemModel *m_fsmodel;
     VisualMenu *m_visMenu;
+    PlayListManager *m_manager;
 };
 
 #endif

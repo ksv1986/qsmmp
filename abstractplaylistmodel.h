@@ -44,6 +44,8 @@ public:
     int count() { return m_pl->count(); }
     const SimpleSelection& getSelection(int row) { return m_pl->getSelection(row); }
 
+    void setPlaylist(PlayListModel *model) { m_pl = model; listChanged(); }
+
 public slots:
     void listChanged();
 private:
