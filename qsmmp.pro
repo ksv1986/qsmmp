@@ -36,3 +36,4 @@ FORMS += mainwindow.ui \
     eqdialog.ui
 RESOURCES += stuff.qrc
 INCLUDEPATH += /usr/include/
+TRANSLATIONS = translations/qsmmp_ru.ts

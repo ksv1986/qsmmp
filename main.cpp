@@ -20,12 +20,24 @@
 
 #include <QApplication>
 #include <QSettings>
+#include <QTranslator>
+#include <QLibraryInfo>
+
 #include "mainwindow.h"
 #include "settings.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    QTranslator qtTranslator;
+    qtTranslator.load(QLibraryInfo::location (QLibraryInfo::TranslationsPath) + "/qt_" + QLocale::system().name());
+    app.installTranslator(&qtTranslator);
+
+    QTranslator myappTranslator;
+    myappTranslator.load(":/translations/qsmmp_" + QLocale::system().name());
+    app.installTranslator(&myappTranslator);
+
     MainWindow mw;
 
     if (QSystemTrayIcon::isSystemTrayAvailable())
