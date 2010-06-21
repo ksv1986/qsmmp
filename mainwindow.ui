@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>726</width>
-    <height>463</height>
+    <width>722</width>
+    <height>459</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,6 +21,16 @@
        <widget class="QPushButton" name="clearButton">
         <property name="text">
          <string>Clear</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="shuffleButton">
+        <property name="text">
+         <string>Shuffle</string>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -78,8 +88,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>726</width>
-     <height>21</height>
+     <width>722</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -359,6 +369,11 @@
   <action name="actionNewPlaylist">
    <property name="text">
     <string>New</string>
+   </property>
+  </action>
+  <action name="actionShuffle">
+   <property name="text">
+    <string>Shuffle</string>
    </property>
   </action>
  </widget>

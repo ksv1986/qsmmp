@@ -66,6 +66,7 @@ private slots:
     void renamePlaylist();
     void removePlaylist();
     void newPlaylist();
+    void shufflePlaylist();
 
 private:
     void setPlaylist(int index);

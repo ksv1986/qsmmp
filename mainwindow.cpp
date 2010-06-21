@@ -85,6 +85,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionEqualizer, SIGNAL(triggered()), this, SLOT(showEQ()));
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
     connect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
+    connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
+    connect(ui.actionShuffle, SIGNAL(triggered()), this, SLOT(shufflePlaylist()));
 
     m_visMenu = new VisualMenu(this);
     ui.actionVisualization->setMenu(m_visMenu);
@@ -382,7 +384,8 @@ void MainWindow::removePlaylist()
 }
 
 void MainWindow::newPlaylist()
-{     bool ok;
+{
+    bool ok;
     QString text = QInputDialog::getText(this, tr("Enter new playlist name"),
 					 tr("Playlist name:"), QLineEdit::Normal,
 					 tr("My playlist"), &ok);
@@ -391,4 +394,9 @@ void MainWindow::newPlaylist()
 	PlayListModel *model = m_manager->createPlayList(text);
 	m_manager->activatePlayList(model);
     }
+}
+
+void MainWindow::shufflePlaylist()
+{
+    m_manager->currentPlayList()->randomizeList();
 }
