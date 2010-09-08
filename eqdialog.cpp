@@ -204,16 +204,16 @@ void EQDialog::changeEvent(QEvent *e)
 
 void EQDialog::setEQValues(double bands[10], double premap)
 {
-	m_core->setEQ(bands, premap);
+//	m_core->setEQ(bands, premap);
 }
 
 void EQDialog::clearEQSlot()
 {
 	double bands[10] = {0,0,0,0,0,0,0,0,0,0,}, premap=0;
-	m_core->setEQ(bands, premap);
+//	m_core->setEQ(bands, premap);
 }
 
 void EQDialog::onOffEQSlot(bool x)
 {
-	m_core->setEQEnabled(x);
+//	m_core->setEQEnabled(x);
 }

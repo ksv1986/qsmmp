@@ -7,6 +7,7 @@
 #include <QHeaderView>
 #include <QAction>
 #include <QMap>
+#include <QApplication>
 
 #include "mytableview.h"
 #include "mytreeview.h"
@@ -174,17 +175,17 @@ void MyTableView::mousePressEvent(QMouseEvent *e)
 	      }
 	  }
 	else
-	 {
-	     if (!playlist->isSelected(row) || (Qt::ControlModifier & e->modifiers()))
-		 playlist->setSelected(row, !playlist->isSelected(row));
-	 }
+	{
+	    if (!playlist->isSelected(row) || (Qt::ControlModifier & e->modifiers()))
+		playlist->setSelected(row, !playlist->isSelected(row));
+	}
 
-	 if (playlist->getSelection(m_pressed_row).count() == 1)
-	     m_anchor_row = m_pressed_row;
+	if (playlist->getSelection(m_pressed_row).count() == 1)
+	    m_anchor_row = m_pressed_row;
 
-	 update();
-     }
-     QTableView::mousePressEvent(e);
+	update();
+    }
+    QTableView::mousePressEvent(e);
  }
 
 void MyTableView::mouseReleaseEvent(QMouseEvent *e)
@@ -218,4 +219,12 @@ void MyTableView::mouseReleaseEvent(QMouseEvent *e)
 	update();
     }
     QTableView::mouseReleaseEvent(e);
+}
+
+QList<int> MyTableView::selectedRows()
+{
+    QList<int> rowList;
+    foreach(QModelIndex rowItem, selectedIndexes())
+        rowList.push_back(rowItem.row());
+    return rowList;
 }

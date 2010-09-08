@@ -7,7 +7,7 @@ class VolumeToolButton : public QToolButton
 {
 Q_OBJECT
 public:
-    explicit VolumeToolButton(QWidget *parent = 0, int current = 0, int min = 0, int max = 100);
+    explicit VolumeToolButton(QWidget *parent = 0, int min = 0, int max = 100);
 
 signals:
     void volumeChanged(int delta);
