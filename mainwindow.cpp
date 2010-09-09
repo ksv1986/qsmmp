@@ -119,7 +119,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_fsmodel = new QFileSystemModel(ui.treeView);
     m_fsmodel->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
 
-	m_fsmodel->setNameFilters(MetaDataManager::instance()->nameFilters());
+    m_fsmodel->setNameFilters(MetaDataManager::instance()->nameFilters());
     m_fsmodel->setNameFilterDisables(false);
     m_fsmodel->setReadOnly(true);
     m_fsmodel->setRootPath(Settings::instance().rootFSCollectionDirectory());
@@ -133,12 +133,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.tableView, SIGNAL(doubleClicked (const QModelIndex &)),
                                 SLOT (playSelected(const QModelIndex &)));
 
-//    connect(ui.treeView, SIGNAL(doubleClicked (const QModelIndex &)),
-//            SLOT(addDirectory(const QModelIndex &)));
-
-    VolumeToolButton *volumeButton = new VolumeToolButton(this, 0, 100);
-    // should be connected in both ways
-    connect(volumeButton, SIGNAL(volumeChanged(int)), this, SLOT(changeVolume(int)));
+    VolumeToolButton *volumeButton = new VolumeToolButton(m_core->leftVolume(), this, 0, 100);
+    connect(volumeButton, SIGNAL(volumeChanged(int, int)), m_core, SLOT(setVolume(int,int)));
+    connect(m_core, SIGNAL(volumeChanged(int,int)), volumeButton, SLOT(setVolume(int,int)));
     ui.toolBar->addWidget(volumeButton);
 
     m_slider = new QSlider (Qt::Horizontal, this);
@@ -163,22 +160,17 @@ MainWindow::MainWindow(QWidget *parent)
     setVisible(!Settings::instance().startHidden() || !m_generalHandler->visibilityControl());
 }
 
-void MainWindow::changeVolume(int delta)
-{
-    m_core->setVolume(m_core->leftVolume() + delta, m_core->rightVolume() + delta);
-}
-
 void MainWindow::lockFSCollectionRoot(bool checked)
 {
     if(!checked)
     {
-	ui.lockButton->setText(tr("Lock"));
-	m_fsmodel->setRootPath("/");
+        ui.lockButton->setText(tr("Lock"));
+        m_fsmodel->setRootPath("/");
     }
     else
     {
-	ui.lockButton->setText(tr("Unlock"));
-	m_fsmodel->setRootPath(m_fsmodel->filePath(ui.treeView->currentIndex()));
+        ui.lockButton->setText(tr("Unlock"));
+        m_fsmodel->setRootPath(m_fsmodel->filePath(ui.treeView->currentIndex()));
     }
     ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
     ui.treeView->setRootIndex(m_fsmodel->index(m_fsmodel->rootPath()));
@@ -206,18 +198,6 @@ void MainWindow::settings()
     m_visMenu->updateActions();
 }
 
-void MainWindow::addDirectory(const QModelIndex &index)
-{
-    if (m_fsmodel->fileInfo(index).isDir())
-    {
-	m_model->addDirectory(m_fsmodel->fileInfo(index).absoluteFilePath());
-    }
-    else
-    {
-	m_model->addFile(m_fsmodel->fileInfo(index).absoluteFilePath());
-    }
-}
-
 MainWindow::~MainWindow()
 {
 }
@@ -226,11 +206,12 @@ void MainWindow::addFiles()
 {
     QString lastDir;
     QStringList filters;
-    filters << tr("All Supported Bitstreams")+" (" + MetaDataManager::instance()->nameFilters().join (" ") +")";
+    filters << tr("All Supported Bitstreams")
+            + " (" + MetaDataManager::instance()->nameFilters().join (" ") +")";
     filters << MetaDataManager::instance()->filters();
     FileDialog::popup(this, FileDialog::AddDirsFiles, &lastDir,
-                            m_model, SLOT(addFileList(const QStringList&)),
-			    tr("Select one or more files to open"), filters.join(";;"));
+                      m_model, SLOT(addFileList(const QStringList&)),
+                      tr("Select one or more files to open"), filters.join(";;"));
 }
 
 void MainWindow::playSelected(const QModelIndex &i)
@@ -239,7 +220,7 @@ void MainWindow::playSelected(const QModelIndex &i)
     m_model->setCurrent(i.row());
     m_player->play();
     foreach(int row, m_model->getSelectedRows())
-	ui.tableView->selectRow(row);
+        ui.tableView->selectRow(row);
 }
 
 void MainWindow::updatePosition(qint64 pos)
@@ -271,7 +252,7 @@ void MainWindow::showState(Qmmp::State state)
         ui.statusbar->showMessage(tr("Paused"));
         break;
     case Qmmp::Stopped:
-	ui.statusbar->showMessage(tr("Stopped"));
+        ui.statusbar->showMessage(tr("Stopped"));
         m_label->setText("--:--/--:--");
         m_slider->setValue(0);
         break;
@@ -281,9 +262,10 @@ void MainWindow::showState(Qmmp::State state)
 
 void MainWindow::showBitrate(int)
 {
-    ui.statusbar->showMessage(QString(tr("Playing [%1 kbps/%2 bit/%3]")).arg(m_core->bitrate())
-                                    .arg(m_core->precision())
-                                    .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
+    ui.statusbar->showMessage(QString(tr("Playing [%1 kbps/%2 bit/%3]"))
+                  .arg(m_core->bitrate())
+                  .arg(m_core->precision())
+                  .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
 }
 
 void MainWindow::showEQ()
@@ -291,7 +273,7 @@ void MainWindow::showEQ()
     EQDialog dialog(m_core, this);
     if(dialog.exec() == QDialog::Accepted)
     {
-	dialog.writeSettings();
+        dialog.writeSettings();
     }
 }
 
@@ -304,8 +286,8 @@ void MainWindow::setPlaylist(int index)
 {
     if (m_model)
     {
-	disconnect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
-	disconnect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
+        disconnect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
+        disconnect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
     }
 
     m_manager->selectPlayList(index);
@@ -324,7 +306,7 @@ void MainWindow::updatePlaylists()
     ui.playlistWidget->clear();
     foreach(PlayListModel *model, m_manager->playLists())
     {
-	ui.playlistWidget->addItem(model->name());
+        ui.playlistWidget->addItem(model->name());
     }
     int row = m_manager->indexOf(m_manager->selectedPlayList());
     ui.playlistWidget->setCurrentRow (row);
@@ -343,9 +325,9 @@ void MainWindow::renamePlaylist()
 {
     QListWidgetItem* item = ui.playlistWidget->currentItem();
     if(item)
-    {	
-	item->setFlags(Qt::ItemIsEditable | item->flags());
-	ui.playlistWidget->editItem(item);
+    {
+        item->setFlags(Qt::ItemIsEditable | item->flags());
+        ui.playlistWidget->editItem(item);
     }
 }
 
@@ -359,15 +341,15 @@ void MainWindow::removePlaylist()
     int index = ui.playlistWidget->currentIndex().row();
     PlayListModel *model = m_manager->playListAt(index);
     if (m_model == model)
-	m_model = NULL;
+        m_model = NULL;
 
     m_manager->removePlayList(model);
 
     if (!m_model)
     {
-	if (index >= m_manager->playLists().count())
-	    index = m_manager->playLists().count() - 1;
-	setPlaylist(index);
+        if (index >= m_manager->playLists().count())
+            index = m_manager->playLists().count() - 1;
+        setPlaylist(index);
     }
 }
 
@@ -375,12 +357,12 @@ void MainWindow::newPlaylist()
 {
     bool ok;
     QString text = QInputDialog::getText(this, tr("Enter new playlist name"),
-					 tr("Playlist name:"), QLineEdit::Normal,
-					 tr("My playlist"), &ok);
+                                 tr("Playlist name:"), QLineEdit::Normal,
+                                 tr("My playlist"), &ok);
     if (ok && !text.isEmpty())
     {
-	PlayListModel *model = m_manager->createPlayList(text);
-	m_manager->activatePlayList(model);
+        PlayListModel *model = m_manager->createPlayList(text);
+        m_manager->activatePlayList(model);
     }
 }
 

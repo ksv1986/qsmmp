@@ -52,10 +52,8 @@ private slots:
     void seek();
     void showState(Qmmp::State);
     void showBitrate(int);
-    void addDirectory(const QModelIndex &index);
     void settings();
     void removeSelected();
-    void changeVolume(int delta);
     void lockFSCollectionRoot(bool checked);
     void toggleVisibility();
     void showEQ();

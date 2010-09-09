@@ -1,33 +1,66 @@
 #include <QWheelEvent>
 #include <QPainter>
-#include <QSettings>
 
 #include <qmmp/qmmp.h>
 #include <qmmp/qmmpsettings.h>
 
 #include "volumetoolbutton.h"
 
-VolumeToolButton::VolumeToolButton(QWidget *parent, int min, int max) :
-    QToolButton(parent), min(min), max(max)
+VolumeToolButton::VolumeToolButton(int volume, QWidget *parent, int min, int max) :
+    QToolButton(parent), volume(volume), min(min), max(max), lastVolume(0)
 {
-    QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
-    volume = settings.value("Volume/left", 80).toInt();
-    volume = (volume > max) ? max : volume;
-    volume = (volume < min) ? min : volume;
+    int newVolume = qMin(volume, max);
+    newVolume = qMax(volume, min);
+    setVolume(newVolume, newVolume);
+
+    if (volume == min)
+        lastVolume = max;
 }
 
 void VolumeToolButton::wheelEvent(QWheelEvent *event)
 {
     int d = event->delta()/12;
-    volume += d;
-    if(volume > max)
-	volume = max;
-    else if(volume < min)
-	volume = min;
+    int newVolume = volume + d;
+    if(newVolume > max)
+        newVolume = max;
+    else if(newVolume < min)
+        newVolume = min;
 
-    emit volumeChanged(d);
+    setVolume(newVolume, newVolume);
     event->accept();
+}
+
+void VolumeToolButton::setVolume(int left, int)
+{
+    if (volume == left)
+        return;
+
+    volume = left;
+
+    if (volume != min)
+        lastVolume = min;
+
+    emit volumeChanged(volume, volume);
     repaint();
+}
+
+void VolumeToolButton::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::MidButton)
+    {
+        int currentVolume = volume;
+        setVolume(lastVolume, lastVolume);
+        lastVolume = currentVolume;
+        event->accept();
+    }
+    else if (event->button() == Qt::LeftButton)
+    {
+        int x = event->x();
+        int width = sizeHint().width();
+        int newVolume = (int)(100.0 * x / width);
+        setVolume(newVolume, newVolume);
+        event->accept();
+    }
 }
 
 void VolumeToolButton::paintEvent(QPaintEvent *)
