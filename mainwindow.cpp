@@ -119,18 +119,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_fsmodel = new QFileSystemModel(ui.treeView);
     m_fsmodel->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
 
-    QStringList list = MetaDataManager::instance()->nameFilters();
-    QStringList filters;
-    QRegExp rx("(\\*.\\w+)[\\s\\)]");
-    foreach(QString str, list){
-	int pos = 0;
-
-	while ((pos = rx.indexIn(str, pos)) != -1) {
-	    filters << rx.cap(1);
-	    pos += rx.matchedLength();
-	}
-    }
-    m_fsmodel->setNameFilters(filters);
+	m_fsmodel->setNameFilters(MetaDataManager::instance()->nameFilters());
     m_fsmodel->setNameFilterDisables(false);
     m_fsmodel->setReadOnly(true);
     m_fsmodel->setRootPath(Settings::instance().rootFSCollectionDirectory());
