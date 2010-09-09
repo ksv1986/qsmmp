@@ -202,18 +202,26 @@ void EQDialog::changeEvent(QEvent *e)
 	}
 }
 
-void EQDialog::setEQValues(double bands[10], double premap)
+void EQDialog::setEQValues(double bands[10], double preamp)
 {
-	m_core->setEQ(bands, premap);
+	EqSettings settings = m_core->eqSettings();
+	settings.setPreamp(preamp);
+	for (int i=0; i<10; i++)
+	{
+		settings.setGain(i, bands[i]);
+	}
+	m_core->setEqSettings(settings);
 }
 
 void EQDialog::clearEQSlot()
 {
-	double bands[10] = {0,0,0,0,0,0,0,0,0,0,}, premap=0;
-	m_core->setEQ(bands, premap);
+	double bands[10] = {0,0,0,0,0,0,0,0,0,0,}, preamp=0;
+	setEQValues(bands, preamp);
 }
 
 void EQDialog::onOffEQSlot(bool x)
 {
-	m_core->setEQEnabled(x);
+	EqSettings settings = m_core->eqSettings();
+	settings.setEnabled(x);
+	m_core->setEqSettings(settings);
 }
