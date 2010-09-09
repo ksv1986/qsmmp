@@ -21,6 +21,7 @@ public:
     void mouseReleaseEvent(QMouseEvent *event);
     void selectAll();
     void setup();
+    QList<int> selectedRows();
 
 private slots:
     void toggleColumn(bool toggled);
@@ -31,7 +32,6 @@ private:
     bool m_select_on_release;
 
     QList<QAction*> m_columnActions; //! Maintains the mapping action<->column
-
 };
 
 #endif // MYTABLEVIEW_H

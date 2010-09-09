@@ -133,10 +133,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.tableView, SIGNAL(doubleClicked (const QModelIndex &)),
                                 SLOT (playSelected(const QModelIndex &)));
 
-    connect(ui.treeView, SIGNAL(doubleClicked (const QModelIndex &)),
-            SLOT(addDirectory(const QModelIndex &)));
+//    connect(ui.treeView, SIGNAL(doubleClicked (const QModelIndex &)),
+//            SLOT(addDirectory(const QModelIndex &)));
 
-    VolumeToolButton *volumeButton = new VolumeToolButton(this, m_core->leftVolume(), 0, 100);
+    VolumeToolButton *volumeButton = new VolumeToolButton(this, 0, 100);
     // should be connected in both ways
     connect(volumeButton, SIGNAL(volumeChanged(int)), this, SLOT(changeVolume(int)));
     ui.toolBar->addWidget(volumeButton);
@@ -187,12 +187,11 @@ void MainWindow::lockFSCollectionRoot(bool checked)
 
 void MainWindow::removeSelected()
 {
+    for(int row = 0; row < m_model->totalLength(); row++)
+        m_model->setSelected(row, false);
+    foreach(int row, ui.tableView->selectedRows())
+        m_model->setSelected(row, true);
     m_model->removeSelected();
-    // after removeSelected() call selection of table view will be cleared
-    // but in the model it will contain 1 element
-    // TODO: is it worth to implement proper behaviour with QItemSelectionModel?
-    foreach(int row, m_model->getSelectedRows())
-	ui.tableView->selectRow(row);
 }
 
 void MainWindow::toggleVisibility()
