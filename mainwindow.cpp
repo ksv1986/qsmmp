@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.clearButton, SIGNAL(clicked()), ui.actionClear, SLOT(trigger()));
     connect(ui.actionRemove, SIGNAL(triggered()), this, SLOT(removeSelected()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
-    connect(ui.actionSelectAll, SIGNAL(triggered()), ui.tableView, SLOT(selectAll()));
+    connect(ui.actionSelectAll, SIGNAL(triggered()), ui.playlistView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(ui.actionRenamePlaylist, SIGNAL(triggered()), this, SLOT(renamePlaylist()));
     connect(ui.actionRemovePlaylist, SIGNAL(triggered()), this, SLOT(removePlaylist()));
@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.lockButton, SIGNAL(clicked(bool)), this, SLOT(lockFSCollectionRoot(bool)));
     connect(ui.actionEqualizer, SIGNAL(triggered()), this, SLOT(showEQ()));
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
-    connect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
+    connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
     connect(ui.actionShuffle, SIGNAL(triggered()), this, SLOT(shufflePlaylist()));
 
@@ -92,29 +92,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui.actionVisualization->setMenu(m_visMenu);
     Visual::initialize(this, m_visMenu, SLOT(updateActions()));
 
-    const int rowHeight = fontMetrics().height() + 2;
-    ui.tableView->verticalHeader()->setDefaultSectionSize(rowHeight);
-    ui.tableView->verticalHeader()->setStyleSheet(
-        "QHeaderView::section {"
-        "padding-bottom: 0px;"
-        "padding-top: 0px;"
-        "padding-left: 0px;"
-        "padding-right: 1px;"
-        "margin: 0px;"
-        "}"
-    );
-
-    ui.tableView->setDragEnabled(true);
-    ui.tableView->setAcceptDrops(true);
-    ui.tableView->setDragDropMode(QAbstractItemView::InternalMove);
+    ui.playlistView->setDragEnabled(true);
+    ui.playlistView->setAcceptDrops(true);
+    ui.playlistView->setDragDropMode(QAbstractItemView::InternalMove);
 
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
-    ui.tableView->setModel(m);
-    ui.tableView->setup();
-    ui.tableView->setColumnWidth(0, 30);
-    ui.tableView->setColumnWidth(1, 100);
-    ui.tableView->setColumnWidth(2, 200);
-    ui.tableView->setColumnWidth(3, 45);
+    ui.playlistView->setModel(m);
+    ui.playlistView->setup();
+    ui.playlistView->setColumnWidth(0, 30);
+    ui.playlistView->setColumnWidth(1, 100);
+    ui.playlistView->setColumnWidth(2, 200);
+    ui.playlistView->setColumnWidth(3, 45);
 
     m_fsmodel = new QFileSystemModel(ui.treeView);
     m_fsmodel->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
@@ -130,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui.treeView->hideColumn(1);
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
-    connect(ui.tableView, SIGNAL(doubleClicked (const QModelIndex &)),
+    connect(ui.playlistView, SIGNAL(doubleClicked (const QModelIndex &)),
             SLOT (playSelected(const QModelIndex &)));
 
     VolumeToolButton *volumeButton = new VolumeToolButton(m_core->leftVolume(), this, 0, 100);
@@ -179,10 +167,10 @@ void MainWindow::lockFSCollectionRoot(bool checked)
 
 void MainWindow::removeSelected()
 {
-    for (int row = 0; row < m_model->totalLength(); row++)
+    for (int row = 0; row < m_model->count(); row++)
         m_model->setSelected(row, false);
-    foreach(int row, ui.tableView->selectedRows())
-    m_model->setSelected(row, true);
+    foreach(int row, ui.playlistView->selectedRows())
+        m_model->setSelected(row, true);
     m_model->removeSelected();
 }
 
@@ -219,8 +207,6 @@ void MainWindow::playSelected(const QModelIndex &i)
     m_player->stop();
     m_model->setCurrent(i.row());
     m_player->play();
-    foreach(int row, m_model->getSelectedRows())
-    ui.tableView->selectRow(row);
 }
 
 void MainWindow::updatePosition(qint64 pos)
@@ -241,7 +227,7 @@ void MainWindow::seek()
 
 void MainWindow::showState(Qmmp::State state)
 {
-    switch ((int) state)
+    switch (state)
     {
     case Qmmp::Playing:
         ui.statusbar->showMessage(tr("Playing"));
@@ -287,18 +273,18 @@ void MainWindow::setPlaylist(int index)
     if (m_model)
     {
         disconnect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
-        disconnect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
+        disconnect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     }
 
     m_manager->selectPlayList(index);
     m_model = m_manager->playListAt(index);
     m_manager->activatePlayList(m_model);
 
-    static_cast<AbstractPlaylistModel*>(ui.tableView->model())->setPlaylist(m_model);
+    static_cast<AbstractPlaylistModel*>(ui.playlistView->model())->setPlaylist(m_model);
 
     connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
-    connect(m_model, SIGNAL(listChanged()), ui.tableView, SLOT(reset()));
-    ui.tableView->reset();
+    connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
+    ui.playlistView->reset();
 }
 
 void MainWindow::updatePlaylists()

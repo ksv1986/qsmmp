@@ -2,7 +2,7 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     abstractplaylistmodel.cpp \
     settings.cpp \
-    mytableview.cpp \
+    playlistview.cpp \
     mytreeview.cpp \
     pluginitem.cpp \
     volumetoolbutton.cpp \
@@ -15,7 +15,7 @@ HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
     mytreeview.h \
-    mytableview.h \
+    playlistview.h \
     pluginitem.h \
     volumetoolbutton.h \
     configdialog.h \
