@@ -25,7 +25,6 @@
 #include <qmmp/qmmp.h>
 #include <ui_mainwindow.h>
 
-class QSlider;
 class QLabel;
 class QFileSystemModel;
 
@@ -35,6 +34,7 @@ class SoundCore;
 class GeneralHandler;
 class VisualMenu;
 class PlayListManager;
+class TrackSlider;
 
 class MainWindow : public QMainWindow
 {
@@ -71,7 +71,7 @@ private:
     PlayListModel *m_model;
     Ui::MainWindow ui;
     MediaPlayer *m_player;
-    QSlider *m_slider;
+    TrackSlider *m_slider;
     QLabel *m_label;
     SoundCore *m_core;
     GeneralHandler *m_generalHandler;

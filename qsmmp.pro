@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     popupsettings.cpp \
     popupwidget.cpp \
     eqdialog.cpp \
-    visualmenu.cpp
+    visualmenu.cpp \
+    trackslider.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
@@ -22,7 +23,8 @@ HEADERS += mainwindow.h \
     popupsettings.h \
     popupwidget.h \
     visualmenu.h \
-    eqdialog.h
+    eqdialog.h \
+    trackslider.h
 TEMPLATE = app
 CONFIG += warn_on \
     thread \

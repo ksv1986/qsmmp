@@ -49,6 +49,7 @@
 #include "configdialog.h"
 #include "visualmenu.h"
 #include "eqdialog.h"
+#include "trackslider.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -126,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_core, SIGNAL(volumeChanged(int,int)), volumeButton, SLOT(setVolume(int,int)));
     ui.toolBar->addWidget(volumeButton);
 
-    m_slider = new QSlider (Qt::Horizontal, this);
+    m_slider = new TrackSlider (this);
     m_label = new QLabel(this);
     m_label->setText("--:--/--:--");
     ui.toolBar->addWidget(m_slider);
