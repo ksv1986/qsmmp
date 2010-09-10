@@ -1,5 +1,7 @@
 #include <QWheelEvent>
 #include <QPainter>
+#include <QPalette>
+#include <QApplication>
 
 #include <qmmp/qmmp.h>
 #include <qmmp/qmmpsettings.h>
@@ -15,6 +17,17 @@ VolumeToolButton::VolumeToolButton(int volume, QWidget *parent, int min, int max
 
     if (volume == min)
         lastVolume = max;
+
+    if(QApplication::palette().color(QPalette::Window).lightness() > 127)
+    {
+        backgroundColor = QApplication::palette().color(QPalette::Mid);
+        sliderColor = backgroundColor.darker();
+    }
+    else
+    {
+        backgroundColor = QApplication::palette().color(QPalette::Light);
+        sliderColor = backgroundColor.lighter();
+    }
 }
 
 void VolumeToolButton::wheelEvent(QWheelEvent *event)
@@ -57,7 +70,7 @@ void VolumeToolButton::mousePressEvent(QMouseEvent *event)
     {
         int x = event->x();
         int width = sizeHint().width();
-        int newVolume = (int)(100.0 * x / width);
+        int newVolume = (int)(100.0 * (x - 2) / (width - 4));
         setVolume(newVolume, newVolume);
         event->accept();
     }
@@ -65,26 +78,29 @@ void VolumeToolButton::mousePressEvent(QMouseEvent *event)
 
 void VolumeToolButton::paintEvent(QPaintEvent *)
 {
-    QPainter painter(this);
-//    painter.setRenderHint(QPainter::Antialiasing, true);
     int x = sizeHint().width();
     int y = sizeHint().height();
-    static const QPointF defaultPoly[3] = {
-        QPointF(2, y - 2),
-        QPointF(x - 2, y - 2),
-        QPointF(x - 2, 2),
+    static const QPoint background[3] = {
+        QPoint(2, y - 2),
+        QPoint(x - 2, y - 2),
+        QPoint(x - 2, 2),
     };
-    painter.setPen(Qt::lightGray);
-    painter.setBrush(Qt::lightGray);
-    painter.drawConvexPolygon(defaultPoly, 3);
-    const QPointF currentPoly[3] = {
-        QPointF(2, y - 2),
-        QPointF(2 + (x - 4)*volume/max, y - 2),
-        QPointF(2 + (x - 4)*volume/max, y - 2 - (y - 4)*volume/max),
-    };
-    painter.setPen(Qt::darkGray);
-    painter.setBrush(Qt::darkGray);
-    painter.drawConvexPolygon(currentPoly, 3);
+
+    QImage img(sizeHint(), QImage::Format_ARGB32_Premultiplied);
+    img.fill(QColor(0, 0, 0, 0).rgba());
+    QPainter painter(&img);
+
+    painter.setPen(backgroundColor);
+    painter.setBrush(backgroundColor);
+    painter.drawConvexPolygon(background, 3);
+
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+
+    QRect slider(QPoint(2, 2), QSize((x - 3)*volume/max, y - 3));
+    painter.fillRect(slider, sliderColor);
+    painter.end();
+    QPainter buttonPainter(this);
+    buttonPainter.drawImage(0, 0, img);
 }
 
 QSize VolumeToolButton::sizeHint() const

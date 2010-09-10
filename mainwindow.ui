@@ -53,32 +53,17 @@
      </layout>
     </item>
     <item>
-     <widget class="PlaylistView" name="playlistView">
+     <widget class="PlaylistView" name="playlistView" native="true">
       <property name="acceptDrops">
        <bool>true</bool>
       </property>
-      <property name="editTriggers">
-       <set>QAbstractItemView::NoEditTriggers</set>
-      </property>
-      <property name="dragEnabled">
+      <property name="dragEnabled" stdset="0">
        <bool>false</bool>
       </property>
-      <property name="dragDropOverwriteMode">
+      <property name="dragDropOverwriteMode" stdset="0">
        <bool>false</bool>
       </property>
-      <property name="dragDropMode">
-       <enum>QAbstractItemView::DragOnly</enum>
-      </property>
-      <property name="defaultDropAction">
-       <enum>Qt::IgnoreAction</enum>
-      </property>
-      <property name="selectionMode">
-       <enum>QAbstractItemView::ExtendedSelection</enum>
-      </property>
-      <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
-      </property>
-      <property name="wordWrap">
+      <property name="wordWrap" stdset="0">
        <bool>false</bool>
       </property>
      </widget>
@@ -92,7 +77,7 @@
      <x>0</x>
      <y>0</y>
      <width>722</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -253,51 +238,26 @@
    </widget>
   </widget>
   <action name="actionPrevious">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/previous.png</normalon>
-    </iconset>
-   </property>
    <property name="text">
     <string>Previous</string>
    </property>
   </action>
   <action name="actionPlay">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/play.png</normalon>
-    </iconset>
-   </property>
    <property name="text">
     <string>Play</string>
    </property>
   </action>
   <action name="actionPause">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/pause.png</normalon>
-    </iconset>
-   </property>
    <property name="text">
     <string>Pause</string>
    </property>
   </action>
   <action name="actionNext">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/next.png</normalon>
-    </iconset>
-   </property>
    <property name="text">
     <string>Next</string>
    </property>
   </action>
   <action name="actionStop">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/stop.png</normalon>
-    </iconset>
-   </property>
    <property name="text">
     <string>Stop</string>
    </property>
@@ -387,8 +347,8 @@
    <header>mytreeview.h</header>
   </customwidget>
   <customwidget>
-   <class>MyTableView</class>
-   <extends>QTableView</extends>
+   <class>PlaylistView</class>
+   <extends>QWidget</extends>
    <header>playlistview.h</header>
   </customwidget>
  </customwidgets>

@@ -63,6 +63,12 @@ MainWindow::MainWindow(QWidget *parent)
     m_player->initialize(m_core, m_manager);
     new PlaylistParser(this);
     m_generalHandler = new GeneralHandler(this);
+    //set theme icons
+    ui.actionPlay->setIcon(QIcon::fromTheme("media-playback-start"));
+    ui.actionPause->setIcon(QIcon::fromTheme("media-playback-pause"));
+    ui.actionNext->setIcon(QIcon::fromTheme("media-seek-forward"));
+    ui.actionPrevious->setIcon(QIcon::fromTheme("media-seek-backward"));
+    ui.actionStop->setIcon(QIcon::fromTheme("media-playback-stop"));
     //connections
     connect(ui.actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui.actionPlay, SIGNAL(triggered()), m_player, SLOT(play()));

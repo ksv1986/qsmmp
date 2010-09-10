@@ -27,6 +27,7 @@ private:
     int min;
     int max;
     int lastVolume;
+    QColor backgroundColor, sliderColor;
 };
 
 #endif // VOLUMETOOLBUTTON_H
