@@ -38,7 +38,7 @@
 
 
 PluginItem::PluginItem(QTreeWidgetItem *parent, InputSourceFactory *factory, const QString &path)
-    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), TRANSPORT)
+        : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), TRANSPORT)
 {
     m_has_about = factory->properties().hasAbout;
     m_has_config = factory->properties().hasSettings;
@@ -47,7 +47,7 @@ PluginItem::PluginItem(QTreeWidgetItem *parent, InputSourceFactory *factory, con
 
 
 PluginItem::PluginItem(QTreeWidgetItem *parent, DecoderFactory *factory, const QString &path)
-    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), DECODER)
+        : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), DECODER)
 {
     setCheckState(0, Decoder::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
     m_has_about = factory->properties().hasAbout;
@@ -56,7 +56,7 @@ PluginItem::PluginItem(QTreeWidgetItem *parent, DecoderFactory *factory, const Q
 }
 
 PluginItem::PluginItem(QTreeWidgetItem *parent, EngineFactory *factory, const QString &path)
-    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), ENGINE)
+        : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), ENGINE)
 {
     setCheckState(0, AbstractEngine::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
     m_has_about = factory->properties().hasAbout;
@@ -65,7 +65,7 @@ PluginItem::PluginItem(QTreeWidgetItem *parent, EngineFactory *factory, const QS
 }
 
 PluginItem::PluginItem(QTreeWidgetItem *parent, EffectFactory *factory, const QString &path)
-    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), EFFECT)
+        : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), EFFECT)
 {
     setCheckState(0, Effect::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
     m_has_about = factory->properties().hasAbout;
@@ -74,7 +74,7 @@ PluginItem::PluginItem(QTreeWidgetItem *parent, EffectFactory *factory, const QS
 }
 
 PluginItem::PluginItem(QTreeWidgetItem *parent, VisualFactory *factory, const QString &path)
-    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), VISUAL)
+        : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), VISUAL)
 {
     setCheckState(0, Visual::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
     m_has_about = factory->properties().hasAbout;
@@ -83,7 +83,7 @@ PluginItem::PluginItem(QTreeWidgetItem *parent, VisualFactory *factory, const QS
 }
 
 PluginItem::PluginItem(QTreeWidgetItem *parent, GeneralFactory *factory, const QString &path)
-    : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), GENERAL)
+        : QTreeWidgetItem(parent, QStringList() << factory->properties().name << path.section('/',-1), GENERAL)
 {
     setCheckState(0, General::isEnabled(factory) ? Qt::Checked : Qt::Unchecked);
     m_has_about = factory->properties().hasAbout;
@@ -107,82 +107,82 @@ bool PluginItem::hasSettings() const
 
 void PluginItem::showAbout(QWidget *parent)
 {
-    switch(type())
+    switch (type())
     {
     case PluginItem::TRANSPORT:
-	static_cast<InputSourceFactory *>(m_factory)->showAbout(parent);
-	break;
+        static_cast<InputSourceFactory *>(m_factory)->showAbout(parent);
+        break;
     case PluginItem::DECODER:
-	static_cast<DecoderFactory *>(m_factory)->showAbout(parent);
-	break;
+        static_cast<DecoderFactory *>(m_factory)->showAbout(parent);
+        break;
     case PluginItem::ENGINE:
-	static_cast<EngineFactory *>(m_factory)->showAbout(parent);
-	break;
+        static_cast<EngineFactory *>(m_factory)->showAbout(parent);
+        break;
     case PluginItem::EFFECT:
-	static_cast<EffectFactory *>(m_factory)->showAbout(parent);
-	break;
+        static_cast<EffectFactory *>(m_factory)->showAbout(parent);
+        break;
     case PluginItem::VISUAL:
-	static_cast<VisualFactory *>(m_factory)->showAbout(parent);
-	break;
+        static_cast<VisualFactory *>(m_factory)->showAbout(parent);
+        break;
     case PluginItem::GENERAL:
-	static_cast<GeneralFactory *>(m_factory)->showAbout(parent);
-	break;
+        static_cast<GeneralFactory *>(m_factory)->showAbout(parent);
+        break;
     default:
-	;
+        ;
     }
 
 }
 
 void PluginItem::showSettings(QWidget *parent)
 {
-    switch(type())
+    switch (type())
     {
     case PluginItem::TRANSPORT:
-	static_cast<InputSourceFactory *>(m_factory)->showSettings(parent);
-	break;
+        static_cast<InputSourceFactory *>(m_factory)->showSettings(parent);
+        break;
     case PluginItem::DECODER:
-	static_cast<DecoderFactory *>(m_factory)->showSettings (parent);
-	break;
+        static_cast<DecoderFactory *>(m_factory)->showSettings (parent);
+        break;
     case PluginItem::ENGINE:
-	static_cast<EngineFactory *>(m_factory)->showSettings (parent);
-	break;
+        static_cast<EngineFactory *>(m_factory)->showSettings (parent);
+        break;
     case PluginItem::EFFECT:
-	static_cast<EffectFactory *>(m_factory)->showSettings (parent);
-	break;
+        static_cast<EffectFactory *>(m_factory)->showSettings (parent);
+        break;
     case PluginItem::VISUAL:
-	Visual::showSettings(static_cast<VisualFactory *>(m_factory), parent);
-	break;
+        Visual::showSettings(static_cast<VisualFactory *>(m_factory), parent);
+        break;
     case PluginItem::GENERAL:
-	GeneralHandler::instance()->showSettings(static_cast<GeneralFactory *>(m_factory), parent);
-	break;
+        GeneralHandler::instance()->showSettings(static_cast<GeneralFactory *>(m_factory), parent);
+        break;
     default:
-	;
+        ;
     }
 }
 
 void PluginItem::setEnabled(bool enabled)
 {
-    switch(type())
+    switch (type())
     {
     case PluginItem::TRANSPORT:
-	//dynamic_cast<InputSourceFactory *>(m_factory)
-	break;
+        //dynamic_cast<InputSourceFactory *>(m_factory)
+        break;
     case PluginItem::DECODER:
-	Decoder::setEnabled(static_cast<DecoderFactory *>(m_factory), enabled);
-	break;
+        Decoder::setEnabled(static_cast<DecoderFactory *>(m_factory), enabled);
+        break;
     case PluginItem::ENGINE:
-	AbstractEngine::setEnabled(static_cast<EngineFactory *>(m_factory), enabled);
-	break;
+        AbstractEngine::setEnabled(static_cast<EngineFactory *>(m_factory), enabled);
+        break;
     case PluginItem::EFFECT:
-	Effect::setEnabled(static_cast<EffectFactory *>(m_factory), enabled);
-	break;
+        Effect::setEnabled(static_cast<EffectFactory *>(m_factory), enabled);
+        break;
     case PluginItem::VISUAL:
-	Visual::setEnabled(static_cast<VisualFactory *>(m_factory), enabled);
-	break;
+        Visual::setEnabled(static_cast<VisualFactory *>(m_factory), enabled);
+        break;
     case PluginItem::GENERAL:
-	GeneralHandler::instance()->setEnabled(static_cast<GeneralFactory *>(m_factory), enabled);
-	break;
+        GeneralHandler::instance()->setEnabled(static_cast<GeneralFactory *>(m_factory), enabled);
+        break;
     default:
-	;
+        ;
     }
 }

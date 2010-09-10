@@ -30,7 +30,7 @@ AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, QObject *parent)
     connect(m_pl, SIGNAL(listChanged()), this, SLOT(listChanged()));
 }
 
-AbstractPlaylistModel::~AbstractPlaylistModel(){}
+AbstractPlaylistModel::~AbstractPlaylistModel() {}
 
 int AbstractPlaylistModel::columnCount (const QModelIndex &) const
 {
@@ -44,25 +44,25 @@ void AbstractPlaylistModel::listChanged()
 
 QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
 {
-    if(role == Qt::DisplayRole && index.row () < m_pl->count())
+    if (role == Qt::DisplayRole && index.row () < m_pl->count())
     {
         PlayListItem *item = m_pl->item(index.row ());
 
-	if (index.column() == 0)
-	    return item->track();
-	if (index.column() == 1)
+        if (index.column() == 0)
+            return item->track();
+        if (index.column() == 1)
             return item->artist();
-	if (index.column() == 2)
-	    return item->title().isEmpty() ? item->url() : item->title();
-	if (index.column() == 3)
+        if (index.column() == 2)
+            return item->title().isEmpty() ? item->url() : item->title();
+        if (index.column() == 3)
             return item->year();
-	if (index.column() == 4)
+        if (index.column() == 4)
             return item->album();
     }
-    else if(role == Qt::FontRole)
+    else if (role == Qt::FontRole)
     {
         QFont font;
-        if(index.row () == m_pl->currentRow())
+        if (index.row () == m_pl->currentRow())
             font.setBold(TRUE);
         return font;
     }
@@ -70,17 +70,17 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
 }
 QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(role == Qt::DisplayRole && orientation == Qt::Horizontal)
+    if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
     {
-	if (section == 0)
-	    return tr("#");
-	if (section == 1)
+        if (section == 0)
+            return tr("#");
+        if (section == 1)
             return tr("Artist");
-	if (section == 2)
+        if (section == 2)
             return tr("Title");
-	if (section == 3)
+        if (section == 3)
             return tr("Year");
-	if (section == 4)
+        if (section == 4)
             return tr("Album");
     }
     else if (role == Qt::DisplayRole)
@@ -109,11 +109,11 @@ void AbstractPlaylistModel::addItem(const QString& path)
     QFileInfo file(path);
     if (file.isDir())
     {
-	m_pl->addDirectory(path);
+        m_pl->addDirectory(path);
     }
     else
     {
-	m_pl->addFile(path);
+        m_pl->addFile(path);
     }
     this->reset();
 }

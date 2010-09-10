@@ -60,7 +60,7 @@ PopupWidget::PopupWidget(QWidget *parent)
     m_timer = new QTimer(this);
     m_timer->setInterval(delay);
     m_timer->setSingleShot (true);
-    if(show_cover)
+    if (show_cover)
         connect(m_timer, SIGNAL(timeout ()), SLOT(loadCover()));
     else
         m_pixlabel->hide();
@@ -87,7 +87,7 @@ void PopupWidget::prepare(PlayListItem *item, QPoint pos)
 
     m_item = item;
     hide();
-    if(!item)
+    if (!item)
     {
         m_timer->stop();
         return;
@@ -116,10 +116,10 @@ PlayListItem *PopupWidget::item()
 
 void PopupWidget::loadCover()
 {
-    if(!m_item)
+    if (!m_item)
         return;
     QPixmap pix = MetaDataManager::instance()->getCover(m_item->url());
-    if(pix.isNull())
+    if (pix.isNull())
         pix = QPixmap(":/ui_no_cover.png");
     m_pixlabel->setFixedSize(m_coverSize,m_coverSize);
     m_pixlabel->setPixmap(pix.scaled(m_coverSize,m_coverSize));

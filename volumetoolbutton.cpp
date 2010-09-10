@@ -7,7 +7,7 @@
 #include "volumetoolbutton.h"
 
 VolumeToolButton::VolumeToolButton(int volume, QWidget *parent, int min, int max) :
-    QToolButton(parent), volume(volume), min(min), max(max), lastVolume(0)
+        QToolButton(parent), volume(volume), min(min), max(max), lastVolume(0)
 {
     int newVolume = qMin(volume, max);
     newVolume = qMax(volume, min);
@@ -21,9 +21,9 @@ void VolumeToolButton::wheelEvent(QWheelEvent *event)
 {
     int d = event->delta()/12;
     int newVolume = volume + d;
-    if(newVolume > max)
+    if (newVolume > max)
         newVolume = max;
-    else if(newVolume < min)
+    else if (newVolume < min)
         newVolume = min;
 
     setVolume(newVolume, newVolume);
@@ -46,7 +46,7 @@ void VolumeToolButton::setVolume(int left, int)
 
 void VolumeToolButton::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::MidButton)
+    if (event->button() == Qt::MidButton)
     {
         int currentVolume = volume;
         setVolume(lastVolume, lastVolume);

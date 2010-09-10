@@ -4,7 +4,7 @@
 #include <QtGui/QDialog>
 
 namespace Ui {
-    class SettingsDialog;
+class SettingsDialog;
 }
 
 class SettingsDialog : public QDialog {

@@ -27,7 +27,7 @@
 
 class AbstractPlaylistModel : public QAbstractTableModel
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     AbstractPlaylistModel(PlayListModel *pl, QObject *parent);
     ~AbstractPlaylistModel();
@@ -38,13 +38,26 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     void addItem(const QString& path);
 
-    void clearSelection() { m_pl->clearSelection(); }
-    bool isSelected(int row) { return m_pl->isSelected(row); }
-    void setSelected(int row, bool selected) { m_pl->setSelected(row, selected); }
-    int count() { return m_pl->count(); }
-    const SimpleSelection& getSelection(int row) { return m_pl->getSelection(row); }
+    void clearSelection() {
+        m_pl->clearSelection();
+    }
+    bool isSelected(int row) {
+        return m_pl->isSelected(row);
+    }
+    void setSelected(int row, bool selected) {
+        m_pl->setSelected(row, selected);
+    }
+    int count() {
+        return m_pl->count();
+    }
+    const SimpleSelection& getSelection(int row) {
+        return m_pl->getSelection(row);
+    }
 
-    void setPlaylist(PlayListModel *model) { m_pl = model; listChanged(); }
+    void setPlaylist(PlayListModel *model) {
+        m_pl = model;
+        listChanged();
+    }
 
 public slots:
     void listChanged();

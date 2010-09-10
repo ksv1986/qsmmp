@@ -49,12 +49,12 @@ public:
 
     enum PluginType
     {
-	TRANSPORT = QTreeWidgetItem::UserType,
-	DECODER,
-	ENGINE,
-	EFFECT,
-	VISUAL,
-	GENERAL
+        TRANSPORT = QTreeWidgetItem::UserType,
+        DECODER,
+        ENGINE,
+        EFFECT,
+        VISUAL,
+        GENERAL
     };
 
     bool hasAbout() const;

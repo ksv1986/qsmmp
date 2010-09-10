@@ -95,13 +95,13 @@ MainWindow::MainWindow(QWidget *parent)
     const int rowHeight = fontMetrics().height() + 2;
     ui.tableView->verticalHeader()->setDefaultSectionSize(rowHeight);
     ui.tableView->verticalHeader()->setStyleSheet(
-     "QHeaderView::section {"
+        "QHeaderView::section {"
         "padding-bottom: 0px;"
         "padding-top: 0px;"
         "padding-left: 0px;"
         "padding-right: 1px;"
         "margin: 0px;"
-     "}"
+        "}"
     );
 
     ui.tableView->setDragEnabled(true);
@@ -131,7 +131,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
     connect(ui.tableView, SIGNAL(doubleClicked (const QModelIndex &)),
-                                SLOT (playSelected(const QModelIndex &)));
+            SLOT (playSelected(const QModelIndex &)));
 
     VolumeToolButton *volumeButton = new VolumeToolButton(m_core->leftVolume(), this, 0, 100);
     connect(volumeButton, SIGNAL(volumeChanged(int, int)), m_core, SLOT(setVolume(int,int)));
@@ -162,7 +162,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::lockFSCollectionRoot(bool checked)
 {
-    if(!checked)
+    if (!checked)
     {
         ui.lockButton->setText(tr("Lock"));
         m_fsmodel->setRootPath("/");
@@ -179,17 +179,17 @@ void MainWindow::lockFSCollectionRoot(bool checked)
 
 void MainWindow::removeSelected()
 {
-    for(int row = 0; row < m_model->totalLength(); row++)
+    for (int row = 0; row < m_model->totalLength(); row++)
         m_model->setSelected(row, false);
     foreach(int row, ui.tableView->selectedRows())
-        m_model->setSelected(row, true);
+    m_model->setSelected(row, true);
     m_model->removeSelected();
 }
 
 void MainWindow::toggleVisibility()
- {
+{
     setVisible(!isVisible());
- }
+}
 
 void MainWindow::settings()
 {
@@ -207,7 +207,7 @@ void MainWindow::addFiles()
     QString lastDir;
     QStringList filters;
     filters << tr("All Supported Bitstreams")
-            + " (" + MetaDataManager::instance()->nameFilters().join (" ") +")";
+    + " (" + MetaDataManager::instance()->nameFilters().join (" ") +")";
     filters << MetaDataManager::instance()->filters();
     FileDialog::popup(this, FileDialog::AddDirsFiles, &lastDir,
                       m_model, SLOT(addFileList(const QStringList&)),
@@ -220,18 +220,18 @@ void MainWindow::playSelected(const QModelIndex &i)
     m_model->setCurrent(i.row());
     m_player->play();
     foreach(int row, m_model->getSelectedRows())
-        ui.tableView->selectRow(row);
+    ui.tableView->selectRow(row);
 }
 
 void MainWindow::updatePosition(qint64 pos)
 {
     m_slider->setMaximum(m_core->totalTime()/1000);
-    if(!m_slider->isSliderDown())
+    if (!m_slider->isSliderDown())
         m_slider->setValue(pos/1000);
     m_label->setText(QString("%1:%2/%3:%4").arg(pos/1000/60, 2, 10, QChar('0'))
-                                   .arg(pos/1000%60, 2, 10, QChar('0'))
-                                   .arg(m_core->totalTime()/1000/60, 2, 10, QChar('0'))
-                                   .arg(m_core->totalTime()/1000%60, 2, 10, QChar('0')));
+                     .arg(pos/1000%60, 2, 10, QChar('0'))
+                     .arg(m_core->totalTime()/1000/60, 2, 10, QChar('0'))
+                     .arg(m_core->totalTime()/1000%60, 2, 10, QChar('0')));
 }
 
 void MainWindow::seek()
@@ -241,11 +241,11 @@ void MainWindow::seek()
 
 void MainWindow::showState(Qmmp::State state)
 {
-    switch((int) state)
+    switch ((int) state)
     {
     case Qmmp::Playing:
         ui.statusbar->showMessage(tr("Playing"));
-        if(m_label->text() != "--:--/--:--")
+        if (m_label->text() != "--:--/--:--")
             showBitrate(m_core->bitrate());
         break;
     case Qmmp::Paused:
@@ -263,15 +263,15 @@ void MainWindow::showState(Qmmp::State state)
 void MainWindow::showBitrate(int)
 {
     ui.statusbar->showMessage(QString(tr("Playing [%1 kbps/%2 bit/%3]"))
-                  .arg(m_core->bitrate())
-                  .arg(m_core->precision())
-                  .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
+                              .arg(m_core->bitrate())
+                              .arg(m_core->precision())
+                              .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
 }
 
 void MainWindow::showEQ()
 {
     EQDialog dialog(m_core, this);
-    if(dialog.exec() == QDialog::Accepted)
+    if (dialog.exec() == QDialog::Accepted)
     {
         dialog.writeSettings();
     }
@@ -324,7 +324,7 @@ void MainWindow::playlistsWidgetContextMenuRequested(QPoint point)
 void MainWindow::renamePlaylist()
 {
     QListWidgetItem* item = ui.playlistWidget->currentItem();
-    if(item)
+    if (item)
     {
         item->setFlags(Qt::ItemIsEditable | item->flags());
         ui.playlistWidget->editItem(item);
@@ -357,8 +357,8 @@ void MainWindow::newPlaylist()
 {
     bool ok;
     QString text = QInputDialog::getText(this, tr("Enter new playlist name"),
-                                 tr("Playlist name:"), QLineEdit::Normal,
-                                 tr("My playlist"), &ok);
+                                         tr("Playlist name:"), QLineEdit::Normal,
+                                         tr("My playlist"), &ok);
     if (ok && !text.isEmpty())
     {
         PlayListModel *model = m_manager->createPlayList(text);

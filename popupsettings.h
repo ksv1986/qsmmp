@@ -30,7 +30,7 @@ class Action;
 */
 class PopupSettings : public QDialog
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     PopupSettings(QWidget *parent = 0);
     ~PopupSettings();

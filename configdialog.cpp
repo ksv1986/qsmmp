@@ -50,7 +50,7 @@
 #include "configdialog.h"
 
 ConfigDialog::ConfigDialog (QWidget *parent)
-	: QDialog (parent)
+        : QDialog (parent)
 {
     ui.setupUi (this);
     setAttribute(Qt::WA_QuitOnClose, false);
@@ -75,10 +75,10 @@ void ConfigDialog::readSettings()
     QSettings settings (Qmmp::configFile(), QSettings::IniFormat);
     if (MediaPlayer *player = MediaPlayer::instance())
     {
-	ui.formatLineEdit->setText(player->playListManager()->format());
-	ui.metadataCheckBox->setChecked(player->playListManager()->useMetadata());
-	ui.underscoresCheckBox->setChecked(player->playListManager()->convertUnderscore());
-	ui.per20CheckBox->setChecked(player->playListManager()->convertTwenty());
+        ui.formatLineEdit->setText(player->playListManager()->format());
+        ui.metadataCheckBox->setChecked(player->playListManager()->useMetadata());
+        ui.underscoresCheckBox->setChecked(player->playListManager()->convertUnderscore());
+        ui.per20CheckBox->setChecked(player->playListManager()->convertTwenty());
     }
     ui.protocolCheckBox->setChecked(settings.value ("PlayList/show_protocol", false).toBool());
     ui.numbersCheckBox->setChecked(settings.value ("PlayList/show_numbers", true).toBool());
@@ -90,7 +90,7 @@ void ConfigDialog::readSettings()
     ui.authProxyCheckBox->setChecked(gs->useProxyAuth());
     ui.hostLineEdit->setText(gs->proxy().host());
     if (gs->proxy().port(0))
-	ui.portLineEdit->setText(QString::number(gs->proxy().port(0)));
+        ui.portLineEdit->setText(QString::number(gs->proxy().port(0)));
     ui.proxyUserLineEdit->setText(gs->proxy().userName());
     ui.proxyPasswLineEdit->setText(gs->proxy().password());
 
@@ -116,16 +116,16 @@ void ConfigDialog::readSettings()
     ui.replayGainModeComboBox->setCurrentIndex(ui.replayGainModeComboBox->findData(gs->replayGainMode()));
     ui.preampDoubleSpinBox->setValue(gs->replayGainPreamp());
     ui.defaultGainDoubleSpinBox->setValue(gs->replayGainDefaultGain());
-     //audio
+    //audio
     ui.softVolumeCheckBox->setChecked(gs->useSoftVolume());
     ui.use16BitCheckBox->setChecked(gs->use16BitOutput());
 }
 
 void ConfigDialog::on_contentsWidget_currentItemChanged (QListWidgetItem *current,
-							 QListWidgetItem *previous)
+        QListWidgetItem *previous)
 {
     if (!current)
-	current = previous;
+        current = previous;
     ui.stackedWidget->setCurrentIndex (ui.contentsWidget->row (current));
     ui.visibilityGroupBox->setEnabled(GeneralHandler::instance()->visibilityControl());
 }
@@ -134,64 +134,64 @@ void ConfigDialog::loadPluginsInfo()
 {
     ui.treeWidget->blockSignals(true);
     /*
-	load transport plugin information
+    load transport plugin information
      */
     QTreeWidgetItem *item = new QTreeWidgetItem (ui.treeWidget, QStringList() << tr("Transports"));
     QList <InputSourceFactory *> *transports = InputSource::factories();
     QStringList files = InputSource::files();
     for (int i = 0; i < transports->count (); ++i)
-	new PluginItem (item, transports->at(i), files.at (i));
+        new PluginItem (item, transports->at(i), files.at (i));
     ui.treeWidget->addTopLevelItem(item);
     item->setExpanded(true);
 
     /*
-	load input plugins information
+    load input plugins information
     */
     item = new QTreeWidgetItem (ui.treeWidget, QStringList() << tr("Decoders"));
     QList <DecoderFactory *> *decoders = Decoder::factories();
     files = Decoder::files();
     for (int i = 0; i < decoders->count (); ++i)
-	new PluginItem (item, decoders->at(i), files.at (i));
+        new PluginItem (item, decoders->at(i), files.at (i));
     ui.treeWidget->addTopLevelItem(item);
     item->setExpanded(true);
     /*
-	load audio engines information
+    load audio engines information
     */
     item = new QTreeWidgetItem (ui.treeWidget, QStringList() << tr("Engines"));
     QList <EngineFactory *> *engines = AbstractEngine::factories();
     files = AbstractEngine::files();
     for (int i = 0; i < engines->count (); ++i)
-	new PluginItem (item, engines->at(i), files.at (i));
+        new PluginItem (item, engines->at(i), files.at (i));
     ui.treeWidget->addTopLevelItem(item);
     item->setExpanded(true);
     /*
-	load effect plugin information
+    load effect plugin information
     */
     item = new QTreeWidgetItem (ui.treeWidget, QStringList() << tr("Effects"));
     QList <EffectFactory *> *effects = Effect::factories();
     files = Effect::files();
     for (int i = 0; i < effects->count (); ++i)
-	new PluginItem (item, effects->at(i), files.at (i));
+        new PluginItem (item, effects->at(i), files.at (i));
     ui.treeWidget->addTopLevelItem(item);
     item->setExpanded(true);
     /*
-	load visual plugin information
+    load visual plugin information
     */
     item = new QTreeWidgetItem (ui.treeWidget, QStringList() << tr("Visualization"));
     QList <VisualFactory *> *visuals = Visual::factories();
     files = Visual::files();
     for (int i = 0; i < visuals->count (); ++i)
-	new PluginItem (item, visuals->at(i), files.at (i));
+        new PluginItem (item, visuals->at(i), files.at (i));
     ui.treeWidget->addTopLevelItem(item);
     item->setExpanded(true);
     /*
-	load general plugin information
+    load general plugin information
     */
     item = new QTreeWidgetItem (ui.treeWidget, QStringList() << tr("General"));
     QList <GeneralFactory *> *generals = General::factories();
     files = General::files();
     for (int i = 0; i < generals->count (); ++i)
-	new PluginItem (item, generals->at(i), files.at (i));
+        new PluginItem (item, generals->at(i), files.at (i));
     ui.treeWidget->addTopLevelItem(item);
     item->setExpanded(true);
 
@@ -199,44 +199,44 @@ void ConfigDialog::loadPluginsInfo()
     ui.treeWidget->resizeColumnToContents(0);
     ui.treeWidget->resizeColumnToContents(1);
     /*
-	load output plugins information
+    load output plugins information
     */
     ui.outputInformationButton->setEnabled(false);
     ui.outputPreferencesButton->setEnabled(false);
     QList <OutputFactory *> *outputs = Output::factories();
     for (int i = 0; i < outputs->count (); ++i)
     {
-	ui.outputComboBox->addItem(outputs->at(i)->properties().name);
-	if(Output::currentFactory() == outputs->at(i))
-	{
-	    ui.outputComboBox->setCurrentIndex(i);
-	    on_outputComboBox_activated (i);
-	}
+        ui.outputComboBox->addItem(outputs->at(i)->properties().name);
+        if (Output::currentFactory() == outputs->at(i))
+        {
+            ui.outputComboBox->setCurrentIndex(i);
+            on_outputComboBox_activated (i);
+        }
     }
     /*
-	load file dialog information
+    load file dialog information
     */
     foreach(FileDialogFactory *factory, FileDialog::registeredFactories())
     {
-	ui.fileDialogComboBox->addItem(factory->properties().name);
-	if (FileDialog::isEnabled(factory))
-	    ui.fileDialogComboBox->setCurrentIndex(ui.fileDialogComboBox->count()-1);
+        ui.fileDialogComboBox->addItem(factory->properties().name);
+        if (FileDialog::isEnabled(factory))
+            ui.fileDialogComboBox->setCurrentIndex(ui.fileDialogComboBox->count()-1);
     }
 }
 
 void ConfigDialog::on_preferencesButton_clicked()
 {
     QTreeWidgetItem *item = ui.treeWidget->currentItem();
-    if(item && item->type() >= PluginItem::TRANSPORT)
-	dynamic_cast<PluginItem *>(item)->showSettings(this);
+    if (item && item->type() >= PluginItem::TRANSPORT)
+        dynamic_cast<PluginItem *>(item)->showSettings(this);
 
 }
 
 void ConfigDialog::on_informationButton_clicked()
 {
     QTreeWidgetItem *item = ui.treeWidget->currentItem();
-    if(item && item->type() >= PluginItem::TRANSPORT)
-	dynamic_cast<PluginItem *>(item)->showAbout(this);
+    if (item && item->type() >= PluginItem::TRANSPORT)
+        dynamic_cast<PluginItem *>(item)->showAbout(this);
 }
 
 void ConfigDialog::createMenus()
@@ -265,9 +265,9 @@ void ConfigDialog::createMenus()
 void ConfigDialog::addTitleString(QAction * a)
 {
     if (ui.formatLineEdit->cursorPosition () < 1)
-	ui.formatLineEdit->insert(a->data().toString());
+        ui.formatLineEdit->insert(a->data().toString());
     else
-	ui.formatLineEdit->insert(" - "+a->data().toString());
+        ui.formatLineEdit->insert(" - "+a->data().toString());
 }
 
 void ConfigDialog::saveSettings()
@@ -275,10 +275,10 @@ void ConfigDialog::saveSettings()
     QSettings settings (Qmmp::configFile(), QSettings::IniFormat);
     if (MediaPlayer *player = MediaPlayer::instance())
     {
-	player->playListManager()->setFormat(ui.formatLineEdit->text().trimmed());
-	player->playListManager()->setUseMetadata(ui.metadataCheckBox->isChecked());
-	player->playListManager()->setConvertUnderscore(ui.underscoresCheckBox->isChecked());
-	player->playListManager()->setConvertTwenty(ui.per20CheckBox->isChecked());
+        player->playListManager()->setFormat(ui.formatLineEdit->text().trimmed());
+        player->playListManager()->setUseMetadata(ui.metadataCheckBox->isChecked());
+        player->playListManager()->setConvertUnderscore(ui.underscoresCheckBox->isChecked());
+        player->playListManager()->setConvertTwenty(ui.per20CheckBox->isChecked());
     }
     settings.setValue ("PlayList/show_protocol", ui.protocolCheckBox->isChecked());
     settings.setValue ("PlayList/show_numbers", ui.numbersCheckBox->isChecked());
@@ -293,8 +293,8 @@ void ConfigDialog::saveSettings()
     proxyUrl.setUserName(ui.proxyUserLineEdit->text());
     proxyUrl.setPassword(ui.proxyPasswLineEdit->text());
     gs->setNetworkSettings(ui.enableProxyCheckBox->isChecked(),
-			   ui.authProxyCheckBox->isChecked(),
-			   proxyUrl);
+                           ui.authProxyCheckBox->isChecked(),
+                           proxyUrl);
 
     settings.setValue ("MainWindow/start_hidden", ui.hiddenCheckBox->isChecked());
     settings.setValue ("MainWindow/hide_on_close", ui.hideOnCloseCheckBox->isChecked());
@@ -302,19 +302,19 @@ void ConfigDialog::saveSettings()
     settings.setValue ("General/metacity_compat", ui.metacityCheckBox->isChecked());
     settings.setValue ("General/resume_on_startup",  ui.continuePlaybackCheckBox->isChecked());
     gs->setCoverSettings(ui.coverIncludeLineEdit->text().split(","),
-			 ui.coverExcludeLineEdit->text().split(","),
-			 ui.coverDepthSpinBox->value(),
-			 ui.useCoverFilesCheckBox->isChecked());
+                         ui.coverExcludeLineEdit->text().split(","),
+                         ui.coverDepthSpinBox->value(),
+                         ui.useCoverFilesCheckBox->isChecked());
     int i = ui.replayGainModeComboBox->currentIndex();
     gs->setReplayGainSettings((QmmpSettings::ReplayGainMode)
-			      ui.replayGainModeComboBox->itemData(i).toInt(),
-			      ui.preampDoubleSpinBox->value(),
-			      ui.defaultGainDoubleSpinBox->value(),
-			      ui.clippingCheckBox->isChecked());
+                              ui.replayGainModeComboBox->itemData(i).toInt(),
+                              ui.preampDoubleSpinBox->value(),
+                              ui.defaultGainDoubleSpinBox->value(),
+                              ui.clippingCheckBox->isChecked());
     gs->setAudioSettings(ui.softVolumeCheckBox->isChecked(), ui.use16BitCheckBox->isChecked());
     QList <OutputFactory *> *outputs = Output::factories();
-    if(ui.outputComboBox->currentIndex() >= 0 && outputs->count())
-	Output::setCurrentFactory(outputs->at(ui.outputComboBox->currentIndex()));
+    if (ui.outputComboBox->currentIndex() >= 0 && outputs->count())
+        Output::setCurrentFactory(outputs->at(ui.outputComboBox->currentIndex()));
 }
 
 void ConfigDialog::updateDialogButton(int index)
@@ -337,39 +337,39 @@ void ConfigDialog::on_popupCustomizeButton_clicked()
 
 void ConfigDialog::on_treeWidget_itemChanged (QTreeWidgetItem *item, int column)
 {
-    if(column == 0 && item->type() >= PluginItem::TRANSPORT)
-	dynamic_cast<PluginItem *>(item)->setEnabled(item->checkState(0) == Qt::Checked);
+    if (column == 0 && item->type() >= PluginItem::TRANSPORT)
+        dynamic_cast<PluginItem *>(item)->setEnabled(item->checkState(0) == Qt::Checked);
 }
 
 void ConfigDialog::on_treeWidget_currentItemChanged (QTreeWidgetItem *current, QTreeWidgetItem *)
 {
-    if(current->type() >= PluginItem::TRANSPORT)
+    if (current->type() >= PluginItem::TRANSPORT)
     {
-	ui.preferencesButton->setEnabled(dynamic_cast<PluginItem *>(current)->hasSettings());
-	ui.informationButton->setEnabled(dynamic_cast<PluginItem *>(current)->hasAbout());
+        ui.preferencesButton->setEnabled(dynamic_cast<PluginItem *>(current)->hasSettings());
+        ui.informationButton->setEnabled(dynamic_cast<PluginItem *>(current)->hasAbout());
     }
     else
     {
-	ui.preferencesButton->setEnabled(false);
-	ui.informationButton->setEnabled(false);
+        ui.preferencesButton->setEnabled(false);
+        ui.informationButton->setEnabled(false);
     }
 }
 
- void ConfigDialog::on_outputComboBox_activated (int index)
- {
-     OutputFactory *factory = Output::factories()->at(index);
-     ui.outputInformationButton->setEnabled(factory->properties().hasAbout);
-     ui.outputPreferencesButton->setEnabled(factory->properties().hasSettings);
- }
+void ConfigDialog::on_outputComboBox_activated (int index)
+{
+    OutputFactory *factory = Output::factories()->at(index);
+    ui.outputInformationButton->setEnabled(factory->properties().hasAbout);
+    ui.outputPreferencesButton->setEnabled(factory->properties().hasSettings);
+}
 
- void ConfigDialog::on_outputPreferencesButton_clicked()
- {
-     int index = ui.outputComboBox->currentIndex();
-     Output::factories()->at(index)->showSettings(this);
- }
+void ConfigDialog::on_outputPreferencesButton_clicked()
+{
+    int index = ui.outputComboBox->currentIndex();
+    Output::factories()->at(index)->showSettings(this);
+}
 
- void ConfigDialog::on_outputInformationButton_clicked()
- {
-     int index = ui.outputComboBox->currentIndex();
-     Output::factories()->at(index)->showAbout(this);
- }
+void ConfigDialog::on_outputInformationButton_clicked()
+{
+    int index = ui.outputComboBox->currentIndex();
+    Output::factories()->at(index)->showAbout(this);
+}

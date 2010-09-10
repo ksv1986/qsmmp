@@ -12,7 +12,9 @@ class Settings
     QStringList _playlistVisibleColumns;
 
     Settings();
-    Settings& operator=(Settings&) { return *this; }
+    Settings& operator=(Settings&) {
+        return *this;
+    }
     Settings(Settings&) {}
 
     void load();
@@ -23,14 +25,24 @@ public:
     void setRootFSCollectionDirectory(QString directory);
     const QString& rootFSCollectionDirectory();
 
-    void setStartHidden(bool startHidden) { _startHidden = startHidden; };
-    bool startHidden() { return _startHidden; }
+    void setStartHidden(bool startHidden) {
+        _startHidden = startHidden;
+    };
+    bool startHidden() {
+        return _startHidden;
+    }
 
-    void setHideOnClose(bool hideOnClose) { _hideOnClose = hideOnClose; };
-    bool hideOnClose() { return _hideOnClose; }
+    void setHideOnClose(bool hideOnClose) {
+        _hideOnClose = hideOnClose;
+    };
+    bool hideOnClose() {
+        return _hideOnClose;
+    }
 
     void setPlaylistVisibleColumns(QStringList columns);
-    QStringList playlistVisibleColumns() { return _playlistVisibleColumns; }
+    QStringList playlistVisibleColumns() {
+        return _playlistVisibleColumns;
+    }
 };
 
 #endif // SETTINGS_H

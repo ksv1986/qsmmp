@@ -3,8 +3,8 @@
 #include "settings.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
-    QDialog(parent),
-    m_ui(new Ui::SettingsDialog)
+        QDialog(parent),
+        m_ui(new Ui::SettingsDialog)
 {
     m_ui->setupUi(this);
     m_ui->collectionRootDirectoryLineEdit->setText(Settings::instance().rootFSCollectionDirectory());
