@@ -21,7 +21,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSystemTrayIcon>
 #include <QMenu>
 #include <qmmp/qmmp.h>
 #include <ui_mainwindow.h>

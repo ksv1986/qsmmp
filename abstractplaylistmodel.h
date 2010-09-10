@@ -36,6 +36,7 @@ public:
     virtual QVariant data (const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    virtual void sort(int column, Qt::SortOrder order);
     void addItem(const QString& path);
 
     void clearSelection() {

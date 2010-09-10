@@ -25,6 +25,7 @@ public:
 
 private slots:
     void toggleColumn(bool toggled);
+    void sectionClicked(int section);
 
 private:
     int m_anchor_row;

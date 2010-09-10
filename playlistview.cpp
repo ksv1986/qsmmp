@@ -21,6 +21,8 @@ PlaylistView::PlaylistView(QWidget *parent=0)
     setItemsExpandable(false);
     setAlternatingRowColors(true);
     header()->setMovable(true);
+    header()->setClickable(true);
+    connect(header(), SIGNAL(sectionClicked(int)), this, SLOT(sectionClicked(int)));
 }
 
 PlaylistView::~PlaylistView()
@@ -78,6 +80,15 @@ void PlaylistView::setup()
         if ( !isColumnHidden( i ) )
             action->setChecked( true );
         connect( action, SIGNAL( toggled(bool) ), this, SLOT(toggleColumn(bool) ) );
+    }
+}
+
+void PlaylistView::sectionClicked(int section)
+{
+    if (!isSortingEnabled())
+    {
+        setSortingEnabled(true);
+        sortByColumn(section);
     }
 }
 

@@ -117,3 +117,29 @@ void AbstractPlaylistModel::addItem(const QString& path)
     }
     this->reset();
 }
+
+void AbstractPlaylistModel::sort(int column, Qt::SortOrder)
+{
+    int mode = 0;
+    switch(column)
+    {
+    case 0:
+        mode = PlayListModel::TRACK;
+        break;
+    case 1:
+        mode = PlayListModel::ARTIST;
+        break;
+    case 2:
+        mode = PlayListModel::TITLE;
+        break;
+    case 3:
+        mode = PlayListModel::DATE;
+        break;
+    case 4:
+        mode = PlayListModel::ALBUM;
+        break;
+
+    }
+
+    m_pl->sort(mode);
+}

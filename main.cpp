@@ -22,6 +22,7 @@
 #include <QSettings>
 #include <QTranslator>
 #include <QLibraryInfo>
+#include <QSystemTrayIcon>
 
 #include "mainwindow.h"
 #include "settings.h"
