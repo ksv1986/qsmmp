@@ -81,6 +81,13 @@ void PlaylistView::setup()
             action->setChecked( true );
         connect( action, SIGNAL( toggled(bool) ), this, SLOT(toggleColumn(bool) ) );
     }
+
+    setContextMenuPolicy( Qt::ActionsContextMenu );
+
+    QAction *action = new QAction( tr("View Track Details"), header() );
+    addAction( action );
+    AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
+    connect( action, SIGNAL(triggered()), playlist, SLOT(showDetails()));
 }
 
 void PlaylistView::sectionClicked(int section)

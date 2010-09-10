@@ -62,6 +62,7 @@ public:
 
 public slots:
     void listChanged();
+    void showDetails();
 private:
     QString formatTime(qint64 time) const;
     PlayListModel *m_pl;

@@ -143,3 +143,8 @@ void AbstractPlaylistModel::sort(int column, Qt::SortOrder)
 
     m_pl->sort(mode);
 }
+
+void AbstractPlaylistModel::showDetails()
+{
+    m_pl->showDetails();
+}
