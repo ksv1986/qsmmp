@@ -27,6 +27,7 @@ Settings::~Settings()
     settings.beginGroup("qsmmp");
     settings.setValue("fscollection", _rootFSCollectionDirectory);
     settings.setValue("playlistColumns", _playlistVisibleColumns);
+    settings.setValue("use_standard_icons", _useStandardIcons);
     settings.endGroup();
 }
 
@@ -57,5 +58,6 @@ void Settings::load()
     settings.beginGroup("qsmmp");
     _rootFSCollectionDirectory = settings.value("fscollection", "/").toString();
     _playlistVisibleColumns = settings.value("playlistColumns", QStringList()).toStringList();
+    _useStandardIcons = settings.value("use_standard_icons", true).toBool();
     settings.endGroup();
 }

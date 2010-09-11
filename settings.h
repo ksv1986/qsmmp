@@ -9,6 +9,7 @@ class Settings
     QString _rootFSCollectionDirectory;
     bool _startHidden;
     bool _hideOnClose;
+    bool _useStandardIcons;
     QStringList _playlistVisibleColumns;
 
     Settings();
@@ -27,16 +28,23 @@ public:
 
     void setStartHidden(bool startHidden) {
         _startHidden = startHidden;
-    };
+    }
     bool startHidden() {
         return _startHidden;
     }
 
     void setHideOnClose(bool hideOnClose) {
         _hideOnClose = hideOnClose;
-    };
+    }
     bool hideOnClose() {
         return _hideOnClose;
+    }
+
+    void setUseStandardIcons(bool useStandardIcons){
+        _useStandardIcons = useStandardIcons;
+    }
+    bool useStandardIcons(){
+        return _useStandardIcons;
     }
 
     void setPlaylistVisibleColumns(QStringList columns);

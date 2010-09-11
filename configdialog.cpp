@@ -48,6 +48,7 @@
 #include "popupsettings.h"
 #include "pluginitem.h"
 #include "configdialog.h"
+#include "settings.h"
 
 ConfigDialog::ConfigDialog (QWidget *parent)
         : QDialog (parent)
@@ -106,6 +107,8 @@ void ConfigDialog::readSettings()
     ui.metacityCheckBox->setChecked(settings.value("General/metacity_compat", false).toBool());
     //resume playback
     ui.continuePlaybackCheckBox->setChecked(settings.value("General/resume_on_startup", false).toBool());
+    // use standard icons
+    ui.useStandardIconsCheckBox->setChecked(Settings::instance().useStandardIcons());
     //cover options
     ui.coverIncludeLineEdit->setText(gs->coverNameFilters(true).join(","));
     ui.coverExcludeLineEdit->setText(gs->coverNameFilters(false).join(","));
@@ -315,6 +318,7 @@ void ConfigDialog::saveSettings()
     QList <OutputFactory *> *outputs = Output::factories();
     if (ui.outputComboBox->currentIndex() >= 0 && outputs->count())
         Output::setCurrentFactory(outputs->at(ui.outputComboBox->currentIndex()));
+    Settings::instance().setUseStandardIcons(ui.useStandardIconsCheckBox->isChecked());
 }
 
 void ConfigDialog::updateDialogButton(int index)

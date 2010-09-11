@@ -63,12 +63,23 @@ MainWindow::MainWindow(QWidget *parent)
     m_player->initialize(m_core, m_manager);
     new PlaylistParser(this);
     m_generalHandler = new GeneralHandler(this);
-    //set theme icons
-    ui.actionPlay->setIcon(QIcon::fromTheme("media-playback-start"));
-    ui.actionPause->setIcon(QIcon::fromTheme("media-playback-pause"));
-    ui.actionNext->setIcon(QIcon::fromTheme("media-seek-forward"));
-    ui.actionPrevious->setIcon(QIcon::fromTheme("media-seek-backward"));
-    ui.actionStop->setIcon(QIcon::fromTheme("media-playback-stop"));
+    //set icons
+    if (Settings::instance().useStandardIcons())
+    {
+        ui.actionPlay->setIcon(QApplication::style ()->standardIcon(QStyle::SP_MediaPlay));
+        ui.actionPause->setIcon(QApplication::style ()->standardIcon(QStyle::SP_MediaPause));
+        ui.actionNext->setIcon(QApplication::style ()->standardIcon(QStyle::SP_MediaSkipForward));
+        ui.actionPrevious->setIcon(QApplication::style ()->standardIcon(QStyle::SP_MediaSeekBackward));
+        ui.actionStop->setIcon(QApplication::style ()->standardIcon(QStyle::SP_MediaStop));
+    }
+    else
+    {
+        ui.actionPlay->setIcon(QIcon(":/images/play.png"));
+        ui.actionPause->setIcon(QIcon(":/images/pause.png"));
+        ui.actionNext->setIcon(QIcon(":/images/next.png"));
+        ui.actionPrevious->setIcon(QIcon(":/images/previous.png"));
+        ui.actionStop->setIcon(QIcon(":/images/stop.png"));
+    }
     //connections
     connect(ui.actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui.actionPlay, SIGNAL(triggered()), m_player, SLOT(play()));
