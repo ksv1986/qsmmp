@@ -19,6 +19,8 @@ public:
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void startDrag(Qt::DropActions supportedActions);
+
     void selectAll();
     void setup();
 
@@ -30,6 +32,7 @@ private:
     int m_anchor_row;
     int m_pressed_row;
     bool m_select_on_release;
+    QPoint startPos;
 
     QList<QAction*> m_columnActions; //! Maintains the mapping action<->column
 };

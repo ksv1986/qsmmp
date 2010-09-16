@@ -173,10 +173,11 @@ void PlaylistView::selectAll()
 
 void PlaylistView::mousePressEvent(QMouseEvent *e)
 {
+    if (e->button() == Qt::LeftButton)
+        startPos = e->pos();
+
     AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
-
     int row = indexAt(e->pos()).row();
-
     if (playlist->rowCount() > row)
     {
         if (!(Qt::ControlModifier & e->modifiers () ||
@@ -224,18 +225,24 @@ void PlaylistView::mousePressEvent(QMouseEvent *e)
 
 void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton && event->modifiers() == Qt::NoModifier)
-    {
-        AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
-        QList<PlayListItem*> items;
-        foreach(QModelIndex index, selectedIndexes())
-        {
-            items.append(playlist->item(index.row()));
-        }
-
-        QMimeData *mimeData = model()->mimeData(selectedIndexes());
-        QDrag *drag = new QDrag(this);
-        drag->setMimeData(mimeData);
-        drag->exec(model()->supportedDragActions(), Qt::CopyAction);
+    if (event->buttons() & Qt::LeftButton) {
+        int distance = (event->pos() - startPos).manhattanLength();
+        if (distance >= QApplication::startDragDistance())
+            startDrag(model()->supportedDragActions());
     }
+}
+
+void PlaylistView::startDrag(Qt::DropActions supportedActions)
+{
+    AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
+    QList<PlayListItem*> items;
+    foreach(QModelIndex index, selectedIndexes())
+    {
+        items.append(playlist->item(index.row()));
+    }
+
+    QMimeData *mimeData = model()->mimeData(selectedIndexes());
+    QDrag *drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->exec(supportedActions, Qt::CopyAction);
 }

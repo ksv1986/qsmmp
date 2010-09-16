@@ -232,13 +232,11 @@ bool AbstractPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction a
 
     if(action == Qt::MoveAction && itemsToMove.count() > 0)
     {
-        qDebug() << "Moving...";
         foreach(PlayListItem *item, itemsToMove)
         {
             m_pl->clearSelection();
             int index = m_pl->items().indexOf(item);
             m_pl->setSelected(index, true);
-            qDebug() << "Move " << index <<  " - " << row;
             m_pl->moveItems(index, row++);
         }
     }
