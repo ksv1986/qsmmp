@@ -237,7 +237,9 @@ bool AbstractPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction a
             m_pl->clearSelection();
             int index = m_pl->items().indexOf(item);
             m_pl->setSelected(index, true);
-            m_pl->moveItems(index, row++);
+            m_pl->moveItems(index, row);
+            if (index > row)
+                row ++;
         }
     }
     else
