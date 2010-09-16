@@ -115,8 +115,14 @@ void PlaylistView::dragEnterEvent(QDragEnterEvent* event)
 {
     if (event->mimeData()->hasUrls())
     {
-        event->setDropAction(Qt::CopyAction);
-        event->accept();
+        if (event->source() == this) {
+            event->setDropAction(Qt::MoveAction);
+            event->accept();
+        } else {
+            event->acceptProposedAction();
+        }
+    } else {
+        event->ignore();
     }
 }
 
@@ -124,8 +130,14 @@ void PlaylistView::dragMoveEvent(QDragMoveEvent *event)
 {
     if (event->mimeData()->hasUrls())
     {
-        event->setDropAction(Qt::CopyAction);
-        event->accept();
+        if (event->source() == this) {
+            event->setDropAction(Qt::MoveAction);
+            event->accept();
+        } else {
+            event->acceptProposedAction();
+        }
+    } else {
+        event->ignore();
     }
 }
 
@@ -133,13 +145,18 @@ void PlaylistView::dropEvent(QDropEvent* event)
 {
     if (event->mimeData()->hasUrls())
     {
-        AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
-        foreach(QUrl url, event->mimeData()->urls())
-        {
-            playlist->addItem(url.toLocalFile());
+        int row = indexAt(event->pos()).row();
+        Qt::DropAction action;
+        if (event->source() == this) {
+            action = Qt::MoveAction;
+        } else {
+            action = event->proposedAction();
         }
-        event->setDropAction(Qt::CopyAction);
+        model()->dropMimeData(event->mimeData(), action, row, 0, QModelIndex());
+        event->setDropAction(action);
         event->accept();
+    } else {
+        event->ignore();
     }
 }
 
@@ -148,7 +165,7 @@ void PlaylistView::selectAll()
     QTreeView::selectAll();
 
     AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
-    for (int i=0; i<playlist->count(); ++i)
+    for (int i=0; i<playlist->rowCount(); ++i)
     {
         playlist->setSelected(i, true);
     }
@@ -160,7 +177,7 @@ void PlaylistView::mousePressEvent(QMouseEvent *e)
 
     int row = indexAt(e->pos()).row();
 
-    if (playlist->count() > row)
+    if (playlist->rowCount() > row)
     {
         if (!(Qt::ControlModifier & e->modifiers () ||
                 Qt::ShiftModifier & e->modifiers () ||
@@ -205,43 +222,20 @@ void PlaylistView::mousePressEvent(QMouseEvent *e)
     QTreeView::mousePressEvent(e);
 }
 
-void PlaylistView::mouseReleaseEvent(QMouseEvent *e)
+void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
-    AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
-
-    int row = indexAt(e->pos()).row();
-
-    if ((e->modifiers() == Qt::NoModifier) && playlist->count() > row)
+    if (event->buttons() & Qt::LeftButton && event->modifiers() == Qt::NoModifier)
     {
-        m_pressed_row = row;
-
-        if (m_pressed_row > m_anchor_row)
+        AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
+        QList<PlayListItem*> items;
+        foreach(QModelIndex index, selectedIndexes())
         {
-            for (int j = m_anchor_row; j <= m_pressed_row; j++)
-            {
-                playlist->setSelected(j, true);
-            }
-        }
-        else
-        {
-            for (int j = m_anchor_row; j >= m_pressed_row; j--)
-            {
-                playlist->setSelected(j, true);
-            }
+            items.append(playlist->item(index.row()));
         }
 
-        if (playlist->getSelection(m_pressed_row).count() == 1)
-            m_anchor_row = m_pressed_row;
-
-        update();
+        QMimeData *mimeData = model()->mimeData(selectedIndexes());
+        QDrag *drag = new QDrag(this);
+        drag->setMimeData(mimeData);
+        drag->exec(model()->supportedDragActions(), Qt::CopyAction);
     }
-    QTreeView::mouseReleaseEvent(e);
-}
-
-QList<int> PlaylistView::selectedRows()
-{
-    QList<int> rowList;
-    foreach(QModelIndex rowItem, selectedIndexes())
-        rowList.push_back(rowItem.row());
-    return rowList;
 }

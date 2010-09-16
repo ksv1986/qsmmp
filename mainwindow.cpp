@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_core = new SoundCore(this);
     m_manager = new PlayListManager(this);
     m_model = m_manager->currentPlayList();
+
     m_player->initialize(m_core, m_manager);
     new PlaylistParser(this);
     m_generalHandler = new GeneralHandler(this);
@@ -89,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionStop, SIGNAL(triggered()), m_player, SLOT(stop()));
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
     connect(ui.clearButton, SIGNAL(clicked()), ui.actionClear, SLOT(trigger()));
-    connect(ui.actionRemove, SIGNAL(triggered()), this, SLOT(removeSelected()));
+    connect(ui.actionRemove, SIGNAL(triggered()), m_model, SLOT(removeSelected()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.playlistView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -112,6 +113,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui.playlistView->setDragEnabled(true);
     ui.playlistView->setAcceptDrops(true);
+    ui.playlistView->setDropIndicatorShown(false);
     ui.playlistView->setDragDropMode(QAbstractItemView::InternalMove);
 
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
@@ -136,6 +138,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui.treeView->hideColumn(1);
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
+
     connect(ui.playlistView, SIGNAL(doubleClicked (const QModelIndex &)),
             SLOT (playSelected(const QModelIndex &)));
 
@@ -181,15 +184,6 @@ void MainWindow::lockFSCollectionRoot(bool checked)
     ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
     ui.treeView->setRootIndex(m_fsmodel->index(m_fsmodel->rootPath()));
     Settings::instance().setRootFSCollectionDirectory(m_fsmodel->rootPath());
-}
-
-void MainWindow::removeSelected()
-{
-    for (int row = 0; row < m_model->count(); row++)
-        m_model->setSelected(row, false);
-    foreach(int row, ui.playlistView->selectedRows())
-        m_model->setSelected(row, true);
-    m_model->removeSelected();
 }
 
 void MainWindow::toggleVisibility()

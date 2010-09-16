@@ -52,7 +52,6 @@ private slots:
     void showState(Qmmp::State);
     void showBitrate(int);
     void settings();
-    void removeSelected();
     void lockFSCollectionRoot(bool checked);
     void toggleVisibility();
     void showEQ();

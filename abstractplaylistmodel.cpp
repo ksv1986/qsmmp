@@ -20,11 +20,16 @@
 
 #include <QFont>
 #include <QChar>
+#include <QSet>
 #include <QFileInfo>
+#include <QMimeData>
+#include <QDebug>
+
 #include <qmmpui/playlistitem.h>
+
 #include "abstractplaylistmodel.h"
 
-AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, QObject *parent) : QAbstractTableModel(parent)
+AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, QObject *parent) : QAbstractListModel(parent)
 {
     m_pl = pl;
     connect(m_pl, SIGNAL(listChanged()), this, SLOT(listChanged()));
@@ -115,13 +120,28 @@ void AbstractPlaylistModel::addItem(const QString& path)
     {
         m_pl->addFile(path);
     }
-    this->reset();
+}
+
+void AbstractPlaylistModel::insertItem(const QString &path, int row)
+{
+    QFileInfo file(path);
+    if (file.isDir())
+    {
+        m_pl->addDirectory(path);
+    }
+    else
+    {
+        m_pl->addFile(path);
+        m_pl->clearSelection();
+        m_pl->setSelected(m_pl->count() - 1, true);
+        m_pl->moveItems(m_pl->count() - 1, row);
+    }
 }
 
 void AbstractPlaylistModel::sort(int column, Qt::SortOrder)
 {
     int mode = 0;
-    switch(column)
+    switch (column)
     {
     case 0:
         mode = PlayListModel::TRACK;
@@ -147,4 +167,127 @@ void AbstractPlaylistModel::sort(int column, Qt::SortOrder)
 void AbstractPlaylistModel::showDetails()
 {
     m_pl->showDetails();
+}
+
+Qt::ItemFlags AbstractPlaylistModel::flags(const QModelIndex &index) const
+{
+    if (index.isValid())
+    {
+        return Qt::ItemIsDragEnabled
+               | Qt::ItemIsDropEnabled
+               | QAbstractListModel::flags(index);
+    }
+    return  Qt::ItemIsDropEnabled
+            | QAbstractListModel::flags(index);
+}
+
+Qt::DropActions AbstractPlaylistModel::supportedDragActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+Qt::DropActions AbstractPlaylistModel::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+QStringList AbstractPlaylistModel::mimeTypes() const
+{
+    return QStringList() << "text/uri-list";
+}
+
+QMimeData *AbstractPlaylistModel::mimeData(const QModelIndexList &indexes) const
+{
+    QList<int> rows;
+    foreach(QModelIndex index, indexes)
+    {
+        if (index.isValid() && !rows.contains(index.row()))
+        {
+            rows << index.row();
+        }
+    }
+    qSort(rows);
+    QList<QUrl> urls;
+    foreach(int row, rows)
+    {
+        PlayListItem *item = m_pl->item(row);
+        itemsToMove.append(item);
+        urls << QUrl(item->url());
+    }
+
+    QMimeData *mimeData = new QMimeData();
+    mimeData->setUrls(urls);
+    return mimeData;
+}
+
+bool AbstractPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
+        int row, int column, const QModelIndex &)
+{
+    Q_UNUSED(column)
+
+    if (action == Qt::IgnoreAction)
+        return true;
+    if (!data->hasUrls())
+        return false;
+
+    if(action == Qt::MoveAction && itemsToMove.count() > 0)
+    {
+        qDebug() << "Moving...";
+        foreach(PlayListItem *item, itemsToMove)
+        {
+            m_pl->clearSelection();
+            int index = m_pl->items().indexOf(item);
+            m_pl->setSelected(index, true);
+            qDebug() << "Move " << index <<  " - " << row;
+            m_pl->moveItems(index, row++);
+        }
+    }
+    else
+    {
+        foreach(QUrl url, data->urls())
+        {
+            if (row >= 0)
+                insertItem(url.toLocalFile(), row++);
+            else
+                addItem(url.toLocalFile());
+        }
+    }
+    itemsToMove.clear();
+    return true;
+}
+
+PlayListItem *AbstractPlaylistModel::item(int row)
+{
+    return m_pl->item(row);
+}
+
+void AbstractPlaylistModel::removeItem(PlayListItem *item)
+{
+    m_pl->removeItem(item);
+}
+
+void AbstractPlaylistModel::clearSelection()
+{
+    m_pl->clearSelection();
+}
+
+bool AbstractPlaylistModel::isSelected(int row)
+{
+    return m_pl->isSelected(row);
+}
+
+void AbstractPlaylistModel::setSelected(int row, bool selected)
+{
+    m_pl->setSelected(row, selected);
+}
+
+const SimpleSelection& AbstractPlaylistModel::getSelection(int row)
+{
+    return m_pl->getSelection(row);
+}
+
+void AbstractPlaylistModel::setPlaylist(PlayListModel *model)
+{
+    m_pl = model;
+    listChanged();
 }

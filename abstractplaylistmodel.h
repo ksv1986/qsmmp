@@ -22,10 +22,11 @@
 #define ABSTRACTPLAYLISTMODEL_H
 
 #include <QObject>
-#include <QAbstractTableModel>
+#include <QAbstractListModel>
+
 #include <qmmpui/playlistmodel.h>
 
-class AbstractPlaylistModel : public QAbstractTableModel
+class AbstractPlaylistModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
@@ -37,35 +38,36 @@ public:
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual void sort(int column, Qt::SortOrder order);
+
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual Qt::DropActions supportedDragActions() const;
+    virtual Qt::DropActions supportedDropActions() const;
+    virtual QStringList mimeTypes() const;
+    virtual QMimeData *mimeData(const QModelIndexList &indexes) const;
+    virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row,
+                              int column, const QModelIndex &parent);
+
     void addItem(const QString& path);
+    void insertItem(const QString& path, int row);
+    void removeItem(PlayListItem *item);
+    PlayListItem *item(int row);
 
-    void clearSelection() {
-        m_pl->clearSelection();
-    }
-    bool isSelected(int row) {
-        return m_pl->isSelected(row);
-    }
-    void setSelected(int row, bool selected) {
-        m_pl->setSelected(row, selected);
-    }
-    int count() {
-        return m_pl->count();
-    }
-    const SimpleSelection& getSelection(int row) {
-        return m_pl->getSelection(row);
-    }
+    void clearSelection();
+    bool isSelected(int row);
+    void setSelected(int row, bool selected);
+    const SimpleSelection& getSelection(int row);
 
-    void setPlaylist(PlayListModel *model) {
-        m_pl = model;
-        listChanged();
-    }
+    void setPlaylist(PlayListModel *model);
 
 public slots:
     void listChanged();
     void showDetails();
+
 private:
     QString formatTime(qint64 time) const;
+
     PlayListModel *m_pl;
+    mutable QList<PlayListItem*> itemsToMove;
 };
 
 #endif // ABSTRACTPLAYLISTMODEL_H

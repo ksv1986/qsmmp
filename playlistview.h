@@ -14,14 +14,13 @@ class PlaylistView : public QTreeView
 public:
     PlaylistView(QWidget *parent);
     virtual ~PlaylistView();
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
     void selectAll();
     void setup();
-    QList<int> selectedRows();
 
 private slots:
     void toggleColumn(bool toggled);
