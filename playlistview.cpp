@@ -199,7 +199,8 @@ void PlaylistView::mousePressEvent(QMouseEvent *e)
 
 void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton) {
+    if (event->buttons() & Qt::LeftButton & (event->modifiers() == Qt::NoModifier))
+    {
         int distance = (event->pos() - startPos).manhattanLength();
         if (distance >= QApplication::startDragDistance())
             startDrag(model()->supportedDragActions());
@@ -215,10 +216,13 @@ void PlaylistView::startDrag(Qt::DropActions supportedActions)
         items.append(playlist->item(index.row()));
     }
 
-    QMimeData *mimeData = model()->mimeData(selectedIndexes());
-    QDrag *drag = new QDrag(this);
-    drag->setMimeData(mimeData);
-    drag->exec(supportedActions, Qt::CopyAction);
+    if (items.count())
+    {
+        QMimeData *mimeData = model()->mimeData(selectedIndexes());
+        QDrag *drag = new QDrag(this);
+        drag->setMimeData(mimeData);
+        drag->exec(supportedActions, Qt::CopyAction);
+    }
 }
 
 QList<int> PlaylistView::selectedRows()
