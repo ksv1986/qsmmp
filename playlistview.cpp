@@ -246,3 +246,11 @@ void PlaylistView::startDrag(Qt::DropActions supportedActions)
     drag->setMimeData(mimeData);
     drag->exec(supportedActions, Qt::CopyAction);
 }
+
+QList<int> PlaylistView::selectedRows()
+{
+    QList<int> rowList;
+    foreach(QModelIndex rowItem, selectedIndexes())
+        rowList.push_back(rowItem.row());
+    return rowList;
+}

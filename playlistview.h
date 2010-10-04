@@ -20,6 +20,7 @@ public:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void startDrag(Qt::DropActions supportedActions);
+    QList<int> selectedRows();
 
     void selectAll();
     void setup();

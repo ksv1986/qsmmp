@@ -171,8 +171,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::removeSelected()
 {
+    for (int row = 0; row < m_model->count(); row++)
+        m_model->setSelected(row, false);
+    foreach(int row, ui.playlistView->selectedRows())
+        m_model->setSelected(row, true);
     m_model->removeSelected();
-    m_model->clearSelection();
 }
 
 void MainWindow::lockFSCollectionRoot(bool checked)
