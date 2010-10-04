@@ -37,38 +37,12 @@ PlaylistView::~PlaylistView()
             map[pos] = column;
         }
     }
-    Settings::instance().setPlaylistVisibleColumns(map.values());
+    Settings::instance().setPlaylistState(header()->saveState());
 }
 
 void PlaylistView::setup()
 {
-    QStringList columns = Settings::instance().playlistVisibleColumns();
-    if (columns.count() > 0)
-    {
-        // setting up column visibility
-        for ( int i = 0; i < model()->columnCount(); i++ )
-        {
-            QString column = model()->headerData( i, Qt::Horizontal ).toString();
-            if (columns.contains(column))
-                showColumn(i);
-            else
-                hideColumn(i);
-        }
-        // setting up column order
-        for (int i = 0; i<columns.count(); i++)
-        {
-            int index;
-            for (index = 0; index < model()->columnCount(); index++)
-            {
-                QString column = model()->headerData( index, Qt::Horizontal ).toString();
-                if (column == columns[i])
-                    break;
-            }
-            int vi = header()->visualIndex(index);
-            header()->moveSection(vi, i + 1);
-        }
-    }
-
+    header()->restoreState(Settings::instance().playlistState());
     header()->setContextMenuPolicy( Qt::ActionsContextMenu );
 
     for ( int i = 0; i < model()->columnCount(); i++ )

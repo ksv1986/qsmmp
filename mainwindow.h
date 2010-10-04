@@ -41,6 +41,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
+    virtual void resizeEvent(QResizeEvent *event);
+    virtual void moveEvent(QMoveEvent *event);
 
     ~MainWindow();
 

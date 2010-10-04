@@ -1,6 +1,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <QRect>
+
 class QString;
 class QStringList;
 
@@ -10,7 +12,9 @@ class Settings
     bool _startHidden;
     bool _hideOnClose;
     bool _useStandardIcons;
-    QStringList _playlistVisibleColumns;
+    QSize _size;
+    QPoint _pos;
+    QByteArray _playlistState;
 
     Settings();
     Settings& operator=(Settings&) {
@@ -47,9 +51,19 @@ public:
         return _useStandardIcons;
     }
 
-    void setPlaylistVisibleColumns(QStringList columns);
-    QStringList playlistVisibleColumns() {
-        return _playlistVisibleColumns;
+    QRect windowGeometry() {
+        return QRect(_pos, _size);
+    }
+    void setWindowGeometry(QRect val) {
+        _pos = val.topLeft();
+        _size = val.size();
+    }
+
+    QByteArray playlistState() {
+        return _playlistState;
+    }
+    void setPlaylistState(QByteArray val) {
+        _playlistState = val;
     }
 };
 

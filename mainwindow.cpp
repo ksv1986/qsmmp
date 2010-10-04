@@ -64,6 +64,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_player->initialize(m_core, m_manager);
     new PlaylistParser(this);
     m_generalHandler = new GeneralHandler(this);
+    //set geometry
+    move(Settings::instance().windowGeometry().topLeft());
+    resize(Settings::instance().windowGeometry().size());
     //set icons
     if (Settings::instance().useStandardIcons())
     {
@@ -119,10 +122,6 @@ MainWindow::MainWindow(QWidget *parent)
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
     ui.playlistView->setModel(m);
     ui.playlistView->setup();
-    ui.playlistView->setColumnWidth(0, 30);
-    ui.playlistView->setColumnWidth(1, 100);
-    ui.playlistView->setColumnWidth(2, 200);
-    ui.playlistView->setColumnWidth(3, 45);
 
     m_fsmodel = new QFileSystemModel(ui.treeView);
     m_fsmodel->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
@@ -376,4 +375,14 @@ void MainWindow::newPlaylist()
 void MainWindow::shufflePlaylist()
 {
     m_manager->currentPlayList()->randomizeList();
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    Settings::instance().setWindowGeometry(QRect(pos(), event->size()));
+}
+
+void MainWindow::moveEvent(QMoveEvent *event)
+{
+    Settings::instance().setWindowGeometry(QRect(event->pos(), size()));
 }

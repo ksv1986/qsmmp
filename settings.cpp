@@ -22,12 +22,15 @@ Settings::~Settings()
 {
     QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
     settings.beginGroup("MainWindow");
-    settings.setValue("_startHidden", _startHidden);
+    settings.setValue("start_hidden", _startHidden);
+    settings.setValue("hide_on_close", _hideOnClose);
     settings.endGroup();
     settings.beginGroup("qsmmp");
     settings.setValue("fscollection", _rootFSCollectionDirectory);
-    settings.setValue("playlistColumns", _playlistVisibleColumns);
     settings.setValue("use_standard_icons", _useStandardIcons);
+    settings.setValue("size", _size);
+    settings.setValue("pos", _pos);
+    settings.setValue("playlist_state", _playlistState);
     settings.endGroup();
 }
 
@@ -41,12 +44,6 @@ void Settings::setRootFSCollectionDirectory(QString directory)
     _rootFSCollectionDirectory = directory;
 }
 
-void Settings::setPlaylistVisibleColumns(QStringList columns)
-{
-    _playlistVisibleColumns.clear();
-    _playlistVisibleColumns.append(columns);
-}
-
 void Settings::load()
 {
     QSettings settings(Qmmp::configFile(), QSettings::IniFormat);
@@ -57,7 +54,9 @@ void Settings::load()
 
     settings.beginGroup("qsmmp");
     _rootFSCollectionDirectory = settings.value("fscollection", "/").toString();
-    _playlistVisibleColumns = settings.value("playlistColumns", QStringList()).toStringList();
     _useStandardIcons = settings.value("use_standard_icons", true).toBool();
+    _size = settings.value("size", QSize(640, 480)).toSize();
+    _pos = settings.value("pos", QPoint(0, 0)).toPoint();
+    _playlistState = settings.value("playlist_state", QByteArray("")).toByteArray();
     settings.endGroup();
 }
