@@ -230,6 +230,9 @@ bool AbstractPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction a
     if (!data->hasUrls())
         return false;
 
+    if (row == -1)
+        row = rowCount() - 1;
+
     if(action == Qt::MoveAction && itemsToMove.count() > 0)
     {
         foreach(PlayListItem *item, itemsToMove)
