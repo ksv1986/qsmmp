@@ -52,17 +52,16 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole && index.row () < m_pl->count())
     {
         PlayListItem *item = m_pl->item(index.row ());
-
         if (index.column() == 0)
-            return item->track();
+            return (*item)[Qmmp::TRACK];
         if (index.column() == 1)
-            return item->artist();
+            return (*item)[Qmmp::ARTIST];
         if (index.column() == 2)
-            return item->title().isEmpty() ? item->url() : item->title();
+            return (*item)[Qmmp::TITLE].isEmpty() ? item->url() : (*item)[Qmmp::TITLE];
         if (index.column() == 3)
-            return item->year();
+            return (*item)[Qmmp::YEAR];
         if (index.column() == 4)
-            return item->album();
+            return (*item)[Qmmp::ALBUM];
     }
     else if (role == Qt::FontRole)
     {
