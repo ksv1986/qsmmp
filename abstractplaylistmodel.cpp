@@ -33,6 +33,7 @@ AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, QObject *parent)
 {
     m_pl = pl;
     connect(m_pl, SIGNAL(listChanged()), this, SLOT(listChanged()));
+    connect(m_pl, SIGNAL(currentChanged()), this, SLOT(currentChanged()));
 }
 
 AbstractPlaylistModel::~AbstractPlaylistModel() {}
@@ -45,6 +46,12 @@ int AbstractPlaylistModel::columnCount (const QModelIndex &) const
 void AbstractPlaylistModel::listChanged()
 {
     reset();
+}
+
+void AbstractPlaylistModel::currentChanged()
+{
+    int row = m_pl->currentRow();
+    currentChanged(index(row));
 }
 
 QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const

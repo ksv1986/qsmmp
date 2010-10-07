@@ -23,6 +23,7 @@ PlaylistView::PlaylistView(QWidget *parent=0)
     header()->setMovable(true);
     header()->setClickable(true);
     connect(header(), SIGNAL(sectionClicked(int)), this, SLOT(sectionClicked(int)));
+    setAutoScroll(true);
 }
 
 PlaylistView::~PlaylistView()
@@ -62,6 +63,12 @@ void PlaylistView::setup()
     addAction( action );
     AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
     connect( action, SIGNAL(triggered()), playlist, SLOT(showDetails()));
+    connect(playlist, SIGNAL(currentChanged(QModelIndex)), this, SLOT(scrollToIndex(QModelIndex)));
+}
+
+void PlaylistView::scrollToIndex(const QModelIndex &index)
+{
+    scrollTo(index);
 }
 
 void PlaylistView::sectionClicked(int section)
@@ -113,6 +120,7 @@ void PlaylistView::dragMoveEvent(QDragMoveEvent *event)
     } else {
         event->ignore();
     }
+    QTreeView::dragMoveEvent(event);
 }
 
 void PlaylistView::dropEvent(QDropEvent* event)

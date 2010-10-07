@@ -28,6 +28,7 @@ public:
 private slots:
     void toggleColumn(bool toggled);
     void sectionClicked(int section);
+    void scrollToIndex(const QModelIndex& index);
 
 private:
     int m_anchor_row;
