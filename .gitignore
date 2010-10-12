@@ -1,0 +1,5 @@
+moc_*
+*.o
+ui_*
+qrc_stuff.cpp
+qsmmp.pro.user
