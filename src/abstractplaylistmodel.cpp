@@ -118,14 +118,7 @@ QString AbstractPlaylistModel::formatTime(qint64 time) const
 void AbstractPlaylistModel::addItem(const QString& path)
 {
     QFileInfo file(path);
-    if (file.isDir())
-    {
-        m_pl->addDirectory(path);
-    }
-    else
-    {
-        m_pl->addFile(path);
-    }
+    m_pl->add(path);
 }
 
 void AbstractPlaylistModel::insertItem(const QString &path, int row)
@@ -133,11 +126,11 @@ void AbstractPlaylistModel::insertItem(const QString &path, int row)
     QFileInfo file(path);
     if (file.isDir())
     {
-        m_pl->addDirectory(path);
+        m_pl->add(path);
     }
     else
     {
-        m_pl->addFile(path);
+        m_pl->add(path);
         m_pl->clearSelection();
         m_pl->setSelected(m_pl->count() - 1, true);
         m_pl->moveItems(m_pl->count() - 1, row);

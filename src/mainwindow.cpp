@@ -212,13 +212,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::addFiles()
 {
-    QString lastDir;
     QStringList filters;
     filters << tr("All Supported Bitstreams")
     + " (" + MetaDataManager::instance()->nameFilters().join (" ") +")";
     filters << MetaDataManager::instance()->filters();
-    FileDialog::popup(this, FileDialog::AddDirsFiles, &lastDir,
-                      m_model, SLOT(addFileList(const QStringList&)),
+    FileDialog::popup(this, FileDialog::AddDirsFiles, &m_lastDir,
+                      m_model, SLOT(add(const QStringList&)),
                       tr("Select one or more files to open"), filters.join(";;"));
 }
 

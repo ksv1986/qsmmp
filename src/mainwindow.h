@@ -80,6 +80,7 @@ private:
     QFileSystemModel *m_fsmodel;
     VisualMenu *m_visMenu;
     PlayListManager *m_manager;
+    QString m_lastDir;
 };
 
 #endif
