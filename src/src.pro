@@ -43,3 +43,12 @@ FORMS += mainwindow.ui \
 RESOURCES += stuff.qrc
 INCLUDEPATH += /usr/include/
 TRANSLATIONS = translations/qsmmp_ru.ts
+QMAKE_CXXFLAGS += \
+    -Wall -Werror -Wextra \
+
+target.path = /usr/bin
+documentation.path = /usr/share/doc/qsmmp
+documentation.files = ../README ../COPYING
+desktop.path = /usr/share/applications
+desktop.files = ../qsmmp.desktop
+INSTALLS += target documentation desktop

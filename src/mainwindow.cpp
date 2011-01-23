@@ -261,6 +261,15 @@ void MainWindow::showState(Qmmp::State state)
         m_label->setText("--:--/--:--");
         m_slider->setValue(0);
         break;
+    case Qmmp::Buffering:
+        ui.statusbar->showMessage(tr("Buffering..."));
+        break;
+    case Qmmp::NormalError:
+        ui.statusbar->showMessage(tr("Error"));
+        break;
+    case Qmmp::FatalError:
+        ui.statusbar->showMessage(tr("Fatal error"));
+        break;
     }
 
 }

@@ -117,7 +117,6 @@ QString AbstractPlaylistModel::formatTime(qint64 time) const
 
 void AbstractPlaylistModel::addItem(const QString& path)
 {
-    QFileInfo file(path);
     m_pl->add(path);
 }
 
