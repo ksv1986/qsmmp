@@ -15,7 +15,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="debug"
 
-RDEPEND="=media-sound/qmmp-9999"
+RDEPEND="=media-sound/qmmp-9999
+		x11-libs/libqxt"
 
 DEPEND="${RDEPEND}"
 
