@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     popupwidget.cpp \
     eqdialog.cpp \
     visualmenu.cpp \
-    trackslider.cpp
+    trackslider.cpp \
+    extendedfilesystemmodel.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
@@ -28,11 +29,14 @@ HEADERS += mainwindow.h \
     popupwidget.h \
     visualmenu.h \
     eqdialog.h \
-    trackslider.h
+    trackslider.h \
+    extendedfilesystemmodel.h
 TEMPLATE = app
 CONFIG += warn_on \
     thread \
-    qt
+    qt \
+    qxt
+QXT += core gui
 TARGET = qsmmp
 LIBS += -lqmmp \
     -lqmmpui

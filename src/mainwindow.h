@@ -66,6 +66,7 @@ private slots:
     void removePlaylist();
     void newPlaylist();
     void shufflePlaylist();
+    void updateFSCollectionPath();
 
 private:
     void setPlaylist(int index);

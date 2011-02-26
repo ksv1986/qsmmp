@@ -50,6 +50,7 @@
 #include "visualmenu.h"
 #include "eqdialog.h"
 #include "trackslider.h"
+#include "extendedfilesystemmodel.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -123,14 +124,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui.playlistView->setModel(m);
     ui.playlistView->setup();
 
-    m_fsmodel = new QFileSystemModel(ui.treeView);
+    m_fsmodel = new ExtendedFileSystemModel(ui.treeView);
     m_fsmodel->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
 
     m_fsmodel->setNameFilters(MetaDataManager::instance()->nameFilters());
     m_fsmodel->setNameFilterDisables(false);
     m_fsmodel->setReadOnly(true);
     m_fsmodel->setRootPath(Settings::instance().rootFSCollectionDirectory());
-    ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
+    updateFSCollectionPath();
 
     ui.treeView->setModel(m_fsmodel);
     ui.treeView->setRootIndex(m_fsmodel->index(Settings::instance().rootFSCollectionDirectory()));
@@ -189,9 +190,14 @@ void MainWindow::lockFSCollectionRoot(bool checked)
         ui.lockButton->setText(tr("Unlock"));
         m_fsmodel->setRootPath(m_fsmodel->filePath(ui.treeView->currentIndex()));
     }
-    ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
+    updateFSCollectionPath();
     ui.treeView->setRootIndex(m_fsmodel->index(m_fsmodel->rootPath()));
     Settings::instance().setRootFSCollectionDirectory(m_fsmodel->rootPath());
+}
+
+void MainWindow::updateFSCollectionPath()
+{
+    ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
 }
 
 void MainWindow::toggleVisibility()

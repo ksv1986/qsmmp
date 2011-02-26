@@ -54,32 +54,14 @@
     </item>
     <item>
      <widget class="PlaylistView" name="playlistView">
-      <property name="acceptDrops">
-       <bool>true</bool>
-      </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>
       <property name="dragEnabled">
-       <bool>false</bool>
-      </property>
-      <property name="dragDropOverwriteMode">
-       <bool>false</bool>
-      </property>
-      <property name="dragDropMode">
-       <enum>QAbstractItemView::DragOnly</enum>
-      </property>
-      <property name="defaultDropAction">
-       <enum>Qt::IgnoreAction</enum>
+       <bool>true</bool>
       </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::ExtendedSelection</enum>
-      </property>
-      <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
-      </property>
-      <property name="wordWrap">
-       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -92,7 +74,7 @@
      <x>0</x>
      <y>0</y>
      <width>722</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -195,7 +177,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="fsCollectionPathLabel">
+            <widget class="QxtLabel" name="fsCollectionPathLabel">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -203,7 +185,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>TextLabel</string>
+              <string>QxtLabel</string>
              </property>
             </widget>
            </item>
@@ -357,13 +339,18 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>QxtLabel</class>
+   <extends>QFrame</extends>
+   <header>QxtLabel</header>
+  </customwidget>
+  <customwidget>
    <class>MyTreeView</class>
    <extends>QTreeView</extends>
    <header>mytreeview.h</header>
   </customwidget>
   <customwidget>
-   <class>MyTableView</class>
-   <extends>QTableView</extends>
+   <class>PlaylistView</class>
+   <extends>QTreeView</extends>
    <header>playlistview.h</header>
   </customwidget>
  </customwidgets>
