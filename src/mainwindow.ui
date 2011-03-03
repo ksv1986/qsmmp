@@ -192,12 +192,15 @@
           </layout>
          </item>
          <item>
-          <widget class="MyTreeView" name="treeView">
+          <widget class="QTreeView" name="treeView">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="contextMenuPolicy">
+            <enum>Qt::ActionsContextMenu</enum>
            </property>
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
@@ -208,6 +211,12 @@
            <property name="dragDropMode">
             <enum>QAbstractItemView::DragOnly</enum>
            </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::ExtendedSelection</enum>
+           </property>
+           <attribute name="headerVisible">
+            <bool>false</bool>
+           </attribute>
           </widget>
          </item>
         </layout>
@@ -336,17 +345,28 @@
     <string>Shuffle</string>
    </property>
   </action>
+  <action name="actionRemoveFSItem">
+   <property name="text">
+    <string>Remove</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionRenameFSItem">
+   <property name="text">
+    <string>Rename</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QxtLabel</class>
    <extends>QFrame</extends>
    <header>QxtLabel</header>
-  </customwidget>
-  <customwidget>
-   <class>MyTreeView</class>
-   <extends>QTreeView</extends>
-   <header>mytreeview.h</header>
   </customwidget>
   <customwidget>
    <class>PlaylistView</class>

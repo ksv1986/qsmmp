@@ -29,6 +29,7 @@
 #include <QDockWidget>
 #include <QSettings>
 #include <QInputDialog>
+#include <QMessageBox>
 
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
@@ -110,6 +111,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
     connect(ui.actionShuffle, SIGNAL(triggered()), this, SLOT(shufflePlaylist()));
+    connect(ui.actionRemoveFSItem, SIGNAL(triggered()), SLOT(removeFSItem()));
+    connect(ui.actionRenameFSItem, SIGNAL(triggered()), SLOT(renameFSItem()));
 
     m_visMenu = new VisualMenu(this);
     ui.actionVisualization->setMenu(m_visMenu);
@@ -138,6 +141,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui.treeView->hideColumn(1);
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
+    ui.treeView->addActions(QList<QAction*>() << ui.actionRemoveFSItem << ui.actionRenameFSItem);
 
     connect(ui.playlistView, SIGNAL(doubleClicked (const QModelIndex &)),
             SLOT (playSelected(const QModelIndex &)));
@@ -399,4 +403,47 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::moveEvent(QMoveEvent *event)
 {
     Settings::instance().setWindowGeometry(QRect(event->pos(), size()));
+}
+
+void MainWindow::removeFSItem()
+{
+    QModelIndex index = ui.treeView->currentIndex();
+    if (!index.isValid())
+        return;
+
+    bool result = false;
+
+    if (m_fsmodel->isDir(index))
+        result = m_fsmodel->rmdir(index);
+    else
+        result = m_fsmodel->remove(index);
+
+    if (!result)
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Failed to remove."));
+        msgBox.exec();
+    }
+}
+
+void MainWindow::renameFSItem()
+{
+    QModelIndex index = ui.treeView->currentIndex();
+    if (!index.isValid())
+        return;
+
+    QFileInfo fileInfo = m_fsmodel->fileInfo(index);
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Enter new file name"),
+                                         tr("File name:"), QLineEdit::Normal,
+                                         fileInfo.fileName(), &ok);
+    if (ok && !text.isEmpty())
+    {
+        if (!QFile::rename(fileInfo.absoluteFilePath(), fileInfo.absolutePath() + QDir::separator() + text))
+        {
+            QMessageBox msgBox;
+            msgBox.setText(tr("Failed to rename."));
+            msgBox.exec();
+        }
+    }
 }
