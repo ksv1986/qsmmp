@@ -349,16 +349,10 @@
    <property name="text">
     <string>Remove</string>
    </property>
-   <property name="shortcut">
-    <string>Del</string>
-   </property>
   </action>
   <action name="actionRenameFSItem">
    <property name="text">
     <string>Rename</string>
-   </property>
-   <property name="shortcut">
-    <string>F2</string>
    </property>
   </action>
  </widget>

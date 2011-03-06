@@ -10,7 +10,6 @@
 #include <QApplication>
 
 #include "playlistview.h"
-#include "mytreeview.h"
 #include "abstractplaylistmodel.h"
 #include "settings.h"
 
