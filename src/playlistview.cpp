@@ -27,16 +27,6 @@ PlaylistView::PlaylistView(QWidget *parent=0)
 
 PlaylistView::~PlaylistView()
 {
-    QMap<int, QString> map;
-    for ( int i = 0; i < model()->columnCount(); i++ )
-    {
-        if (!isColumnHidden(i))
-        {
-            QString column = model()->headerData( i, Qt::Horizontal ).toString();
-            int pos = header()->sectionPosition(i);
-            map[pos] = column;
-        }
-    }
     Settings::instance().setPlaylistState(header()->saveState());
 }
 
