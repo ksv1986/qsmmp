@@ -29,6 +29,7 @@
 #include <QDockWidget>
 #include <QSettings>
 #include <QInputDialog>
+#include <QMessageBox>
 
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
@@ -50,6 +51,7 @@
 #include "visualmenu.h"
 #include "eqdialog.h"
 #include "trackslider.h"
+#include "extendedfilesystemmodel.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -64,6 +66,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_player->initialize(m_core, m_manager);
     new PlaylistParser(this);
     m_generalHandler = new GeneralHandler(this);
+    //set geometry
+    move(Settings::instance().windowGeometry().topLeft());
+    resize(Settings::instance().windowGeometry().size());
     //set icons
     if (Settings::instance().useStandardIcons())
     {
@@ -106,6 +111,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
     connect(ui.actionShuffle, SIGNAL(triggered()), this, SLOT(shufflePlaylist()));
+    connect(ui.actionRemoveFSItem, SIGNAL(triggered()), SLOT(removeFSItem()));
+    connect(ui.actionRenameFSItem, SIGNAL(triggered()), SLOT(renameFSItem()));
 
     m_visMenu = new VisualMenu(this);
     ui.actionVisualization->setMenu(m_visMenu);
@@ -119,25 +126,22 @@ MainWindow::MainWindow(QWidget *parent)
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
     ui.playlistView->setModel(m);
     ui.playlistView->setup();
-    ui.playlistView->setColumnWidth(0, 30);
-    ui.playlistView->setColumnWidth(1, 100);
-    ui.playlistView->setColumnWidth(2, 200);
-    ui.playlistView->setColumnWidth(3, 45);
 
-    m_fsmodel = new QFileSystemModel(ui.treeView);
+    m_fsmodel = new ExtendedFileSystemModel(ui.treeView);
     m_fsmodel->setFilter(QDir::AllEntries|QDir::AllDirs|QDir::NoDotAndDotDot);
 
     m_fsmodel->setNameFilters(MetaDataManager::instance()->nameFilters());
     m_fsmodel->setNameFilterDisables(false);
     m_fsmodel->setReadOnly(true);
     m_fsmodel->setRootPath(Settings::instance().rootFSCollectionDirectory());
-    ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
+    updateFSCollectionPath();
 
     ui.treeView->setModel(m_fsmodel);
     ui.treeView->setRootIndex(m_fsmodel->index(Settings::instance().rootFSCollectionDirectory()));
     ui.treeView->hideColumn(1);
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
+    ui.treeView->addActions(QList<QAction*>() << ui.actionRemoveFSItem << ui.actionRenameFSItem);
 
     connect(ui.playlistView, SIGNAL(doubleClicked (const QModelIndex &)),
             SLOT (playSelected(const QModelIndex &)));
@@ -171,8 +175,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::removeSelected()
 {
+    for (int row = 0; row < m_model->count(); row++)
+        m_model->setSelected(row, false);
+    foreach(int row, ui.playlistView->selectedRows())
+        m_model->setSelected(row, true);
     m_model->removeSelected();
-    m_model->clearSelection();
 }
 
 void MainWindow::lockFSCollectionRoot(bool checked)
@@ -187,9 +194,14 @@ void MainWindow::lockFSCollectionRoot(bool checked)
         ui.lockButton->setText(tr("Unlock"));
         m_fsmodel->setRootPath(m_fsmodel->filePath(ui.treeView->currentIndex()));
     }
-    ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
+    updateFSCollectionPath();
     ui.treeView->setRootIndex(m_fsmodel->index(m_fsmodel->rootPath()));
     Settings::instance().setRootFSCollectionDirectory(m_fsmodel->rootPath());
+}
+
+void MainWindow::updateFSCollectionPath()
+{
+    ui.fsCollectionPathLabel->setText(m_fsmodel->rootPath());
 }
 
 void MainWindow::toggleVisibility()
@@ -210,13 +222,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::addFiles()
 {
-    QString lastDir;
     QStringList filters;
     filters << tr("All Supported Bitstreams")
     + " (" + MetaDataManager::instance()->nameFilters().join (" ") +")";
     filters << MetaDataManager::instance()->filters();
-    FileDialog::popup(this, FileDialog::AddDirsFiles, &lastDir,
-                      m_model, SLOT(addFileList(const QStringList&)),
+    FileDialog::popup(this, FileDialog::AddDirsFiles, &m_lastDir,
+                      m_model, SLOT(add(const QStringList&)),
                       tr("Select one or more files to open"), filters.join(";;"));
 }
 
@@ -259,6 +270,15 @@ void MainWindow::showState(Qmmp::State state)
         ui.statusbar->showMessage(tr("Stopped"));
         m_label->setText("--:--/--:--");
         m_slider->setValue(0);
+        break;
+    case Qmmp::Buffering:
+        ui.statusbar->showMessage(tr("Buffering..."));
+        break;
+    case Qmmp::NormalError:
+        ui.statusbar->showMessage(tr("Error"));
+        break;
+    case Qmmp::FatalError:
+        ui.statusbar->showMessage(tr("Fatal error"));
         break;
     }
 
@@ -373,4 +393,57 @@ void MainWindow::newPlaylist()
 void MainWindow::shufflePlaylist()
 {
     m_manager->currentPlayList()->randomizeList();
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    Settings::instance().setWindowGeometry(QRect(pos(), event->size()));
+}
+
+void MainWindow::moveEvent(QMoveEvent *event)
+{
+    Settings::instance().setWindowGeometry(QRect(event->pos(), size()));
+}
+
+void MainWindow::removeFSItem()
+{
+    QModelIndex index = ui.treeView->currentIndex();
+    if (!index.isValid())
+        return;
+
+    bool result = false;
+
+    if (m_fsmodel->isDir(index))
+        result = m_fsmodel->rmdir(index);
+    else
+        result = m_fsmodel->remove(index);
+
+    if (!result)
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Failed to remove."));
+        msgBox.exec();
+    }
+}
+
+void MainWindow::renameFSItem()
+{
+    QModelIndex index = ui.treeView->currentIndex();
+    if (!index.isValid())
+        return;
+
+    QFileInfo fileInfo = m_fsmodel->fileInfo(index);
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Enter new file name"),
+                                         tr("File name:"), QLineEdit::Normal,
+                                         fileInfo.fileName(), &ok);
+    if (ok && !text.isEmpty())
+    {
+        if (!QFile::rename(fileInfo.absoluteFilePath(), fileInfo.absolutePath() + QDir::separator() + text))
+        {
+            QMessageBox msgBox;
+            msgBox.setText(tr("Failed to rename."));
+            msgBox.exec();
+        }
+    }
 }

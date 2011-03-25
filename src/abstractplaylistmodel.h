@@ -59,9 +59,15 @@ public:
 
     void setPlaylist(PlayListModel *model);
 
+signals:
+    void currentChanged(const QModelIndex& index);
+
 public slots:
     void listChanged();
     void showDetails();
+
+private slots:
+    void currentChanged();
 
 private:
     QString formatTime(qint64 time) const;

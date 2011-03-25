@@ -33,6 +33,7 @@ AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, QObject *parent)
 {
     m_pl = pl;
     connect(m_pl, SIGNAL(listChanged()), this, SLOT(listChanged()));
+    connect(m_pl, SIGNAL(currentChanged()), this, SLOT(currentChanged()));
 }
 
 AbstractPlaylistModel::~AbstractPlaylistModel() {}
@@ -47,22 +48,27 @@ void AbstractPlaylistModel::listChanged()
     reset();
 }
 
+void AbstractPlaylistModel::currentChanged()
+{
+    int row = m_pl->currentRow();
+    currentChanged(index(row));
+}
+
 QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
 {
     if (role == Qt::DisplayRole && index.row () < m_pl->count())
     {
         PlayListItem *item = m_pl->item(index.row ());
-
         if (index.column() == 0)
-            return item->track();
+            return (*item)[Qmmp::TRACK];
         if (index.column() == 1)
-            return item->artist();
+            return (*item)[Qmmp::ARTIST];
         if (index.column() == 2)
-            return item->title().isEmpty() ? item->url() : item->title();
+            return (*item)[Qmmp::TITLE].isEmpty() ? item->url() : (*item)[Qmmp::TITLE];
         if (index.column() == 3)
-            return item->year();
+            return (*item)[Qmmp::YEAR];
         if (index.column() == 4)
-            return item->album();
+            return (*item)[Qmmp::ALBUM];
     }
     else if (role == Qt::FontRole)
     {
@@ -111,15 +117,7 @@ QString AbstractPlaylistModel::formatTime(qint64 time) const
 
 void AbstractPlaylistModel::addItem(const QString& path)
 {
-    QFileInfo file(path);
-    if (file.isDir())
-    {
-        m_pl->addDirectory(path);
-    }
-    else
-    {
-        m_pl->addFile(path);
-    }
+    m_pl->add(path);
 }
 
 void AbstractPlaylistModel::insertItem(const QString &path, int row)
@@ -127,11 +125,11 @@ void AbstractPlaylistModel::insertItem(const QString &path, int row)
     QFileInfo file(path);
     if (file.isDir())
     {
-        m_pl->addDirectory(path);
+        m_pl->add(path);
     }
     else
     {
-        m_pl->addFile(path);
+        m_pl->add(path);
         m_pl->clearSelection();
         m_pl->setSelected(m_pl->count() - 1, true);
         m_pl->moveItems(m_pl->count() - 1, row);
@@ -229,6 +227,9 @@ bool AbstractPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction a
         return true;
     if (!data->hasUrls())
         return false;
+
+    if (row == -1)
+        row = rowCount() - 1;
 
     if(action == Qt::MoveAction && itemsToMove.count() > 0)
     {

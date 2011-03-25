@@ -10,7 +10,6 @@
 #include <QApplication>
 
 #include "playlistview.h"
-#include "mytreeview.h"
 #include "abstractplaylistmodel.h"
 #include "settings.h"
 
@@ -23,52 +22,17 @@ PlaylistView::PlaylistView(QWidget *parent=0)
     header()->setMovable(true);
     header()->setClickable(true);
     connect(header(), SIGNAL(sectionClicked(int)), this, SLOT(sectionClicked(int)));
+    setAutoScroll(true);
 }
 
 PlaylistView::~PlaylistView()
 {
-    QMap<int, QString> map;
-    for ( int i = 0; i < model()->columnCount(); i++ )
-    {
-        if (!isColumnHidden(i))
-        {
-            QString column = model()->headerData( i, Qt::Horizontal ).toString();
-            int pos = header()->sectionPosition(i);
-            map[pos] = column;
-        }
-    }
-    Settings::instance().setPlaylistVisibleColumns(map.values());
+    Settings::instance().setPlaylistState(header()->saveState());
 }
 
 void PlaylistView::setup()
 {
-    QStringList columns = Settings::instance().playlistVisibleColumns();
-    if (columns.count() > 0)
-    {
-        // setting up column visibility
-        for ( int i = 0; i < model()->columnCount(); i++ )
-        {
-            QString column = model()->headerData( i, Qt::Horizontal ).toString();
-            if (columns.contains(column))
-                showColumn(i);
-            else
-                hideColumn(i);
-        }
-        // setting up column order
-        for (int i = 0; i<columns.count(); i++)
-        {
-            int index;
-            for (index = 0; index < model()->columnCount(); index++)
-            {
-                QString column = model()->headerData( index, Qt::Horizontal ).toString();
-                if (column == columns[i])
-                    break;
-            }
-            int vi = header()->visualIndex(index);
-            header()->moveSection(vi, i + 1);
-        }
-    }
-
+    header()->restoreState(Settings::instance().playlistState());
     header()->setContextMenuPolicy( Qt::ActionsContextMenu );
 
     for ( int i = 0; i < model()->columnCount(); i++ )
@@ -88,6 +52,12 @@ void PlaylistView::setup()
     addAction( action );
     AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
     connect( action, SIGNAL(triggered()), playlist, SLOT(showDetails()));
+    connect(playlist, SIGNAL(currentChanged(QModelIndex)), this, SLOT(scrollToIndex(QModelIndex)));
+}
+
+void PlaylistView::scrollToIndex(const QModelIndex &index)
+{
+    scrollTo(index);
 }
 
 void PlaylistView::sectionClicked(int section)
@@ -139,6 +109,7 @@ void PlaylistView::dragMoveEvent(QDragMoveEvent *event)
     } else {
         event->ignore();
     }
+    QTreeView::dragMoveEvent(event);
 }
 
 void PlaylistView::dropEvent(QDropEvent* event)
@@ -225,7 +196,8 @@ void PlaylistView::mousePressEvent(QMouseEvent *e)
 
 void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton) {
+    if (event->buttons() & Qt::LeftButton & (event->modifiers() == Qt::NoModifier))
+    {
         int distance = (event->pos() - startPos).manhattanLength();
         if (distance >= QApplication::startDragDistance())
             startDrag(model()->supportedDragActions());
@@ -241,8 +213,19 @@ void PlaylistView::startDrag(Qt::DropActions supportedActions)
         items.append(playlist->item(index.row()));
     }
 
-    QMimeData *mimeData = model()->mimeData(selectedIndexes());
-    QDrag *drag = new QDrag(this);
-    drag->setMimeData(mimeData);
-    drag->exec(supportedActions, Qt::CopyAction);
+    if (items.count())
+    {
+        QMimeData *mimeData = model()->mimeData(selectedIndexes());
+        QDrag *drag = new QDrag(this);
+        drag->setMimeData(mimeData);
+        drag->exec(supportedActions, Qt::CopyAction);
+    }
+}
+
+QList<int> PlaylistView::selectedRows()
+{
+    QList<int> rowList;
+    foreach(QModelIndex rowItem, selectedIndexes())
+        rowList.push_back(rowItem.row());
+    return rowList;
 }

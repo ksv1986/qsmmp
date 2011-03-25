@@ -41,6 +41,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
+    virtual void resizeEvent(QResizeEvent *event);
+    virtual void moveEvent(QMoveEvent *event);
 
     ~MainWindow();
 
@@ -64,6 +66,9 @@ private slots:
     void removePlaylist();
     void newPlaylist();
     void shufflePlaylist();
+    void updateFSCollectionPath();
+    void removeFSItem();
+    void renameFSItem();
 
 private:
     void setPlaylist(int index);
@@ -78,6 +83,7 @@ private:
     QFileSystemModel *m_fsmodel;
     VisualMenu *m_visMenu;
     PlayListManager *m_manager;
+    QString m_lastDir;
 };
 
 #endif

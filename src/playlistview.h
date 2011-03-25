@@ -20,6 +20,7 @@ public:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void startDrag(Qt::DropActions supportedActions);
+    QList<int> selectedRows();
 
     void selectAll();
     void setup();
@@ -27,6 +28,7 @@ public:
 private slots:
     void toggleColumn(bool toggled);
     void sectionClicked(int section);
+    void scrollToIndex(const QModelIndex& index);
 
 private:
     int m_anchor_row;
