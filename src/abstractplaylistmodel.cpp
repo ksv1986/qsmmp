@@ -64,7 +64,7 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
         if (index.column() == 1)
             return (*item)[Qmmp::ARTIST];
         if (index.column() == 2)
-            return (*item)[Qmmp::TITLE].isEmpty() ? item->url() : (*item)[Qmmp::TITLE];
+            return (*item)[Qmmp::TITLE].isEmpty() ? QFileInfo(item->url()).fileName() : (*item)[Qmmp::TITLE];
         if (index.column() == 3)
             return (*item)[Qmmp::YEAR];
         if (index.column() == 4)
