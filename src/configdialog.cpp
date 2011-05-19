@@ -318,7 +318,10 @@ void ConfigDialog::saveSettings()
     QList <OutputFactory *> *outputs = Output::factories();
     if (ui.outputComboBox->currentIndex() >= 0 && outputs->count())
         Output::setCurrentFactory(outputs->at(ui.outputComboBox->currentIndex()));
+
     Settings::instance().setUseStandardIcons(ui.useStandardIconsCheckBox->isChecked());
+    Settings::instance().setStartHidden(ui.hiddenCheckBox->isChecked());
+    Settings::instance().setHideOnClose(ui.hideOnCloseCheckBox->isChecked());
 }
 
 void ConfigDialog::updateDialogButton(int index)
