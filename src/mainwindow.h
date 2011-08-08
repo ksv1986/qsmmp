@@ -31,10 +31,10 @@ class QFileSystemModel;
 class PlayListModel;
 class MediaPlayer;
 class SoundCore;
-class GeneralHandler;
 class VisualMenu;
 class PlayListManager;
 class TrackSlider;
+class UiHelper;
 
 class MainWindow : public QMainWindow
 {
@@ -79,11 +79,11 @@ private:
     TrackSlider *m_slider;
     QLabel *m_label;
     SoundCore *m_core;
-    GeneralHandler *m_generalHandler;
     QFileSystemModel *m_fsmodel;
     VisualMenu *m_visMenu;
     PlayListManager *m_manager;
     QString m_lastDir;
+    UiHelper *m_uiHelper;
 };
 
 #endif

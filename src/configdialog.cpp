@@ -41,7 +41,6 @@
 #include <qmmp/inputsourcefactory.h>
 #include <qmmpui/generalfactory.h>
 #include <qmmpui/general.h>
-#include <qmmpui/generalhandler.h>
 #include <qmmpui/filedialog.h>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/playlistmodel.h>
@@ -130,7 +129,6 @@ void ConfigDialog::on_contentsWidget_currentItemChanged (QListWidgetItem *curren
     if (!current)
         current = previous;
     ui.stackedWidget->setCurrentIndex (ui.contentsWidget->row (current));
-    ui.visibilityGroupBox->setEnabled(GeneralHandler::instance()->visibilityControl());
 }
 
 void ConfigDialog::loadPluginsInfo()

@@ -41,7 +41,7 @@
 #include <qmmpui/playlistitem.h>
 #include <qmmpui/playlistmanager.h>
 #include <qmmpui/mediaplayer.h>
-#include <qmmpui/generalhandler.h>
+#include <qmmpui/uihelper.h>
 
 #include "abstractplaylistmodel.h"
 #include "mainwindow.h"
@@ -57,15 +57,20 @@ MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
 {
     ui.setupUi(this);
-    //qmmp objects
+
+    //prepare libqmmp and libqmmpui libraries for usage
     m_player = new MediaPlayer(this);
-    m_core = new SoundCore(this);
-    m_manager = new PlayListManager(this);
+    m_core = SoundCore::instance();
+
+    //additional featuries
+    new PlaylistParser(this);
+    new UiHelper(this);
+
+    m_uiHelper = UiHelper::instance();
+
+    m_manager = PlayListManager::instance();
     m_model = m_manager->currentPlayList();
 
-    m_player->initialize(m_core, m_manager);
-    new PlaylistParser(this);
-    m_generalHandler = new GeneralHandler(this);
     //set geometry
     move(Settings::instance().windowGeometry().topLeft());
     resize(Settings::instance().windowGeometry().size());
@@ -167,10 +172,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.playlistWidget, SIGNAL(doubleClicked(QModelIndex)), ui.actionRenamePlaylist, SLOT(trigger()));
     connect(ui.playlistWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(playlistsWidgetItemChanged(QListWidgetItem*)));
 
-    connect(m_generalHandler, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
-    connect(m_generalHandler, SIGNAL(exitCalled()), qApp, SLOT(quit()));
+    connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
+    connect(m_uiHelper, SIGNAL(exitCalled()), qApp, SLOT(quit()));
 
-    setVisible(!Settings::instance().startHidden() || !m_generalHandler->visibilityControl());
+    setVisible(!Settings::instance().startHidden() || !m_uiHelper->visibilityControl());
 }
 
 void MainWindow::removeSelected()
@@ -288,7 +293,7 @@ void MainWindow::showBitrate(int)
 {
     ui.statusbar->showMessage(QString(tr("Playing [%1 kbps/%2 bit/%3]"))
                               .arg(m_core->bitrate())
-                              .arg(m_core->precision())
+                              .arg(m_core->frequency())
                               .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
 }
 
