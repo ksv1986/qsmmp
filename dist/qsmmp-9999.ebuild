@@ -9,7 +9,8 @@ EGIT_REPO_URI="git://gitorious.org/qsmmp/${PN}.git"
 EGIT_BRANCH="qmmp-9999"
 EGIT_COMMIT="${EGIT_BRANCH}"
 
-DESCRIPTION="Qsmmp is a audio player based on Qmmp. Qmmp is a Winamp-like player, while Qsmmp aimed to have native qt look."
+DESCRIPTION="QSMMP is alternative UI for QMMP implemented as a plugin with
+native Qt look."
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
