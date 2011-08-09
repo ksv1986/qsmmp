@@ -15,7 +15,8 @@ SOURCES += \
     visualmenu.cpp \
     trackslider.cpp \
     extendedfilesystemmodel.cpp \
-    simplefactory.cpp
+    simplefactory.cpp \
+    settingswidget.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
@@ -28,7 +29,8 @@ HEADERS += mainwindow.h \
     eqdialog.h \
     trackslider.h \
     extendedfilesystemmodel.h \
-    simplefactory.h
+    simplefactory.h \
+    settingswidget.h
 TEMPLATE = lib
 CONFIG += warn_on \
     thread \
@@ -41,7 +43,8 @@ LIBS += -lqmmp \
     -lqmmpui
 FORMS += mainwindow.ui \
     popupsettings.ui \
-    eqdialog.ui
+    eqdialog.ui \
+    settingswidget.ui
 RESOURCES += stuff.qrc
 INCLUDEPATH += /usr/include/
 TRANSLATIONS = translations/qsmmp_ru.ts

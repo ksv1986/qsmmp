@@ -30,6 +30,7 @@
 #include <QSettings>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QSystemTrayIcon>
 
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
@@ -52,11 +53,15 @@
 #include "eqdialog.h"
 #include "trackslider.h"
 #include "extendedfilesystemmodel.h"
+#include "settingswidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
 {
     ui.setupUi(this);
+
+    if (QSystemTrayIcon::isSystemTrayAvailable())
+        QApplication::setQuitOnLastWindowClosed(!Settings::instance().hideOnClose());
 
     //prepare libqmmp and libqmmpui libraries for usage
     m_player = MediaPlayer::instance();
@@ -211,10 +216,13 @@ void MainWindow::toggleVisibility()
 void MainWindow::settings()
 {
     ConfigDialog *confDialog = new ConfigDialog(this);
+    SettingsWidget *widget = new SettingsWidget(this);
+    confDialog->addPage(tr("Appearance"), widget, QIcon(":/interface.png"));
     confDialog->exec();
     confDialog->deleteLater();
 
-    Settings::instance().reload();
+    widget->applySettings();
+
     m_visMenu->updateActions();
 }
 
