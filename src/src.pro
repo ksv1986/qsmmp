@@ -33,6 +33,7 @@ TEMPLATE = lib
 CONFIG += warn_on \
     thread \
     qt \
+    plugin \
     qxt
 QXT += core gui
 TARGET = qsmmp
