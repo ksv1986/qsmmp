@@ -49,7 +49,7 @@ QMAKE_CXXFLAGS += \
 
 unix{
 isEmpty(LIB_DIR){
-    LIB_DIR = /lib
+    LIB_DIR = /usr/lib
 }
 target.path = $$LIB_DIR/qmmp/Ui
 INSTALLS += target
