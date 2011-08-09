@@ -42,12 +42,12 @@
 #include <qmmpui/playlistmanager.h>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/uihelper.h>
+#include <qmmpui/configdialog.h>
 
 #include "abstractplaylistmodel.h"
 #include "mainwindow.h"
 #include "settings.h"
 #include "volumetoolbutton.h"
-#include "configdialog.h"
 #include "visualmenu.h"
 #include "eqdialog.h"
 #include "trackslider.h"
@@ -59,16 +59,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui.setupUi(this);
 
     //prepare libqmmp and libqmmpui libraries for usage
-    m_player = new MediaPlayer(this);
+    m_player = MediaPlayer::instance();
     m_core = SoundCore::instance();
-
-    //additional featuries
-    new PlaylistParser(this);
-    new UiHelper(this);
-
-    m_uiHelper = UiHelper::instance();
-
     m_manager = PlayListManager::instance();
+    m_uiHelper = UiHelper::instance();
     m_model = m_manager->currentPlayList();
 
     //set geometry
@@ -216,8 +210,11 @@ void MainWindow::toggleVisibility()
 
 void MainWindow::settings()
 {
-    ConfigDialog dialog;
-    dialog.exec();
+    ConfigDialog *confDialog = new ConfigDialog(this);
+    confDialog->exec();
+    confDialog->deleteLater();
+
+    Settings::instance().reload();
     m_visMenu->updateActions();
 }
 
