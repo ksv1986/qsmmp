@@ -35,6 +35,7 @@ class VisualMenu;
 class PlayListManager;
 class TrackSlider;
 class UiHelper;
+class RecursiveSortFilterProxyModel;
 
 class MainWindow : public QMainWindow
 {
@@ -69,6 +70,7 @@ private slots:
     void updateFSCollectionPath();
     void removeFSItem();
     void renameFSItem();
+    void filterTextChanged(QString filterText);
 
 private:
     void setPlaylist(int index);
@@ -80,6 +82,7 @@ private:
     QLabel *m_label;
     SoundCore *m_core;
     QFileSystemModel *m_fsmodel;
+    RecursiveSortFilterProxyModel *m_proxyModel;
     VisualMenu *m_visMenu;
     PlayListManager *m_manager;
     QString m_lastDir;

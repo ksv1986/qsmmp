@@ -54,6 +54,7 @@
 #include "trackslider.h"
 #include "extendedfilesystemmodel.h"
 #include "settingswidget.h"
+#include "recursivesortfilterproxymodel.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -139,13 +140,22 @@ MainWindow::MainWindow(QWidget *parent)
     m_fsmodel->setReadOnly(true);
     m_fsmodel->setRootPath(Settings::instance().rootFSCollectionDirectory());
     updateFSCollectionPath();
+    QModelIndex rootIndex =  m_fsmodel->index(Settings::instance().rootFSCollectionDirectory());
 
-    ui.treeView->setModel(m_fsmodel);
-    ui.treeView->setRootIndex(m_fsmodel->index(Settings::instance().rootFSCollectionDirectory()));
+    m_proxyModel = new RecursiveSortFilterProxyModel(this);
+    m_proxyModel->setSourceModel(m_fsmodel);
+    m_proxyModel->setDynamicSortFilter(true);
+    m_proxyModel->setFilterKeyColumn(0);
+    m_proxyModel->setSourceRoot(rootIndex);
+
+    ui.treeView->setModel(m_proxyModel);
+    ui.treeView->setRootIndex(m_proxyModel->mapFromSource(rootIndex));
     ui.treeView->hideColumn(1);
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
     ui.treeView->addActions(QList<QAction*>() << ui.actionRemoveFSItem << ui.actionRenameFSItem);
+
+    connect(ui.filterLineEdit, SIGNAL(textChanged(QString)), this, SLOT(filterTextChanged(QString)));
 
     connect(ui.playlistView, SIGNAL(doubleClicked (const QModelIndex &)),
             SLOT (playSelected(const QModelIndex &)));
@@ -456,4 +466,9 @@ void MainWindow::renameFSItem()
             msgBox.exec();
         }
     }
+}
+
+void MainWindow::filterTextChanged(QString filterText)
+{
+    m_proxyModel->setFilterRegExp(filterText);
 }
