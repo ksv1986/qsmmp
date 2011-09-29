@@ -431,12 +431,11 @@ void MainWindow::removeFSItem()
     if (!index.isValid())
         return;
 
-    bool result = false;
+    QModelIndex soureIndex = m_proxyModel->mapToSource(index);
 
-    if (m_fsmodel->isDir(index))
-        result = m_fsmodel->rmdir(index);
-    else
-        result = m_fsmodel->remove(index);
+    bool result = m_fsmodel->isDir(soureIndex)
+            ? m_fsmodel->rmdir(soureIndex)
+            : m_fsmodel->remove(soureIndex);
 
     if (!result)
     {
