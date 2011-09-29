@@ -452,7 +452,9 @@ void MainWindow::renameFSItem()
     if (!index.isValid())
         return;
 
-    QFileInfo fileInfo = m_fsmodel->fileInfo(index);
+    QModelIndex sourceIndex = m_proxyModel->mapToSource(index);
+
+    QFileInfo fileInfo = m_fsmodel->fileInfo(sourceIndex);
     bool ok;
     QString text = QInputDialog::getText(this, tr("Enter new file name"),
                                          tr("File name:"), QLineEdit::Normal,
