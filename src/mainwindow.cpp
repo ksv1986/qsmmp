@@ -182,7 +182,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.playlistWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(playlistsWidgetItemChanged(QListWidgetItem*)));
 
     connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
-    connect(m_uiHelper, SIGNAL(exitCalled()), qApp, SLOT(quit()));
 
     setVisible(!Settings::instance().startHidden() || !m_uiHelper->visibilityControl());
 }
@@ -198,6 +197,7 @@ void MainWindow::removeSelected()
 
 void MainWindow::lockFSCollectionRoot(bool checked)
 {
+    QModelIndex currentIndex = ui.treeView->currentIndex();
     if (!checked)
     {
         ui.lockButton->setText(tr("Lock"));
@@ -206,10 +206,11 @@ void MainWindow::lockFSCollectionRoot(bool checked)
     else
     {
         ui.lockButton->setText(tr("Unlock"));
-        m_fsmodel->setRootPath(m_fsmodel->filePath(ui.treeView->currentIndex()));
+        QModelIndex index = m_proxyModel->mapToSource(currentIndex);
+        m_fsmodel->setRootPath(m_fsmodel->filePath(index));
     }
     updateFSCollectionPath();
-    ui.treeView->setRootIndex(m_fsmodel->index(m_fsmodel->rootPath()));
+    ui.treeView->setRootIndex(currentIndex);
     Settings::instance().setRootFSCollectionDirectory(m_fsmodel->rootPath());
 }
 
