@@ -309,7 +309,7 @@ void MainWindow::showBitrate(int)
 {
     ui.statusbar->showMessage(QString(tr("Playing [%1 kbps/%2 bit/%3]"))
                               .arg(m_core->bitrate())
-                              .arg(m_core->frequency())
+                              .arg(m_core->sampleSize())
                               .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
 }
 
