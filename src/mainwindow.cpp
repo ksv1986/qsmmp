@@ -104,9 +104,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.playlistView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
-    connect(ui.actionRenamePlaylist, SIGNAL(triggered()), this, SLOT(renamePlaylist()));
-    connect(ui.actionRemovePlaylist, SIGNAL(triggered()), this, SLOT(removePlaylist()));
-    connect(ui.actionNewPlaylist, SIGNAL(triggered()), this, SLOT(newPlaylist()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
@@ -172,14 +169,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui.toolBar->addWidget(m_label);
 
     connect(m_slider, SIGNAL(sliderReleased()), SLOT(seek()));
-
-    connect(m_manager, SIGNAL(playListsChanged()), SLOT(updatePlaylists()));
-    updatePlaylists();
-
-    connect(ui.playlistWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(setPlaylist(QModelIndex)));
-    connect(ui.playlistWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(playlistsWidgetContextMenuRequested(QPoint)));
-    connect(ui.playlistWidget, SIGNAL(doubleClicked(QModelIndex)), ui.actionRenamePlaylist, SLOT(trigger()));
-    connect(ui.playlistWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(playlistsWidgetItemChanged(QListWidgetItem*)));
+    connect(m_manager, SIGNAL(currentPlayListChanged(PlayListModel*,PlayListModel*)), SLOT(currentPlayListChanged(PlayListModel*,PlayListModel*)));
 
     connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
 
@@ -322,93 +312,21 @@ void MainWindow::showEQ()
     }
 }
 
-void MainWindow::setPlaylist(QModelIndex index)
+void MainWindow::currentPlayListChanged(PlayListModel *current,PlayListModel *previous)
 {
-    setPlaylist(index.row());
-}
-
-void MainWindow::setPlaylist(int index)
-{
-    if (m_model)
+    if (previous)
     {
-        disconnect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
-        disconnect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
+        disconnect(ui.actionClear, SIGNAL(triggered()), previous, SLOT(clear()));
+        disconnect(previous, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     }
 
-    m_manager->selectPlayList(index);
-    m_model = m_manager->playListAt(index);
-    m_manager->activatePlayList(m_model);
+    m_model = current;
 
-    static_cast<AbstractPlaylistModel*>(ui.playlistView->model())->setPlaylist(m_model);
+    static_cast<AbstractPlaylistModel*>(ui.playlistView->model())->setPlaylist(current);
 
-    connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
-    connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
+    connect(ui.actionClear, SIGNAL(triggered()),current,SLOT(clear()));
+    connect(current, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     ui.playlistView->reset();
-}
-
-void MainWindow::updatePlaylists()
-{
-    ui.playlistWidget->clear();
-    foreach(PlayListModel *model, m_manager->playLists())
-    {
-        ui.playlistWidget->addItem(model->name());
-    }
-    int row = m_manager->indexOf(m_manager->selectedPlayList());
-    ui.playlistWidget->setCurrentRow (row);
-}
-
-void MainWindow::playlistsWidgetContextMenuRequested(QPoint point)
-{
-    QMenu menu(this);
-    menu.addAction(ui.actionNewPlaylist);
-    menu.addAction(ui.actionRemovePlaylist);
-    menu.addAction(ui.actionRenamePlaylist);
-    menu.exec(ui.playlistWidget->mapToGlobal(point));
-}
-
-void MainWindow::renamePlaylist()
-{
-    QListWidgetItem* item = ui.playlistWidget->currentItem();
-    if (item)
-    {
-        item->setFlags(Qt::ItemIsEditable | item->flags());
-        ui.playlistWidget->editItem(item);
-    }
-}
-
-void MainWindow::playlistsWidgetItemChanged(QListWidgetItem *item)
-{
-    m_manager->playListAt(ui.playlistWidget->row(item))->setName(item->text());
-}
-
-void MainWindow::removePlaylist()
-{
-    int index = ui.playlistWidget->currentIndex().row();
-    PlayListModel *model = m_manager->playListAt(index);
-    if (m_model == model)
-        m_model = NULL;
-
-    m_manager->removePlayList(model);
-
-    if (!m_model)
-    {
-        if (index >= m_manager->playLists().count())
-            index = m_manager->playLists().count() - 1;
-        setPlaylist(index);
-    }
-}
-
-void MainWindow::newPlaylist()
-{
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("Enter new playlist name"),
-                                         tr("Playlist name:"), QLineEdit::Normal,
-                                         tr("My playlist"), &ok);
-    if (ok && !text.isEmpty())
-    {
-        PlayListModel *model = m_manager->createPlayList(text);
-        m_manager->activatePlayList(model);
-    }
 }
 
 void MainWindow::shufflePlaylist()

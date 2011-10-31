@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>720</width>
-    <height>457</height>
+    <width>714</width>
+    <height>451</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -73,7 +73,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>720</width>
+     <width>714</width>
      <height>25</height>
     </rect>
    </property>
@@ -230,9 +230,9 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <widget class="QListWidget" name="playlistWidget">
+          <widget class="PlaylistsWidget" name="playlistWidget">
            <property name="contextMenuPolicy">
-            <enum>Qt::CustomContextMenu</enum>
+            <enum>Qt::ActionsContextMenu</enum>
            </property>
            <property name="alternatingRowColors">
             <bool>true</bool>
@@ -325,24 +325,6 @@
     <string>Visualization</string>
    </property>
   </action>
-  <action name="actionRenamePlaylist">
-   <property name="text">
-    <string>Rename</string>
-   </property>
-   <property name="toolTip">
-    <string>Rename playlist</string>
-   </property>
-  </action>
-  <action name="actionRemovePlaylist">
-   <property name="text">
-    <string>Remove</string>
-   </property>
-  </action>
-  <action name="actionNewPlaylist">
-   <property name="text">
-    <string>New</string>
-   </property>
-  </action>
   <action name="actionShuffle">
    <property name="text">
     <string>Shuffle</string>
@@ -369,6 +351,11 @@
    <class>PlaylistView</class>
    <extends>QTreeView</extends>
    <header>playlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PlaylistsWidget</class>
+   <extends>QListWidget</extends>
+   <header>playlistswidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

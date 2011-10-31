@@ -59,22 +59,14 @@ private slots:
     void lockFSCollectionRoot(bool checked);
     void toggleVisibility();
     void showEQ();
-    void setPlaylist(QModelIndex index);
-    void updatePlaylists();
-    void playlistsWidgetContextMenuRequested(QPoint point);
-    void playlistsWidgetItemChanged(QListWidgetItem *item);
-    void renamePlaylist();
-    void removePlaylist();
-    void newPlaylist();
     void shufflePlaylist();
     void updateFSCollectionPath();
     void removeFSItem();
     void renameFSItem();
     void filterTextChanged(QString filterText);
+    void currentPlayListChanged(PlayListModel*,PlayListModel*);
 
 private:
-    void setPlaylist(int index);
-
     PlayListModel *m_model;
     Ui::MainWindow ui;
     MediaPlayer *m_player;
