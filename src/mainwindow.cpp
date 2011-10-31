@@ -120,11 +120,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui.actionVisualization->setMenu(m_visMenu);
     Visual::initialize(this, m_visMenu, SLOT(updateActions()));
 
-    ui.playlistView->setDragEnabled(true);
-    ui.playlistView->setAcceptDrops(true);
-    ui.playlistView->setDropIndicatorShown(false);
-    ui.playlistView->setDragDropMode(QAbstractItemView::InternalMove);
-
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
     ui.playlistView->setModel(m);
     ui.playlistView->setup();

@@ -16,13 +16,9 @@
 PlaylistView::PlaylistView(QWidget *parent=0)
         : QTreeView(parent)
 {
-    setRootIsDecorated(false);
-    setItemsExpandable(false);
-    setAlternatingRowColors(true);
     header()->setMovable(true);
     header()->setClickable(true);
     connect(header(), SIGNAL(sectionClicked(int)), this, SLOT(sectionClicked(int)));
-    setAutoScroll(true);
 }
 
 PlaylistView::~PlaylistView()
