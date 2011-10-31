@@ -228,7 +228,7 @@ void MainWindow::settings()
 {
     ConfigDialog *confDialog = new ConfigDialog(this);
     SettingsWidget *widget = new SettingsWidget(this);
-    confDialog->addPage(tr("Appearance"), widget, QIcon(":/interface.png"));
+    confDialog->addPage(tr("Appearance"), widget, QIcon(":/images/interface.png"));
     confDialog->exec();
     confDialog->deleteLater();
 
