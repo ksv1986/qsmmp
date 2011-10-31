@@ -59,7 +59,6 @@ private slots:
     void lockFSCollectionRoot(bool checked);
     void toggleVisibility();
     void showEQ();
-    void shufflePlaylist();
     void updateFSCollectionPath();
     void removeFSItem();
     void renameFSItem();

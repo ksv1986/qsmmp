@@ -109,10 +109,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
     connect(ui.lockButton, SIGNAL(clicked(bool)), this, SLOT(lockFSCollectionRoot(bool)));
     connect(ui.actionEqualizer, SIGNAL(triggered()), this, SLOT(showEQ()));
-    connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
+    connect(ui.actionClear, SIGNAL(triggered()),m_model, SLOT(clear()));
+    connect(ui.actionShuffle, SIGNAL(triggered()), m_model, SLOT(randomizeList()));
     connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
-    connect(ui.actionShuffle, SIGNAL(triggered()), this, SLOT(shufflePlaylist()));
     connect(ui.actionRemoveFSItem, SIGNAL(triggered()), SLOT(removeFSItem()));
     connect(ui.actionRenameFSItem, SIGNAL(triggered()), SLOT(renameFSItem()));
 
@@ -314,24 +314,22 @@ void MainWindow::showEQ()
 
 void MainWindow::currentPlayListChanged(PlayListModel *current,PlayListModel *previous)
 {
+    m_model = current;
+
     if (previous)
     {
         disconnect(ui.actionClear, SIGNAL(triggered()), previous, SLOT(clear()));
         disconnect(previous, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
+        disconnect(ui.actionShuffle, SIGNAL(triggered()), previous, SLOT(randomizeList()));
     }
-
-    m_model = current;
 
     static_cast<AbstractPlaylistModel*>(ui.playlistView->model())->setPlaylist(current);
 
     connect(ui.actionClear, SIGNAL(triggered()),current,SLOT(clear()));
     connect(current, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
-    ui.playlistView->reset();
-}
+    connect(ui.actionShuffle, SIGNAL(triggered()), current, SLOT(randomizeList()));
 
-void MainWindow::shufflePlaylist()
-{
-    m_manager->currentPlayList()->randomizeList();
+    ui.playlistView->reset();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
