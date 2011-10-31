@@ -292,3 +292,9 @@ void AbstractPlaylistModel::setPlaylist(PlayListModel *model)
     m_pl = model;
     listChanged();
 }
+
+void AbstractPlaylistModel::currentPlayListChanged(PlayListModel *current, PlayListModel *previous)
+{
+    Q_UNUSED(previous)
+    setPlaylist(current);
+}

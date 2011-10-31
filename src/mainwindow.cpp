@@ -165,6 +165,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_slider, SIGNAL(sliderReleased()), SLOT(seek()));
     connect(m_manager, SIGNAL(currentPlayListChanged(PlayListModel*,PlayListModel*)), SLOT(currentPlayListChanged(PlayListModel*,PlayListModel*)));
+    connect(m_manager, SIGNAL(currentPlayListChanged(PlayListModel*,PlayListModel*)), m, SLOT(currentPlayListChanged(PlayListModel*,PlayListModel*)));
 
     connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
 
@@ -318,13 +319,9 @@ void MainWindow::currentPlayListChanged(PlayListModel *current,PlayListModel *pr
         disconnect(ui.actionShuffle, SIGNAL(triggered()), previous, SLOT(randomizeList()));
     }
 
-    static_cast<AbstractPlaylistModel*>(ui.playlistView->model())->setPlaylist(current);
-
     connect(ui.actionClear, SIGNAL(triggered()),current,SLOT(clear()));
     connect(current, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     connect(ui.actionShuffle, SIGNAL(triggered()), current, SLOT(randomizeList()));
-
-    ui.playlistView->reset();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)

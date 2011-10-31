@@ -65,6 +65,7 @@ signals:
 public slots:
     void listChanged();
     void showDetails();
+    void currentPlayListChanged(PlayListModel *current, PlayListModel *previous);
 
 private slots:
     void currentChanged();
