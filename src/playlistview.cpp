@@ -9,6 +9,8 @@
 #include <QMap>
 #include <QApplication>
 
+#include <qmmpui/uihelper.h>
+
 #include "playlistview.h"
 #include "abstractplaylistmodel.h"
 #include "settings.h"
@@ -45,7 +47,11 @@ void PlaylistView::setup()
     setContextMenuPolicy( Qt::ActionsContextMenu );
 
     QAction *action = new QAction( tr("View Track Details"), header() );
+    action->setShortcut(tr("Ctrl+I"));
     addAction( action );
+
+    addActions(UiHelper::instance()->actions(UiHelper::PLAYLIST_MENU));
+
     AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
     connect( action, SIGNAL(triggered()), playlist, SLOT(showDetails()));
     connect(playlist, SIGNAL(currentChanged(QModelIndex)), this, SLOT(scrollToIndex(QModelIndex)));
