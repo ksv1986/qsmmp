@@ -17,8 +17,8 @@ SOURCES += \
     extendedfilesystemmodel.cpp \
     simplefactory.cpp \
     settingswidget.cpp \
-    recursivesortfilterproxymodel.cpp \
-    playlistswidget.cpp
+    playlistswidget.cpp \
+    main.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
@@ -33,7 +33,6 @@ HEADERS += mainwindow.h \
     extendedfilesystemmodel.h \
     simplefactory.h \
     settingswidget.h \
-    recursivesortfilterproxymodel.h \
     playlistswidget.h
 TEMPLATE = lib
 CONFIG += warn_on \
@@ -66,6 +65,9 @@ INSTALLS += target
 documentation.path = /usr/share/doc/qsmmp
 documentation.files = ../README ../COPYING
 INSTALLS += documentation
+
+
+
 
 
 

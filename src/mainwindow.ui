@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>712</width>
-    <height>449</height>
+    <width>710</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,7 +91,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>712</width>
+     <width>710</width>
      <height>25</height>
     </rect>
    </property>
@@ -236,9 +236,6 @@
             <bool>false</bool>
            </attribute>
           </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="filterLineEdit"/>
          </item>
         </layout>
        </widget>

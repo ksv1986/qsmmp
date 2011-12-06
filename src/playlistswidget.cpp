@@ -12,7 +12,6 @@ PlaylistsWidget::PlaylistsWidget(QWidget *parent) :
 
     connect(manager(), SIGNAL(playListsChanged()), SLOT(updatePlaylists()));
     connect(this, SIGNAL(clicked(QModelIndex)), this, SLOT(setPlaylist(QModelIndex)));
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(playlistsWidgetContextMenuRequested(QPoint)));
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(renamePlaylist()));
     connect(this, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(playlistsWidgetItemChanged(QListWidgetItem*)));
 }

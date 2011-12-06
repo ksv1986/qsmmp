@@ -13,7 +13,6 @@ public:
 
 private slots:
     void playlistsWidgetItemChanged(QListWidgetItem*);
-    void playlistsWidgetContextMenuRequested(QPoint);
     void setPlaylist(QModelIndex index);
     void updatePlaylists();
     void renamePlaylist();

@@ -54,7 +54,6 @@
 #include "trackslider.h"
 #include "extendedfilesystemmodel.h"
 #include "settingswidget.h"
-#include "recursivesortfilterproxymodel.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -134,20 +133,12 @@ MainWindow::MainWindow(QWidget *parent)
     updateFSCollectionPath();
     QModelIndex rootIndex =  m_fsmodel->index(Settings::instance().rootFSCollectionDirectory());
 
-    m_proxyModel = new RecursiveSortFilterProxyModel(this);
-    m_proxyModel->setSourceModel(m_fsmodel);
-    m_proxyModel->setDynamicSortFilter(true);
-    m_proxyModel->setFilterKeyColumn(0);
-    m_proxyModel->setSourceRoot(rootIndex);
-
-    ui.treeView->setModel(m_proxyModel);
-    ui.treeView->setRootIndex(m_proxyModel->mapFromSource(rootIndex));
+    ui.treeView->setModel(m_fsmodel);
+    ui.treeView->setRootIndex(rootIndex);
     ui.treeView->hideColumn(1);
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
     ui.treeView->addActions(QList<QAction*>() << ui.actionRemoveFSItem << ui.actionRenameFSItem);
-
-    connect(ui.filterLineEdit, SIGNAL(textChanged(QString)), this, SLOT(filterTextChanged(QString)));
 
     connect(ui.playlistView, SIGNAL(doubleClicked (const QModelIndex &)),
             SLOT (playSelected(const QModelIndex &)));
@@ -192,8 +183,7 @@ void MainWindow::lockFSCollectionRoot(bool checked)
     else
     {
         ui.lockButton->setText(tr("Unlock"));
-        QModelIndex index = m_proxyModel->mapToSource(currentIndex);
-        m_fsmodel->setRootPath(m_fsmodel->filePath(index));
+        m_fsmodel->setRootPath(m_fsmodel->filePath(currentIndex));
     }
     updateFSCollectionPath();
     ui.treeView->setRootIndex(currentIndex);
@@ -334,11 +324,9 @@ void MainWindow::removeFSItem()
     if (!index.isValid())
         return;
 
-    QModelIndex soureIndex = m_proxyModel->mapToSource(index);
-
-    bool result = m_fsmodel->isDir(soureIndex)
-            ? m_fsmodel->rmdir(soureIndex)
-            : m_fsmodel->remove(soureIndex);
+    bool result = m_fsmodel->isDir(index)
+            ? m_fsmodel->rmdir(index)
+            : m_fsmodel->remove(index);
 
     if (!result)
     {
@@ -354,9 +342,7 @@ void MainWindow::renameFSItem()
     if (!index.isValid())
         return;
 
-    QModelIndex sourceIndex = m_proxyModel->mapToSource(index);
-
-    QFileInfo fileInfo = m_fsmodel->fileInfo(sourceIndex);
+    QFileInfo fileInfo = m_fsmodel->fileInfo(index);
     bool ok;
     QString text = QInputDialog::getText(this, tr("Enter new file name"),
                                          tr("File name:"), QLineEdit::Normal,
@@ -370,9 +356,4 @@ void MainWindow::renameFSItem()
             msgBox.exec();
         }
     }
-}
-
-void MainWindow::filterTextChanged(QString filterText)
-{
-    m_proxyModel->setFilterRegExp(filterText);
 }

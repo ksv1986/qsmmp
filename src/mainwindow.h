@@ -62,7 +62,6 @@ private slots:
     void updateFSCollectionPath();
     void removeFSItem();
     void renameFSItem();
-    void filterTextChanged(QString filterText);
     void currentPlayListChanged(PlayListModel*,PlayListModel*);
 
 private:
@@ -73,7 +72,6 @@ private:
     QLabel *m_label;
     SoundCore *m_core;
     QFileSystemModel *m_fsmodel;
-    RecursiveSortFilterProxyModel *m_proxyModel;
     VisualMenu *m_visMenu;
     PlayListManager *m_manager;
     QString m_lastDir;
