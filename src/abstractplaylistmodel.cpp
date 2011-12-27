@@ -262,6 +262,11 @@ PlayListItem *AbstractPlaylistModel::item(int row)
     return m_pl->item(row);
 }
 
+void AbstractPlaylistModel::removeAt(int row)
+{
+    m_pl->removeAt(row);
+}
+
 void AbstractPlaylistModel::removeItem(PlayListItem *item)
 {
     m_pl->removeItem(item);

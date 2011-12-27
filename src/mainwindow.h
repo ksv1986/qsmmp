@@ -50,7 +50,6 @@ public:
 private slots:
     void addFiles();
     void playSelected(const QModelIndex &i);
-    void removeSelected();
     void updatePosition(qint64 pos);
     void seek();
     void showState(Qmmp::State);

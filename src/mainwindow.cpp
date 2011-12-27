@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionStop, SIGNAL(triggered()), m_player, SLOT(stop()));
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
     connect(ui.clearButton, SIGNAL(clicked()), ui.actionClear, SLOT(trigger()));
-    connect(ui.actionRemove, SIGNAL(triggered()), this, SLOT(removeSelected()));
+    connect(ui.actionRemove, SIGNAL(triggered()), ui.playlistView, SLOT(removeSelected()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(showSettings()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.playlistView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -161,15 +161,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
 
     setVisible(!Settings::instance().startHidden() || !m_uiHelper->visibilityControl());
-}
-
-void MainWindow::removeSelected()
-{
-    for (int row = 0; row < m_model->count(); row++)
-        m_model->setSelected(row, false);
-    foreach(int row, ui.playlistView->selectedRows())
-        m_model->setSelected(row, true);
-    m_model->removeSelected();
 }
 
 void MainWindow::lockFSCollectionRoot(bool checked)

@@ -224,10 +224,18 @@ void PlaylistView::startDrag(Qt::DropActions supportedActions)
     }
 }
 
-QList<int> PlaylistView::selectedRows()
+void PlaylistView::removeSelected()
 {
     QList<int> rowList;
     foreach(QModelIndex rowItem, selectedIndexes())
-        rowList.push_back(rowItem.row());
-    return rowList;
+    {
+        if (rowItem.column() == 0)
+        {
+            rowList.push_front(rowItem.row());
+        }
+    }
+
+    AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
+    foreach(int row, rowList)
+        playlist->removeAt(row);
 }

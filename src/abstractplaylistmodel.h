@@ -51,6 +51,7 @@ public:
     void insertItem(const QString& path, int row);
     void removeItem(PlayListItem *item);
     PlayListItem *item(int row);
+    void removeAt(int row);
 
     void clearSelection();
     bool isSelected(int row);
