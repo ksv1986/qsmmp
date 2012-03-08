@@ -24,6 +24,7 @@
 #include <QFileInfo>
 #include <QMimeData>
 #include <QDebug>
+#include <QUrl>
 
 #include <qmmpui/playlistitem.h>
 
