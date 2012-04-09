@@ -1,9 +1,9 @@
-# Copyright 1999-2010 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/media-sound/qsmmp/qsmmp-9999.ebuild,v 1.1 2011/01/13 23:44:36 dexon Exp $
+# $Header: $ 
 
-EAPI=2
-inherit qt4-r2 git
+EAPI=3
+inherit qt4-r2 git-2
 
 EGIT_REPO_URI="git://gitorious.org/qsmmp/${PN}.git"
 EGIT_BRANCH="qmmp-9999"
