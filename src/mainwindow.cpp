@@ -165,19 +165,20 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::lockFSCollectionRoot(bool checked)
 {
-    QModelIndex currentIndex = ui.treeView->currentIndex();
+    QModelIndex rootIndex;
     if (!checked)
     {
         ui.lockButton->setText(tr("Lock"));
-        m_fsmodel->setRootPath("/");
+        rootIndex = m_fsmodel->setRootPath("/");
     }
     else
     {
         ui.lockButton->setText(tr("Unlock"));
-        m_fsmodel->setRootPath(m_fsmodel->filePath(currentIndex));
+        QModelIndex currentIndex = ui.treeView->currentIndex();
+        rootIndex = m_fsmodel->setRootPath(m_fsmodel->filePath(currentIndex));
     }
     updateFSCollectionPath();
-    ui.treeView->setRootIndex(currentIndex);
+    ui.treeView->setRootIndex(rootIndex);
     Settings::instance().setRootFSCollectionDirectory(m_fsmodel->rootPath());
 }
 
