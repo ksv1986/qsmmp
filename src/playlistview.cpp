@@ -9,6 +9,8 @@
 #include <QMap>
 #include <QApplication>
 
+#include <qmmpui/uihelper.h>
+
 #include "playlistview.h"
 #include "abstractplaylistmodel.h"
 #include "settings.h"
@@ -16,13 +18,9 @@
 PlaylistView::PlaylistView(QWidget *parent=0)
         : QTreeView(parent)
 {
-    setRootIsDecorated(false);
-    setItemsExpandable(false);
-    setAlternatingRowColors(true);
     header()->setMovable(true);
     header()->setClickable(true);
     connect(header(), SIGNAL(sectionClicked(int)), this, SLOT(sectionClicked(int)));
-    setAutoScroll(true);
 }
 
 PlaylistView::~PlaylistView()
@@ -49,7 +47,11 @@ void PlaylistView::setup()
     setContextMenuPolicy( Qt::ActionsContextMenu );
 
     QAction *action = new QAction( tr("View Track Details"), header() );
+    action->setShortcut(tr("Ctrl+I"));
     addAction( action );
+
+    addActions(UiHelper::instance()->actions(UiHelper::PLAYLIST_MENU));
+
     AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
     connect( action, SIGNAL(triggered()), playlist, SLOT(showDetails()));
     connect(playlist, SIGNAL(currentChanged(QModelIndex)), this, SLOT(scrollToIndex(QModelIndex)));
@@ -222,10 +224,18 @@ void PlaylistView::startDrag(Qt::DropActions supportedActions)
     }
 }
 
-QList<int> PlaylistView::selectedRows()
+void PlaylistView::removeSelected()
 {
     QList<int> rowList;
     foreach(QModelIndex rowItem, selectedIndexes())
-        rowList.push_back(rowItem.row());
-    return rowList;
+    {
+        if (rowItem.column() == 0)
+        {
+            rowList.push_front(rowItem.row());
+        }
+    }
+
+    AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
+    foreach(int row, rowList)
+        playlist->removeAt(row);
 }

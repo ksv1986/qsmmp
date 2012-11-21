@@ -31,10 +31,11 @@ class QFileSystemModel;
 class PlayListModel;
 class MediaPlayer;
 class SoundCore;
-class GeneralHandler;
 class VisualMenu;
 class PlayListManager;
 class TrackSlider;
+class UiHelper;
+class RecursiveSortFilterProxyModel;
 
 class MainWindow : public QMainWindow
 {
@@ -49,41 +50,31 @@ public:
 private slots:
     void addFiles();
     void playSelected(const QModelIndex &i);
-    void removeSelected();
     void updatePosition(qint64 pos);
     void seek();
     void showState(Qmmp::State);
     void showBitrate(int);
-    void settings();
+    void showSettings();
     void lockFSCollectionRoot(bool checked);
     void toggleVisibility();
     void showEQ();
-    void setPlaylist(QModelIndex index);
-    void updatePlaylists();
-    void playlistsWidgetContextMenuRequested(QPoint point);
-    void playlistsWidgetItemChanged(QListWidgetItem *item);
-    void renamePlaylist();
-    void removePlaylist();
-    void newPlaylist();
-    void shufflePlaylist();
     void updateFSCollectionPath();
     void removeFSItem();
     void renameFSItem();
+    void currentPlayListChanged(PlayListModel*,PlayListModel*);
 
 private:
-    void setPlaylist(int index);
-
     PlayListModel *m_model;
     Ui::MainWindow ui;
     MediaPlayer *m_player;
     TrackSlider *m_slider;
     QLabel *m_label;
     SoundCore *m_core;
-    GeneralHandler *m_generalHandler;
     QFileSystemModel *m_fsmodel;
     VisualMenu *m_visMenu;
     PlayListManager *m_manager;
     QString m_lastDir;
+    UiHelper *m_uiHelper;
 };
 
 #endif

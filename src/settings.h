@@ -27,6 +27,10 @@ public:
     static Settings& instance();
     virtual ~Settings();
 
+    void reload() {
+        load();
+    }
+
     void setRootFSCollectionDirectory(QString directory);
     const QString& rootFSCollectionDirectory();
 

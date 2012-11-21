@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>722</width>
-    <height>459</height>
+    <width>710</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -54,14 +54,32 @@
     </item>
     <item>
      <widget class="PlaylistView" name="playlistView">
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="showDropIndicator" stdset="0">
+       <bool>false</bool>
       </property>
       <property name="dragEnabled">
        <bool>true</bool>
       </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::InternalMove</enum>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::ExtendedSelection</enum>
+      </property>
+      <property name="rootIsDecorated">
+       <bool>false</bool>
+      </property>
+      <property name="itemsExpandable">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -73,8 +91,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>722</width>
-     <height>24</height>
+     <width>710</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -227,9 +245,9 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <widget class="QListWidget" name="playlistWidget">
+          <widget class="PlaylistsWidget" name="playlistWidget">
            <property name="contextMenuPolicy">
-            <enum>Qt::CustomContextMenu</enum>
+            <enum>Qt::ActionsContextMenu</enum>
            </property>
            <property name="alternatingRowColors">
             <bool>true</bool>
@@ -322,24 +340,6 @@
     <string>Visualization</string>
    </property>
   </action>
-  <action name="actionRenamePlaylist">
-   <property name="text">
-    <string>Rename</string>
-   </property>
-   <property name="toolTip">
-    <string>Rename playlist</string>
-   </property>
-  </action>
-  <action name="actionRemovePlaylist">
-   <property name="text">
-    <string>Remove</string>
-   </property>
-  </action>
-  <action name="actionNewPlaylist">
-   <property name="text">
-    <string>New</string>
-   </property>
-  </action>
   <action name="actionShuffle">
    <property name="text">
     <string>Shuffle</string>
@@ -366,6 +366,11 @@
    <class>PlaylistView</class>
    <extends>QTreeView</extends>
    <header>playlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PlaylistsWidget</class>
+   <extends>QListWidget</extends>
+   <header>playlistswidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

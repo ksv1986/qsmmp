@@ -24,6 +24,7 @@
 #include <QFileInfo>
 #include <QMimeData>
 #include <QDebug>
+#include <QUrl>
 
 #include <qmmpui/playlistitem.h>
 
@@ -64,7 +65,7 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
         if (index.column() == 1)
             return (*item)[Qmmp::ARTIST];
         if (index.column() == 2)
-            return (*item)[Qmmp::TITLE].isEmpty() ? item->url() : (*item)[Qmmp::TITLE];
+            return (*item)[Qmmp::TITLE].isEmpty() ? QFileInfo(item->url()).fileName() : (*item)[Qmmp::TITLE];
         if (index.column() == 3)
             return (*item)[Qmmp::YEAR];
         if (index.column() == 4)
@@ -262,6 +263,11 @@ PlayListItem *AbstractPlaylistModel::item(int row)
     return m_pl->item(row);
 }
 
+void AbstractPlaylistModel::removeAt(int row)
+{
+    m_pl->removeAt(row);
+}
+
 void AbstractPlaylistModel::removeItem(PlayListItem *item)
 {
     m_pl->removeItem(item);
@@ -291,4 +297,10 @@ void AbstractPlaylistModel::setPlaylist(PlayListModel *model)
 {
     m_pl = model;
     listChanged();
+}
+
+void AbstractPlaylistModel::currentPlayListChanged(PlayListModel *current, PlayListModel *previous)
+{
+    Q_UNUSED(previous)
+    setPlaylist(current);
 }

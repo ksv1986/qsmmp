@@ -51,6 +51,7 @@ public:
     void insertItem(const QString& path, int row);
     void removeItem(PlayListItem *item);
     PlayListItem *item(int row);
+    void removeAt(int row);
 
     void clearSelection();
     bool isSelected(int row);
@@ -65,6 +66,7 @@ signals:
 public slots:
     void listChanged();
     void showDetails();
+    void currentPlayListChanged(PlayListModel *current, PlayListModel *previous);
 
 private slots:
     void currentChanged();

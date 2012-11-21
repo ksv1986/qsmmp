@@ -6,5 +6,6 @@
         <file>images/stop.png</file>
         <file>images/next.png</file>
         <file>translations/qsmmp_ru.qm</file>
+        <file>images/interface.png</file>
     </qresource>
 </RCC>

@@ -2,55 +2,77 @@ UI_DIR=./.build/ui/
 MOC_DIR=./.build/moc/
 OBJECTS_DIR=./.build/obj/
 
-SOURCES += main.cpp \
+SOURCES += \
     mainwindow.cpp \
     abstractplaylistmodel.cpp \
     settings.cpp \
     playlistview.cpp \
     pluginitem.cpp \
     volumetoolbutton.cpp \
-    configdialog.cpp \
     popupsettings.cpp \
     popupwidget.cpp \
     eqdialog.cpp \
     visualmenu.cpp \
     trackslider.cpp \
-    extendedfilesystemmodel.cpp
+    extendedfilesystemmodel.cpp \
+    simplefactory.cpp \
+    settingswidget.cpp \
+    playlistswidget.cpp \
+    main.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
     playlistview.h \
     pluginitem.h \
     volumetoolbutton.h \
-    configdialog.h \
     popupsettings.h \
     popupwidget.h \
     visualmenu.h \
     eqdialog.h \
     trackslider.h \
-    extendedfilesystemmodel.h
-TEMPLATE = app
+    extendedfilesystemmodel.h \
+    simplefactory.h \
+    settingswidget.h \
+    playlistswidget.h
+TEMPLATE = lib
 CONFIG += warn_on \
     thread \
     qt \
+    plugin \
     qxt
 QXT += core gui
 TARGET = qsmmp
 LIBS += -lqmmp \
     -lqmmpui
 FORMS += mainwindow.ui \
-    configdialog.ui \
     popupsettings.ui \
-    eqdialog.ui
+    eqdialog.ui \
+    settingswidget.ui
 RESOURCES += stuff.qrc
 INCLUDEPATH += /usr/include/
 TRANSLATIONS = translations/qsmmp_ru.ts
 QMAKE_CXXFLAGS += \
     -Wall -Werror -Wextra \
 
-target.path = /usr/bin
+unix{
+isEmpty(LIB_DIR){
+    LIB_DIR = /usr/lib
+}
+target.path = $$LIB_DIR/qmmp/Ui
+INSTALLS += target
+}
+
 documentation.path = /usr/share/doc/qsmmp
 documentation.files = ../README ../COPYING
-desktop.path = /usr/share/applications
-desktop.files = ../qsmmp.desktop
-INSTALLS += target documentation desktop
+INSTALLS += documentation
+
+
+
+
+
+
+
+
+
+
+

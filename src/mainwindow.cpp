@@ -30,6 +30,7 @@
 #include <QSettings>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QSystemTrayIcon>
 
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
@@ -41,31 +42,34 @@
 #include <qmmpui/playlistitem.h>
 #include <qmmpui/playlistmanager.h>
 #include <qmmpui/mediaplayer.h>
-#include <qmmpui/generalhandler.h>
+#include <qmmpui/uihelper.h>
+#include <qmmpui/configdialog.h>
 
 #include "abstractplaylistmodel.h"
 #include "mainwindow.h"
 #include "settings.h"
 #include "volumetoolbutton.h"
-#include "configdialog.h"
 #include "visualmenu.h"
 #include "eqdialog.h"
 #include "trackslider.h"
 #include "extendedfilesystemmodel.h"
+#include "settingswidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
 {
     ui.setupUi(this);
-    //qmmp objects
-    m_player = new MediaPlayer(this);
-    m_core = new SoundCore(this);
-    m_manager = new PlayListManager(this);
+
+    if (QSystemTrayIcon::isSystemTrayAvailable())
+        QApplication::setQuitOnLastWindowClosed(!Settings::instance().hideOnClose());
+
+    //prepare libqmmp and libqmmpui libraries for usage
+    m_player = MediaPlayer::instance();
+    m_core = SoundCore::instance();
+    m_manager = PlayListManager::instance();
+    m_uiHelper = UiHelper::instance();
     m_model = m_manager->currentPlayList();
 
-    m_player->initialize(m_core, m_manager);
-    new PlaylistParser(this);
-    m_generalHandler = new GeneralHandler(this);
     //set geometry
     move(Settings::instance().windowGeometry().topLeft());
     resize(Settings::instance().windowGeometry().size());
@@ -95,33 +99,25 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionStop, SIGNAL(triggered()), m_player, SLOT(stop()));
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
     connect(ui.clearButton, SIGNAL(clicked()), ui.actionClear, SLOT(trigger()));
-    connect(ui.actionRemove, SIGNAL(triggered()), this, SLOT(removeSelected()));
-    connect(ui.actionSettings, SIGNAL(triggered()), SLOT(settings()));
+    connect(ui.actionRemove, SIGNAL(triggered()), ui.playlistView, SLOT(removeSelected()));
+    connect(ui.actionSettings, SIGNAL(triggered()), SLOT(showSettings()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.playlistView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
-    connect(ui.actionRenamePlaylist, SIGNAL(triggered()), this, SLOT(renamePlaylist()));
-    connect(ui.actionRemovePlaylist, SIGNAL(triggered()), this, SLOT(removePlaylist()));
-    connect(ui.actionNewPlaylist, SIGNAL(triggered()), this, SLOT(newPlaylist()));
     connect(m_core, SIGNAL(elapsedChanged(qint64)), SLOT(updatePosition(qint64)));
     connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(showState(Qmmp::State)));
     connect(m_core, SIGNAL(bitrateChanged(int)), SLOT(showBitrate(int)));
     connect(ui.lockButton, SIGNAL(clicked(bool)), this, SLOT(lockFSCollectionRoot(bool)));
     connect(ui.actionEqualizer, SIGNAL(triggered()), this, SLOT(showEQ()));
-    connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
+    connect(ui.actionClear, SIGNAL(triggered()),m_model, SLOT(clear()));
+    connect(ui.actionShuffle, SIGNAL(triggered()), m_model, SLOT(randomizeList()));
     connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
-    connect(ui.actionShuffle, SIGNAL(triggered()), this, SLOT(shufflePlaylist()));
     connect(ui.actionRemoveFSItem, SIGNAL(triggered()), SLOT(removeFSItem()));
     connect(ui.actionRenameFSItem, SIGNAL(triggered()), SLOT(renameFSItem()));
 
     m_visMenu = new VisualMenu(this);
     ui.actionVisualization->setMenu(m_visMenu);
     Visual::initialize(this, m_visMenu, SLOT(updateActions()));
-
-    ui.playlistView->setDragEnabled(true);
-    ui.playlistView->setAcceptDrops(true);
-    ui.playlistView->setDropIndicatorShown(false);
-    ui.playlistView->setDragDropMode(QAbstractItemView::InternalMove);
 
     AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
     ui.playlistView->setModel(m);
@@ -135,9 +131,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_fsmodel->setReadOnly(true);
     m_fsmodel->setRootPath(Settings::instance().rootFSCollectionDirectory());
     updateFSCollectionPath();
+    QModelIndex rootIndex =  m_fsmodel->index(Settings::instance().rootFSCollectionDirectory());
 
     ui.treeView->setModel(m_fsmodel);
-    ui.treeView->setRootIndex(m_fsmodel->index(Settings::instance().rootFSCollectionDirectory()));
+    ui.treeView->setRootIndex(rootIndex);
     ui.treeView->hideColumn(1);
     ui.treeView->hideColumn(2);
     ui.treeView->hideColumn(3);
@@ -158,32 +155,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui.toolBar->addWidget(m_label);
 
     connect(m_slider, SIGNAL(sliderReleased()), SLOT(seek()));
+    connect(m_manager, SIGNAL(currentPlayListChanged(PlayListModel*,PlayListModel*)), SLOT(currentPlayListChanged(PlayListModel*,PlayListModel*)));
+    connect(m_manager, SIGNAL(currentPlayListChanged(PlayListModel*,PlayListModel*)), m, SLOT(currentPlayListChanged(PlayListModel*,PlayListModel*)));
 
-    connect(m_manager, SIGNAL(playListsChanged()), SLOT(updatePlaylists()));
-    updatePlaylists();
+    connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
 
-    connect(ui.playlistWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(setPlaylist(QModelIndex)));
-    connect(ui.playlistWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(playlistsWidgetContextMenuRequested(QPoint)));
-    connect(ui.playlistWidget, SIGNAL(doubleClicked(QModelIndex)), ui.actionRenamePlaylist, SLOT(trigger()));
-    connect(ui.playlistWidget, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(playlistsWidgetItemChanged(QListWidgetItem*)));
-
-    connect(m_generalHandler, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
-    connect(m_generalHandler, SIGNAL(exitCalled()), qApp, SLOT(quit()));
-
-    setVisible(!Settings::instance().startHidden() || !m_generalHandler->visibilityControl());
-}
-
-void MainWindow::removeSelected()
-{
-    for (int row = 0; row < m_model->count(); row++)
-        m_model->setSelected(row, false);
-    foreach(int row, ui.playlistView->selectedRows())
-        m_model->setSelected(row, true);
-    m_model->removeSelected();
+    setVisible(!Settings::instance().startHidden() || !m_uiHelper->visibilityControl());
 }
 
 void MainWindow::lockFSCollectionRoot(bool checked)
 {
+    QModelIndex currentIndex = ui.treeView->currentIndex();
     if (!checked)
     {
         ui.lockButton->setText(tr("Lock"));
@@ -192,10 +174,10 @@ void MainWindow::lockFSCollectionRoot(bool checked)
     else
     {
         ui.lockButton->setText(tr("Unlock"));
-        m_fsmodel->setRootPath(m_fsmodel->filePath(ui.treeView->currentIndex()));
+        m_fsmodel->setRootPath(m_fsmodel->filePath(currentIndex));
     }
     updateFSCollectionPath();
-    ui.treeView->setRootIndex(m_fsmodel->index(m_fsmodel->rootPath()));
+    ui.treeView->setRootIndex(currentIndex);
     Settings::instance().setRootFSCollectionDirectory(m_fsmodel->rootPath());
 }
 
@@ -209,10 +191,16 @@ void MainWindow::toggleVisibility()
     setVisible(!isVisible());
 }
 
-void MainWindow::settings()
+void MainWindow::showSettings()
 {
-    ConfigDialog dialog;
-    dialog.exec();
+    ConfigDialog *confDialog = new ConfigDialog(this);
+    SettingsWidget *widget = new SettingsWidget(this);
+    confDialog->addPage(tr("Appearance"), widget, QIcon(":/images/interface.png"));
+    confDialog->exec();
+    confDialog->deleteLater();
+
+    widget->applySettings();
+
     m_visMenu->updateActions();
 }
 
@@ -222,13 +210,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::addFiles()
 {
-    QStringList filters;
-    filters << tr("All Supported Bitstreams")
-    + " (" + MetaDataManager::instance()->nameFilters().join (" ") +")";
-    filters << MetaDataManager::instance()->filters();
-    FileDialog::popup(this, FileDialog::AddDirsFiles, &m_lastDir,
-                      m_model, SLOT(add(const QStringList&)),
-                      tr("Select one or more files to open"), filters.join(";;"));
+    m_uiHelper->addFile();
 }
 
 void MainWindow::playSelected(const QModelIndex &i)
@@ -288,7 +270,7 @@ void MainWindow::showBitrate(int)
 {
     ui.statusbar->showMessage(QString(tr("Playing [%1 kbps/%2 bit/%3]"))
                               .arg(m_core->bitrate())
-                              .arg(m_core->precision())
+                              .arg(m_core->sampleSize())
                               .arg(m_core->channels() > 1 ? tr("Stereo"):tr("Mono")));
 }
 
@@ -301,98 +283,20 @@ void MainWindow::showEQ()
     }
 }
 
-void MainWindow::setPlaylist(QModelIndex index)
+void MainWindow::currentPlayListChanged(PlayListModel *current,PlayListModel *previous)
 {
-    setPlaylist(index.row());
-}
+    m_model = current;
 
-void MainWindow::setPlaylist(int index)
-{
-    if (m_model)
+    if (previous)
     {
-        disconnect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
-        disconnect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
+        disconnect(ui.actionClear, SIGNAL(triggered()), previous, SLOT(clear()));
+        disconnect(previous, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
+        disconnect(ui.actionShuffle, SIGNAL(triggered()), previous, SLOT(randomizeList()));
     }
 
-    m_manager->selectPlayList(index);
-    m_model = m_manager->playListAt(index);
-    m_manager->activatePlayList(m_model);
-
-    static_cast<AbstractPlaylistModel*>(ui.playlistView->model())->setPlaylist(m_model);
-
-    connect(ui.actionClear, SIGNAL(triggered()),m_model,SLOT(clear()));
-    connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
-    ui.playlistView->reset();
-}
-
-void MainWindow::updatePlaylists()
-{
-    ui.playlistWidget->clear();
-    foreach(PlayListModel *model, m_manager->playLists())
-    {
-        ui.playlistWidget->addItem(model->name());
-    }
-    int row = m_manager->indexOf(m_manager->selectedPlayList());
-    ui.playlistWidget->setCurrentRow (row);
-}
-
-void MainWindow::playlistsWidgetContextMenuRequested(QPoint point)
-{
-    QMenu menu(this);
-    menu.addAction(ui.actionNewPlaylist);
-    menu.addAction(ui.actionRemovePlaylist);
-    menu.addAction(ui.actionRenamePlaylist);
-    menu.exec(ui.playlistWidget->mapToGlobal(point));
-}
-
-void MainWindow::renamePlaylist()
-{
-    QListWidgetItem* item = ui.playlistWidget->currentItem();
-    if (item)
-    {
-        item->setFlags(Qt::ItemIsEditable | item->flags());
-        ui.playlistWidget->editItem(item);
-    }
-}
-
-void MainWindow::playlistsWidgetItemChanged(QListWidgetItem *item)
-{
-    m_manager->playListAt(ui.playlistWidget->row(item))->setName(item->text());
-}
-
-void MainWindow::removePlaylist()
-{
-    int index = ui.playlistWidget->currentIndex().row();
-    PlayListModel *model = m_manager->playListAt(index);
-    if (m_model == model)
-        m_model = NULL;
-
-    m_manager->removePlayList(model);
-
-    if (!m_model)
-    {
-        if (index >= m_manager->playLists().count())
-            index = m_manager->playLists().count() - 1;
-        setPlaylist(index);
-    }
-}
-
-void MainWindow::newPlaylist()
-{
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("Enter new playlist name"),
-                                         tr("Playlist name:"), QLineEdit::Normal,
-                                         tr("My playlist"), &ok);
-    if (ok && !text.isEmpty())
-    {
-        PlayListModel *model = m_manager->createPlayList(text);
-        m_manager->activatePlayList(model);
-    }
-}
-
-void MainWindow::shufflePlaylist()
-{
-    m_manager->currentPlayList()->randomizeList();
+    connect(ui.actionClear, SIGNAL(triggered()),current,SLOT(clear()));
+    connect(current, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
+    connect(ui.actionShuffle, SIGNAL(triggered()), current, SLOT(randomizeList()));
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -411,12 +315,9 @@ void MainWindow::removeFSItem()
     if (!index.isValid())
         return;
 
-    bool result = false;
-
-    if (m_fsmodel->isDir(index))
-        result = m_fsmodel->rmdir(index);
-    else
-        result = m_fsmodel->remove(index);
+    bool result = m_fsmodel->isDir(index)
+            ? m_fsmodel->rmdir(index)
+            : m_fsmodel->remove(index);
 
     if (!result)
     {
