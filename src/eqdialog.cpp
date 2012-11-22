@@ -92,18 +92,19 @@ void EQDialog::clearEQUiSlot()
 
 void EQDialog::EQChangedSlot()
 {
-    double bands[10] = {	ui.verticalBandSlider1->value(),
-                         ui.verticalBandSlider2->value(),
-                         ui.verticalBandSlider3->value(),
-                         ui.verticalBandSlider4->value(),
-                         ui.verticalBandSlider5->value(),
-                         ui.verticalBandSlider6->value(),
-                         ui.verticalBandSlider7->value(),
-                         ui.verticalBandSlider8->value(),
-                         ui.verticalBandSlider9->value(),
-                         ui.verticalBandSlider10->value(),
-                       };
-    double premap = ui.verticalPremapSlider->value();
+    int bands[10] = {
+                     ui.verticalBandSlider1->value(),
+                     ui.verticalBandSlider2->value(),
+                     ui.verticalBandSlider3->value(),
+                     ui.verticalBandSlider4->value(),
+                     ui.verticalBandSlider5->value(),
+                     ui.verticalBandSlider6->value(),
+                     ui.verticalBandSlider7->value(),
+                     ui.verticalBandSlider8->value(),
+                     ui.verticalBandSlider9->value(),
+                     ui.verticalBandSlider10->value(),
+                    };
+    int premap = ui.verticalPremapSlider->value();
     setEQValues(bands, premap);
 }
 
@@ -202,7 +203,7 @@ void EQDialog::changeEvent(QEvent *e)
     }
 }
 
-void EQDialog::setEQValues(double bands[10], double preamp)
+void EQDialog::setEQValues(int bands[10], int preamp)
 {
     EqSettings settings = m_core->eqSettings();
     settings.setPreamp(preamp);
@@ -215,7 +216,7 @@ void EQDialog::setEQValues(double bands[10], double preamp)
 
 void EQDialog::clearEQSlot()
 {
-    double bands[10] = {0,0,0,0,0,0,0,0,0,0,}, preamp=0;
+    int bands[10] = {0,0,0,0,0,0,0,0,0,0,}, preamp=0;
     setEQValues(bands, preamp);
 }
 

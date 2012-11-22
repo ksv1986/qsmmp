@@ -29,7 +29,7 @@ public slots:
     void EQChangedSlot();
     void onOffEQSlot(bool);
     void clearEQSlot();
-    void setEQValues(double* ,double);
+    void setEQValues(int* ,int);
 
 signals:
     void EQStateSignal(bool);
