@@ -2,11 +2,8 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QLibraryInfo>
-#include <stdio.h>
-#include <stdlib.h>
 #include <qmmp/qmmp.h>
 #include <qmmpui/mediaplayer.h>
-#include <qmmpui/playlistparser.h>
 #include <qmmpui/uihelper.h>
 #include "mainwindow.h"
 
@@ -23,8 +20,6 @@ int main(int argc, char *argv[])
     a.installTranslator(&qt_translator);
 
     new MediaPlayer(&a);
-    //additional featuries
-    new PlaylistParser(&a);
     new UiHelper(&a);
 
     MainWindow window;

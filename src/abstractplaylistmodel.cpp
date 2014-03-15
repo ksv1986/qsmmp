@@ -51,7 +51,7 @@ void AbstractPlaylistModel::listChanged()
 
 void AbstractPlaylistModel::currentChanged()
 {
-    int row = m_pl->currentRow();
+    int row = m_pl->currentIndex();
     currentChanged(index(row));
 }
 
@@ -74,7 +74,7 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
     else if (role == Qt::FontRole)
     {
         QFont font;
-        if (index.row () == m_pl->currentRow())
+        if (index.row () == m_pl->currentIndex())
             font.setBold(TRUE);
         return font;
     }
