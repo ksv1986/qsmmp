@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_manager = PlayListManager::instance();
     m_uiHelper = UiHelper::instance();
     m_model = m_manager->currentPlayList();
-    m_trayIcon = new QSystemTrayIcon(this);
+    createTrayIcon();
 
     //set geometry
     move(Settings::instance().windowGeometry().topLeft());
@@ -163,7 +163,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
                 this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 
-    m_trayIcon->setIcon(windowIcon());
     m_trayIcon->show();
     setVisible(!Settings::instance().startHidden() || !m_uiHelper->visibilityControl());
 }
@@ -353,6 +352,21 @@ void MainWindow::renameFSItem()
             msgBox.exec();
         }
     }
+}
+
+void MainWindow::createTrayIcon()
+{
+    m_trayIcon = new QSystemTrayIcon(this);
+    m_trayIcon->setIcon(windowIcon());
+    QMenu *menu = new QMenu(this);
+    menu->addAction(ui.actionOpen);
+    menu->addAction(ui.actionPrevious);
+    menu->addAction(ui.actionPlay);
+    menu->addAction(ui.actionPause);
+    menu->addAction(ui.actionStop);
+    menu->addAction(ui.actionNext);
+    menu->addAction(ui.actionQuit);
+    m_trayIcon->setContextMenu(menu);
 }
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)

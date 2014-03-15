@@ -66,6 +66,8 @@ private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
+    void createTrayIcon();
+
     PlayListModel *m_model;
     Ui::MainWindow ui;
     MediaPlayer *m_player;
