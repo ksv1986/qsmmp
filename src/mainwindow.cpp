@@ -320,6 +320,11 @@ void MainWindow::removeFSItem()
     if (!index.isValid())
         return;
 
+    if (QMessageBox::Ok != QMessageBox::question(this, tr("Delete Files"),
+                                                 tr("Do you really want to delete this item?"),
+                                                 QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel))
+        return;
+
     bool result = m_fsmodel->isDir(index)
             ? m_fsmodel->rmdir(index)
             : m_fsmodel->remove(index);
