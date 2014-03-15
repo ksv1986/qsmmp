@@ -25,6 +25,8 @@
 #include <QMimeData>
 #include <QDebug>
 #include <QUrl>
+#include <QApplication>
+#include <QPalette>
 
 #include <qmmpui/playlistitem.h>
 
@@ -71,15 +73,17 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
         if (index.column() == 4)
             return (*item)[Qmmp::ALBUM];
     }
-    else if (role == Qt::FontRole)
+    else if (role == Qt::BackgroundRole && index.row () == m_pl->currentIndex())
     {
-        QFont font;
-        if (index.row () == m_pl->currentIndex())
-            font.setBold(TRUE);
-        return font;
+        return QApplication::palette().brush(QPalette::Current, QPalette::Background);
+    }
+    else if (role == Qt::ForegroundRole && index.row () == m_pl->currentIndex())
+    {
+        return QApplication::palette().brush(QPalette::Current, QPalette::Foreground);
     }
     return QVariant();
 }
+
 QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
@@ -98,10 +102,6 @@ QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientat
     else if (role == Qt::DisplayRole)
     {
         return section;
-    }
-    else if (role == Qt::FontRole)
-    {
-        return QFont();
     }
     return QVariant();
 }
