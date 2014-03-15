@@ -135,13 +135,9 @@ void PlaylistView::dropEvent(QDropEvent* event)
 
 void PlaylistView::selectAll()
 {
-    QTreeView::selectAll();
-
     AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
-    for (int i=0; i<playlist->rowCount(); ++i)
-    {
-        playlist->setSelected(i, true);
-    }
+    playlist->selectAll();
+    QTreeView::selectAll();
 }
 
 void PlaylistView::mousePressEvent(QMouseEvent *e)

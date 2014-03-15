@@ -56,6 +56,7 @@ public:
     void clearSelection();
     bool isSelected(int row);
     void setSelected(int row, bool selected);
+    void selectAll();
     const SimpleSelection& getSelection(int row);
 
     void setPlaylist(PlayListModel *model);

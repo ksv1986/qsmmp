@@ -288,6 +288,11 @@ void AbstractPlaylistModel::setSelected(int row, bool selected)
     m_pl->setSelected(row, selected);
 }
 
+void AbstractPlaylistModel::selectAll()
+{
+    m_pl->selectAll();
+}
+
 const SimpleSelection& AbstractPlaylistModel::getSelection(int row)
 {
     return m_pl->getSelection(row);
