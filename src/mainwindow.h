@@ -22,6 +22,7 @@
 
 #include <QMainWindow>
 #include <QMenu>
+#include <QSystemTrayIcon>
 #include <qmmp/qmmp.h>
 #include <ui_mainwindow.h>
 
@@ -62,6 +63,7 @@ private slots:
     void removeFSItem();
     void renameFSItem();
     void currentPlayListChanged(PlayListModel*,PlayListModel*);
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     PlayListModel *m_model;
@@ -75,6 +77,7 @@ private:
     PlayListManager *m_manager;
     QString m_lastDir;
     UiHelper *m_uiHelper;
+    QSystemTrayIcon *m_trayIcon;
 };
 
 #endif

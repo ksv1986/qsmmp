@@ -69,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_manager = PlayListManager::instance();
     m_uiHelper = UiHelper::instance();
     m_model = m_manager->currentPlayList();
+    m_trayIcon = new QSystemTrayIcon(this);
 
     //set geometry
     move(Settings::instance().windowGeometry().topLeft());
@@ -159,7 +160,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_manager, SIGNAL(currentPlayListChanged(PlayListModel*,PlayListModel*)), m, SLOT(currentPlayListChanged(PlayListModel*,PlayListModel*)));
 
     connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
+    connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+                this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 
+    m_trayIcon->setIcon(windowIcon());
+    m_trayIcon->show();
     setVisible(!Settings::instance().startHidden() || !m_uiHelper->visibilityControl());
 }
 
@@ -347,5 +352,16 @@ void MainWindow::renameFSItem()
             msgBox.setText(tr("Failed to rename."));
             msgBox.exec();
         }
+    }
+}
+
+void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+        setVisible(!isVisible());
+        break;
+    default:
+        ;
     }
 }
