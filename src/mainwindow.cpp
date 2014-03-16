@@ -31,6 +31,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QSystemTrayIcon>
+#include <QSignalMapper>
 
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
@@ -69,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_manager = PlayListManager::instance();
     m_uiHelper = UiHelper::instance();
     m_model = m_manager->currentPlayList();
+    m_sortMapper = new QSignalMapper(this);
     createTrayIcon();
 
     //set geometry
@@ -115,6 +117,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
     connect(ui.actionRemoveFSItem, SIGNAL(triggered()), SLOT(removeFSItem()));
     connect(ui.actionRenameFSItem, SIGNAL(triggered()), SLOT(renameFSItem()));
+
+    mapSortAction(ui.actionSortByTitle,    PlayListModel::TITLE);
+    mapSortAction(ui.actionSortByAlbum,    PlayListModel::ALBUM);
+    mapSortAction(ui.actionSortByArtist,   PlayListModel::ARTIST);
+    mapSortAction(ui.actionSortByFilename, PlayListModel::FILENAME);
+    mapSortAction(ui.actionSortByPathAndFilename, PlayListModel::PATH_AND_FILENAME);
+    mapSortAction(ui.actionSortByDate,     PlayListModel::DATE);
+    mapSortAction(ui.actionSortByTrack,    PlayListModel::TRACK);
+    connect(m_sortMapper, SIGNAL(mapped(int)), this, SLOT(sortBy(int)));
 
     m_visMenu = new VisualMenu(this);
     ui.actionVisualization->setMenu(m_visMenu);
@@ -357,6 +368,17 @@ void MainWindow::renameFSItem()
             msgBox.exec();
         }
     }
+}
+
+void MainWindow::mapSortAction(QAction *action, int mode)
+{
+    m_sortMapper->setMapping(action, mode);
+    connect(action, SIGNAL(triggered()), m_sortMapper, SLOT(map()));
+}
+
+void MainWindow::sortBy(int mode)
+{
+    m_model->sort(mode);
 }
 
 void MainWindow::createTrayIcon()

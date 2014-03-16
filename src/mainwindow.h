@@ -28,6 +28,7 @@
 
 class QLabel;
 class QFileSystemModel;
+class QSignalMapper;
 
 class PlayListModel;
 class MediaPlayer;
@@ -62,11 +63,13 @@ private slots:
     void updateFSCollectionPath();
     void removeFSItem();
     void renameFSItem();
+    void sortBy(int);
     void currentPlayListChanged(PlayListModel*,PlayListModel*);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     void createTrayIcon();
+    void mapSortAction(QAction *action, int mode);
 
     PlayListModel *m_model;
     Ui::MainWindow ui;
@@ -80,6 +83,7 @@ private:
     QString m_lastDir;
     UiHelper *m_uiHelper;
     QSystemTrayIcon *m_trayIcon;
+    QSignalMapper *m_sortMapper;
 };
 
 #endif

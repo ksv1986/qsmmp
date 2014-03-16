@@ -120,9 +120,22 @@
     <property name="title">
      <string>Playlist</string>
     </property>
+    <widget class="QMenu" name="menuSort">
+     <property name="title">
+      <string>Sort</string>
+     </property>
+     <addaction name="actionSortByTitle"/>
+     <addaction name="actionSortByAlbum"/>
+     <addaction name="actionSortByArtist"/>
+     <addaction name="actionSortByFilename"/>
+     <addaction name="actionSortByPathAndFilename"/>
+     <addaction name="actionSortByDate"/>
+     <addaction name="actionSortByTrack"/>
+    </widget>
     <addaction name="actionClear"/>
     <addaction name="actionSelectAll"/>
     <addaction name="actionRemove"/>
+    <addaction name="menuSort"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlaylist"/>
@@ -356,6 +369,41 @@
   <action name="actionRenameFSItem">
    <property name="text">
     <string>Rename</string>
+   </property>
+  </action>
+  <action name="actionSortByArtist">
+   <property name="text">
+    <string>Sort by Artist</string>
+   </property>
+  </action>
+  <action name="actionSortByTitle">
+   <property name="text">
+    <string>Sort by Title</string>
+   </property>
+  </action>
+  <action name="actionSortByAlbum">
+   <property name="text">
+    <string>Sort by Album</string>
+   </property>
+  </action>
+  <action name="actionSortByPathAndFilename">
+   <property name="text">
+    <string>Sort by Path and File name</string>
+   </property>
+  </action>
+  <action name="actionSortByTrack">
+   <property name="text">
+    <string>Sort by Track</string>
+   </property>
+  </action>
+  <action name="actionSortByDate">
+   <property name="text">
+    <string>Sort by Date</string>
+   </property>
+  </action>
+  <action name="actionSortByFilename">
+   <property name="text">
+    <string>Sort by File name</string>
    </property>
   </action>
  </widget>
