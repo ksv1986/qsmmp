@@ -262,6 +262,7 @@ void MainWindow::showState(Qmmp::State state)
         ui.statusbar->showMessage(tr("Playing"));
         if (m_label->text() != "--:--/--:--")
             showBitrate(m_core->bitrate());
+        ui.coverView->setCover(MetaDataManager::instance()->getCover(m_core->url()));
         break;
     case Qmmp::Paused:
         ui.statusbar->showMessage(tr("Paused"));

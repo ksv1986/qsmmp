@@ -283,6 +283,15 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="coverDock">
+   <property name="features">
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="CoverWidget" name="coverView"/>
+  </widget>
   <action name="actionPrevious">
    <property name="text">
     <string>Previous</string>
@@ -428,6 +437,12 @@
    <class>PlaylistsWidget</class>
    <extends>QListWidget</extends>
    <header>playlistswidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CoverWidget</class>
+   <extends>QWidget</extends>
+   <header>coverwidget.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>PlaylistBar</class>

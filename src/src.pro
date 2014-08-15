@@ -20,7 +20,9 @@ SOURCES += \
     playlistswidget.cpp \
     playlistbar.cpp \
     main.cpp \
-    scrollingtrayicon.cpp
+    coverwidget.cpp \
+    scrollingtrayicon.cpp \
+
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
@@ -37,7 +39,9 @@ HEADERS += mainwindow.h \
     settingswidget.h \
     playlistswidget.h \
     playlistbar.h \
-    scrollingtrayicon.h
+    scrollingtrayicon.h \
+    coverwidget.h \
+
 TEMPLATE = lib
 CONFIG += warn_on \
     thread \
@@ -69,14 +73,3 @@ INSTALLS += target
 documentation.path = /usr/share/doc/qsmmp
 documentation.files = ../README ../COPYING
 INSTALLS += documentation
-
-
-
-
-
-
-
-
-
-
-
