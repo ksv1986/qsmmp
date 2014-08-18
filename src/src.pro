@@ -18,6 +18,7 @@ SOURCES += \
     simplefactory.cpp \
     settingswidget.cpp \
     playlistswidget.cpp \
+    playlistbar.cpp \
     main.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
@@ -33,7 +34,8 @@ HEADERS += mainwindow.h \
     extendedfilesystemmodel.h \
     simplefactory.h \
     settingswidget.h \
-    playlistswidget.h
+    playlistswidget.h \
+    playlistbar.h
 TEMPLATE = lib
 CONFIG += warn_on \
     thread \

@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
 {
     ui.setupUi(this);
+    ui.playlistPanel->hide();
 
     if (QSystemTrayIcon::isSystemTrayAvailable())
         QApplication::setQuitOnLastWindowClosed(!Settings::instance().hideOnClose());

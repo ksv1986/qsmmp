@@ -16,41 +16,46 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QPushButton" name="clearButton">
-        <property name="text">
-         <string>Clear</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="shuffleButton">
-        <property name="text">
-         <string>Shuffle</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
+     <widget class="QWidget" name="playlistPanel" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QPushButton" name="clearButton">
+         <property name="text">
+          <string>Clear</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="shuffleButton">
+         <property name="text">
+          <string>Shuffle</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="PlaylistBar" name="widget" native="true"/>
     </item>
     <item>
      <widget class="PlaylistView" name="playlistView">
@@ -135,6 +140,7 @@
     <addaction name="actionClear"/>
     <addaction name="actionSelectAll"/>
     <addaction name="actionRemove"/>
+    <addaction name="actionShuffle"/>
     <addaction name="menuSort"/>
    </widget>
    <addaction name="menuFile"/>
@@ -422,6 +428,12 @@
    <class>PlaylistsWidget</class>
    <extends>QListWidget</extends>
    <header>playlistswidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PlaylistBar</class>
+   <extends>QWidget</extends>
+   <header>playlistbar.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
