@@ -36,15 +36,21 @@ public:
 
     ~CoverWidget();
 
+    QPixmap cover() const { return m_pixmap; }
     void setCover(const QPixmap&);
+    void setNoCover(const QPixmap&);
     void clearCover();
 
-private slots:
-    void saveAs();
+signals:
+    void clicked();
+
+protected:
+    virtual void paintEvent (QPaintEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
 
 private:
-    void paintEvent (QPaintEvent *event);
     QPixmap m_pixmap;
+    QPixmap m_default;
 };
 
 #endif

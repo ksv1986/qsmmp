@@ -27,6 +27,33 @@
         </property>
        </widget>
       </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>No cover image</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="CoverWidget" name="noCoverWidget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>64</width>
+            <height>64</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Click to choose no cover image</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid black</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>
@@ -67,7 +94,23 @@
     </spacer>
    </item>
   </layout>
+  <action name="action_NoCover">
+   <property name="text">
+    <string>No cover</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset no cover image</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CoverWidget</class>
+   <extends>QWidget</extends>
+   <header>coverwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

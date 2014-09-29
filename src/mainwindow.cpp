@@ -61,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui.setupUi(this);
     ui.playlistPanel->hide();
+    ui.coverView->setNoCover(Settings::instance().noCoverPixmap());
 
     if (QSystemTrayIcon::isSystemTrayAvailable())
         QApplication::setQuitOnLastWindowClosed(!Settings::instance().hideOnClose());
@@ -118,6 +119,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
     connect(ui.actionRemoveFSItem, SIGNAL(triggered()), SLOT(removeFSItem()));
     connect(ui.actionRenameFSItem, SIGNAL(triggered()), SLOT(renameFSItem()));
+    QAction *saveCoverAction = new QAction(tr("&Save as..."), this);
+    connect(saveCoverAction, SIGNAL(triggered()), SLOT(saveCover()));
+    ui.coverView->addAction(saveCoverAction);
+    ui.coverView->setNoCover(Settings::instance().noCoverPixmap());
 
     mapSortAction(ui.actionSortByTitle,    PlayListModel::TITLE);
     mapSortAction(ui.actionSortByAlbum,    PlayListModel::ALBUM);
@@ -155,6 +160,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui.playlistView, SIGNAL(doubleClicked (const QModelIndex &)),
             SLOT (playSelected(const QModelIndex &)));
+    connect(ui.playlistView, SIGNAL(selectedChanged(int)), SLOT(selectedChanged(int)));
 
     VolumeToolButton *volumeButton = new VolumeToolButton(m_core->leftVolume(), this, 0, 100);
     connect(volumeButton, SIGNAL(volumeChanged(int, int)), m_core, SLOT(setVolume(int,int)));
@@ -218,6 +224,7 @@ void MainWindow::showSettings()
     confDialog->deleteLater();
 
     widget->applySettings();
+    ui.coverView->setNoCover(Settings::instance().noCoverPixmap());
 
     m_visMenu->updateActions();
 }
@@ -262,7 +269,6 @@ void MainWindow::showState(Qmmp::State state)
         ui.statusbar->showMessage(tr("Playing"));
         if (m_label->text() != "--:--/--:--")
             showBitrate(m_core->bitrate());
-        ui.coverView->setCover(MetaDataManager::instance()->getCover(m_core->url()));
         break;
     case Qmmp::Paused:
         ui.statusbar->showMessage(tr("Paused"));
@@ -414,4 +420,23 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
     default:
         ;
     }
+}
+
+void MainWindow::selectedChanged(int selected)
+{
+    int index = selected < 0 ? m_model->currentIndex() : selected;
+    ui.coverView->setCover(MetaDataManager::instance()->getCover( m_model->track(index)->url() ));
+}
+
+void MainWindow::saveCover()
+{
+    QPixmap cover = ui.coverView->cover();
+    if (cover.isNull())
+        return;
+    QString path = FileDialog::getSaveFileName(this, tr("Save cover as"),
+                                               QDir::homePath() + "/cover.jpg",
+                                               tr("Images") + " (*.png *.jpg *.gif)");
+
+    if (!path.isEmpty())
+        cover.save(path);
 }

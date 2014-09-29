@@ -16,7 +16,8 @@
 #include "settings.h"
 
 PlaylistView::PlaylistView(QWidget *parent=0)
-        : QTreeView(parent)
+        : QTreeView(parent),
+m_selected_row(-1)
 {
     header()->setMovable(true);
     header()->setClickable(true);
@@ -158,6 +159,10 @@ void PlaylistView::mousePressEvent(QMouseEvent *e)
             m_select_on_release = TRUE;
 
         m_pressed_row = row;
+        if (m_selected_row != m_pressed_row) {
+            m_selected_row =  m_pressed_row;
+            emit selectedChanged(m_selected_row);
+        }
         if ((Qt::ShiftModifier & e->modifiers()))
         {
 
@@ -188,6 +193,11 @@ void PlaylistView::mousePressEvent(QMouseEvent *e)
             m_anchor_row = m_pressed_row;
 
         update();
+    } else {
+        if (m_selected_row != -1) {
+            m_selected_row =  -1;
+            emit selectedChanged(m_selected_row);
+        }
     }
     QTreeView::mousePressEvent(e);
 }

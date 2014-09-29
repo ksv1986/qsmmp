@@ -5,10 +5,12 @@
 
 class QString;
 class QStringList;
+class QPixmap;
 
 class Settings
 {
     QString _rootFSCollectionDirectory;
+    QString _noCoverImage;
     bool _startHidden;
     bool _hideOnClose;
     bool _useStandardIcons;
@@ -69,6 +71,8 @@ public:
     void setPlaylistState(QByteArray val) {
         _playlistState = val;
     }
+    QPixmap noCoverPixmap() const;
+    void setNoCoverImage(const QString &path);
 };
 
 #endif // SETTINGS_H

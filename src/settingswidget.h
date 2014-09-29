@@ -20,6 +20,9 @@ public:
 protected:
     void changeEvent(QEvent *e);
 
+private slots:
+    void chooseNoCoverImage();
+    void resetNoCoverImage();
 private:
     Ui::SettingsWidget *ui;
 };

@@ -67,6 +67,8 @@ private slots:
     void sortBy(int);
     void currentPlayListChanged(PlayListModel*,PlayListModel*);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void selectedChanged(int);
+    void saveCover();
 
 private:
     void createTrayIcon();

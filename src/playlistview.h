@@ -24,6 +24,9 @@ public:
 
     void setup();
 
+signals:
+    void selectedChanged(int);
+
 private slots:
     void toggleColumn(bool toggled);
     void sectionClicked(int section);
@@ -33,6 +36,7 @@ private slots:
 private:
     int m_anchor_row;
     int m_pressed_row;
+    int m_selected_row;
     bool m_select_on_release;
     QPoint startPos;
 

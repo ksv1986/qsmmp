@@ -25,13 +25,9 @@
 #include <qmmpui/filedialog.h>
 #include "coverwidget.h"
 
-CoverWidget::CoverWidget(QWidget *parent) : QWidget(parent),
-    m_pixmap(":/qsui/ui_no_cover.png")
+CoverWidget::CoverWidget(QWidget *parent) : QWidget(parent)
 {
     setContextMenuPolicy(Qt::ActionsContextMenu);
-    QAction *saveAsAction = new QAction(tr("&Save As..."), this);
-    connect(saveAsAction, SIGNAL(triggered()), SLOT(saveAs()));
-    addAction(saveAsAction);
 }
 
 CoverWidget::~CoverWidget()
@@ -39,13 +35,21 @@ CoverWidget::~CoverWidget()
 
 void CoverWidget::setCover(const QPixmap &pixmap)
 {
-    m_pixmap = pixmap.isNull() ? QPixmap(":/qsui/ui_no_cover.png") : pixmap;
+    m_pixmap = pixmap.isNull() ? m_default : pixmap;
+    update();
+}
+
+void CoverWidget::setNoCover(const QPixmap &pixmap)
+{
+    m_default = pixmap;
+    if (m_pixmap.isNull() && !m_default.isNull())
+        m_pixmap = m_default;
     update();
 }
 
 void CoverWidget::clearCover()
 {
-    setCover(QPixmap());
+    setCover(m_default);
     update();
 }
 
@@ -55,16 +59,15 @@ void CoverWidget::paintEvent(QPaintEvent *p)
     if(!m_pixmap.isNull())
     {
         int w = qMin(p->rect().width(), p->rect().height());
-        paint.drawPixmap(0,0, m_pixmap.scaled(w,w));
+        int x =  (width() - w)/2;
+        int y = (height() - w)/2;
+        paint.drawPixmap(x, y, m_pixmap.scaled(w, w));
     }
 }
 
-void CoverWidget::saveAs()
+void CoverWidget::mousePressEvent(QMouseEvent *event)
 {
-    QString path = FileDialog::getSaveFileName(this, tr("Save Cover As"),
-                                                 QDir::homePath() + "/cover.jpg",
-                                                 tr("Images") +" (*.png *.jpg)");
-
-    if (!path.isEmpty())
-        m_pixmap.save(path);
+    if (Qt::LeftButton == event->button())
+        emit clicked();
+    QWidget::mousePressEvent(event);
 }

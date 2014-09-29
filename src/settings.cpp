@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <QDebug>
 #include <QStringList>
+#include <QPixmap>
 
 #include <qmmp/qmmp.h>
 
@@ -31,6 +32,7 @@ Settings::~Settings()
     settings.setValue("size", _size);
     settings.setValue("pos", _pos);
     settings.setValue("playlist_state", _playlistState);
+    settings.setValue("no_cover_image", _noCoverImage);
     settings.endGroup();
 }
 
@@ -42,6 +44,16 @@ const QString& Settings::rootFSCollectionDirectory()
 void Settings::setRootFSCollectionDirectory(QString directory)
 {
     _rootFSCollectionDirectory = directory;
+}
+
+QPixmap Settings::noCoverPixmap() const
+{
+    return QPixmap(_noCoverImage);
+}
+
+void Settings::setNoCoverImage(const QString &path)
+{
+    _noCoverImage = path;
 }
 
 void Settings::load()
@@ -58,5 +70,6 @@ void Settings::load()
     _size = settings.value("size", QSize(640, 480)).toSize();
     _pos = settings.value("pos", QPoint(0, 0)).toPoint();
     _playlistState = settings.value("playlist_state", QByteArray("")).toByteArray();
+    _noCoverImage = settings.value("no_cover_image").toString();
     settings.endGroup();
 }
