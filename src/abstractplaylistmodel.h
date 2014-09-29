@@ -49,8 +49,8 @@ public:
 
     void addItem(const QString& path);
     void insertItem(const QString& path, int row);
-    void removeItem(PlayListItem *item);
-    PlayListItem *item(int row);
+    void removeItem(PlayListTrack *item);
+    PlayListTrack *item(int row);
     void removeAt(int row);
 
     void clearSelection();
@@ -76,7 +76,7 @@ private:
     QString formatTime(qint64 time) const;
 
     PlayListModel *m_pl;
-    mutable QList<PlayListItem*> itemsToMove;
+    mutable QList<PlayListTrack*> itemsToMove;
 };
 
 #endif // ABSTRACTPLAYLISTMODEL_H

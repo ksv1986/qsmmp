@@ -27,7 +27,7 @@
 #include <qmmp/soundcore.h>
 #include <qmmp/metadatamanager.h>
 #include <qmmpui/metadataformatter.h>
-#include <qmmpui/playlistitem.h>
+#include <qmmpui/playlisttrack.h>
 
 #include "popupwidget.h"
 
@@ -39,7 +39,7 @@ PopupWidget::PopupWidget(QWidget *parent)
     setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::Dialog | Qt::FramelessWindowHint);
     //setFrameStyle(QFrame::Box | QFrame::Plain);
     setAttribute(Qt::WA_QuitOnClose, false);
-    m_item = 0;
+    m_track = 0;
     QHBoxLayout *hlayout = new QHBoxLayout(this); //layout
     m_pixlabel = new QLabel(this);
     hlayout->addWidget(m_pixlabel);
@@ -81,11 +81,11 @@ void PopupWidget::mouseMoveEvent (QMouseEvent *)
     hide();
 }
 
-void PopupWidget::prepare(PlayListItem *item, QPoint pos)
+void PopupWidget::prepare(PlayListTrack *item, QPoint pos)
 {
     pos += QPoint(15,10);
 
-    m_item = item;
+    m_track = item;
     hide();
     if (!item)
     {
@@ -109,16 +109,16 @@ void PopupWidget::deactivate()
     hide();
 }
 
-PlayListItem *PopupWidget::item()
+PlayListTrack *PopupWidget::track()
 {
-    return m_item;
+    return m_track;
 }
 
 void PopupWidget::loadCover()
 {
-    if (!m_item)
+    if (!m_track)
         return;
-    QPixmap pix = MetaDataManager::instance()->getCover(m_item->url());
+    QPixmap pix = MetaDataManager::instance()->getCover(m_track->url());
     if (pix.isNull())
         pix = QPixmap(":/ui_no_cover.png");
     m_pixlabel->setFixedSize(m_coverSize,m_coverSize);

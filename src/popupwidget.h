@@ -26,7 +26,7 @@
 
 class QTimer;
 class QLabel;
-class PlayListItem;
+class PlayListTrack;
 
 namespace PlayListPopup {
 /**
@@ -40,9 +40,9 @@ public:
 
     ~PopupWidget();
 
-    void prepare(PlayListItem *item, QPoint pos);
+    void prepare(PlayListTrack *item, QPoint pos);
     void deactivate();
-    PlayListItem *item();
+    PlayListTrack *track();
 
 protected:
     virtual void mousePressEvent (QMouseEvent *);
@@ -58,7 +58,7 @@ private:
     QString m_template;
     uint m_pos;
     int m_coverSize;
-    PlayListItem *m_item;
+    PlayListTrack *m_track;
 
 };
 }

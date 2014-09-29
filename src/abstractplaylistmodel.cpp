@@ -28,7 +28,7 @@
 #include <QApplication>
 #include <QPalette>
 
-#include <qmmpui/playlistitem.h>
+#include <qmmpui/playlisttrack.h>
 
 #include "abstractplaylistmodel.h"
 
@@ -61,7 +61,7 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
 {
     if (role == Qt::DisplayRole && index.row () < m_pl->count())
     {
-        PlayListItem *item = m_pl->item(index.row ());
+        PlayListTrack *item = m_pl->track(index.row ());
         if (index.column() == 0)
             return (*item)[Qmmp::TRACK];
         if (index.column() == 1)
@@ -209,7 +209,7 @@ QMimeData *AbstractPlaylistModel::mimeData(const QModelIndexList &indexes) const
     QList<QUrl> urls;
     foreach(int row, rows)
     {
-        PlayListItem *item = m_pl->item(row);
+        PlayListTrack *item = m_pl->track(row);
         itemsToMove.append(item);
         urls << QUrl(item->url());
     }
@@ -234,7 +234,7 @@ bool AbstractPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction a
 
     if(action == Qt::MoveAction && itemsToMove.count() > 0)
     {
-        foreach(PlayListItem *item, itemsToMove)
+        foreach(PlayListTrack *item, itemsToMove)
         {
             m_pl->clearSelection();
             int index = m_pl->items().indexOf(item);
@@ -258,19 +258,19 @@ bool AbstractPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction a
     return true;
 }
 
-PlayListItem *AbstractPlaylistModel::item(int row)
+PlayListTrack *AbstractPlaylistModel::item(int row)
 {
-    return m_pl->item(row);
+    return m_pl->track(row);
 }
 
 void AbstractPlaylistModel::removeAt(int row)
 {
-    m_pl->removeAt(row);
+    m_pl->removeTrack(row);
 }
 
-void AbstractPlaylistModel::removeItem(PlayListItem *item)
+void AbstractPlaylistModel::removeItem(PlayListTrack *item)
 {
-    m_pl->removeItem(item);
+    m_pl->removeTrack(item);
 }
 
 void AbstractPlaylistModel::clearSelection()
