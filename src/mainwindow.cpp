@@ -402,6 +402,10 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
     switch (reason) {
     case QSystemTrayIcon::Trigger:
         setVisible(!isVisible());
+        if (isVisible()) {
+            showNormal();
+            raise();
+        }
         break;
     default:
         ;
