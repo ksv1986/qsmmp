@@ -30,7 +30,6 @@
 #include <QSettings>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QSystemTrayIcon>
 #include <QSignalMapper>
 
 #include <qmmp/soundcore.h>
@@ -55,6 +54,7 @@
 #include "trackslider.h"
 #include "extendedfilesystemmodel.h"
 #include "settingswidget.h"
+#include "scrollingtrayicon.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -174,6 +174,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
     connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
                 this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+    connect(m_trayIcon, SIGNAL(wheelScrolled(int)), m_core, SLOT(changeVolume(int)));
 
     m_trayIcon->show();
     setVisible(!Settings::instance().startHidden() || !m_uiHelper->visibilityControl());
@@ -384,7 +385,7 @@ void MainWindow::sortBy(int mode)
 
 void MainWindow::createTrayIcon()
 {
-    m_trayIcon = new QSystemTrayIcon(this);
+    m_trayIcon = new ScrollingTrayIcon(this);
     m_trayIcon->setIcon(windowIcon());
     QMenu *menu = new QMenu(this);
     menu->addAction(ui.actionOpen);
@@ -393,6 +394,8 @@ void MainWindow::createTrayIcon()
     menu->addAction(ui.actionPause);
     menu->addAction(ui.actionStop);
     menu->addAction(ui.actionNext);
+    menu->addSeparator();
+    menu->addAction(ui.actionSettings);
     menu->addAction(ui.actionQuit);
     m_trayIcon->setContextMenu(menu);
 }

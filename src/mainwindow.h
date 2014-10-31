@@ -38,6 +38,7 @@ class PlayListManager;
 class TrackSlider;
 class UiHelper;
 class RecursiveSortFilterProxyModel;
+class ScrollingTrayIcon;
 
 class MainWindow : public QMainWindow
 {
@@ -82,7 +83,7 @@ private:
     PlayListManager *m_manager;
     QString m_lastDir;
     UiHelper *m_uiHelper;
-    QSystemTrayIcon *m_trayIcon;
+    ScrollingTrayIcon *m_trayIcon;
     QSignalMapper *m_sortMapper;
 };
 
