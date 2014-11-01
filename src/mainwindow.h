@@ -67,9 +67,13 @@ private slots:
     void sortBy(int);
     void currentPlayListChanged(PlayListModel*,PlayListModel*);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void volumeUp();
+    void volumeDown();
 
 private:
     void createTrayIcon();
+    void createGlobalShortcuts();
+    void createGlobalShortcut(const QString &key, const QObject *receiver, const char *member);
     void mapSortAction(QAction *action, int mode);
 
     PlayListModel *m_model;

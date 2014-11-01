@@ -31,6 +31,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QSignalMapper>
+#include <QxtGlobalShortcut>
 
 #include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
@@ -127,6 +128,8 @@ MainWindow::MainWindow(QWidget *parent)
     mapSortAction(ui.actionSortByDate,     PlayListModel::DATE);
     mapSortAction(ui.actionSortByTrack,    PlayListModel::TRACK);
     connect(m_sortMapper, SIGNAL(mapped(int)), this, SLOT(sortBy(int)));
+
+    createGlobalShortcuts();
 
     m_visMenu = new VisualMenu(this);
     ui.actionVisualization->setMenu(m_visMenu);
@@ -398,6 +401,34 @@ void MainWindow::createTrayIcon()
     menu->addAction(ui.actionSettings);
     menu->addAction(ui.actionQuit);
     m_trayIcon->setContextMenu(menu);
+}
+
+void MainWindow::createGlobalShortcuts()
+{
+    createGlobalShortcut("Ctrl+Alt+Z", m_player, SLOT(previous()));
+    createGlobalShortcut("Ctrl+Alt+X", m_player, SLOT(play()));
+    createGlobalShortcut("Ctrl+Alt+C", m_core,   SLOT(pause()));
+    createGlobalShortcut("Ctrl+Alt+V", m_player, SLOT(stop()));
+    createGlobalShortcut("Ctrl+Alt+B", m_player, SLOT(next()));
+    createGlobalShortcut("Ctrl+Alt+Up",   this,  SLOT(volumeUp()));
+    createGlobalShortcut("Ctrl+Alt+Down", this,  SLOT(volumeDown()));
+}
+
+void MainWindow::createGlobalShortcut(const QString &key, const QObject *receiver, const char *member)
+{
+    QxtGlobalShortcut* shortcut = new QxtGlobalShortcut(this);
+    shortcut->setShortcut(QKeySequence(key));
+    connect(shortcut, SIGNAL(activated()), receiver, member);
+}
+
+void MainWindow::volumeDown()
+{
+    m_core->changeVolume(-3);
+}
+
+void MainWindow::volumeUp()
+{
+    m_core->changeVolume( 3);
 }
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
