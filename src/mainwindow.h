@@ -65,6 +65,7 @@ private slots:
     void removeFSItem();
     void renameFSItem();
     void sortBy(int);
+    void currentChanged();
     void currentPlayListChanged(PlayListModel*,PlayListModel*);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void volumeUp();
