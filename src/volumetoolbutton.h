@@ -23,6 +23,7 @@ protected slots:
     virtual QSize sizeHint() const;
 
 private:
+    int limitVolume(int volume) const;
     int volume;
     int min;
     int max;

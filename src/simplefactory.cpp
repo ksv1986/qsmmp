@@ -1,5 +1,6 @@
-#include <QtPlugin>
 #include <QMessageBox>
+#include <QtPlugin>
+#include <QTranslator>
 #include "mainwindow.h"
 #include "simplefactory.h"
 

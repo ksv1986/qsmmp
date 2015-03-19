@@ -1,6 +1,6 @@
-#include <QString>
-#include <QSettings>
 #include <QDebug>
+#include <QSettings>
+#include <QString>
 #include <QStringList>
 
 #include <qmmp/qmmp.h>

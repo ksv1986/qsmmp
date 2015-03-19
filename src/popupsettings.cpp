@@ -18,11 +18,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <QSettings>
 #include <QMenu>
+#include <QSettings>
 #include <qmmp/qmmp.h>
-#include "popupwidget.h"
 #include "popupsettings.h"
+#include "popupwidget.h"
 
 PopupSettings::PopupSettings(QWidget *parent)
         : QDialog(parent)

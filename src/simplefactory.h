@@ -2,8 +2,9 @@
 #define SIMPLEFACTORY_H
 
 #include <QObject>
-#include <QTranslator>
 #include <qmmpui/uifactory.h>
+
+class QTranslator;
 
 class SimpleFactory : public QObject, public UiFactory
 {

@@ -21,7 +21,6 @@
 #ifndef ABSTRACTPLAYLISTMODEL_H
 #define ABSTRACTPLAYLISTMODEL_H
 
-#include <QObject>
 #include <QAbstractListModel>
 
 #include <qmmpui/playlistmodel.h>

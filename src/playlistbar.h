@@ -7,7 +7,7 @@ class PlaylistBar : public QTabBar
 {
     Q_OBJECT
 public:
-    PlaylistBar(QWidget *parent);
+    PlaylistBar(QWidget *parent=0);
 private slots:
     void updatePlaylists();
     void newPlaylist();

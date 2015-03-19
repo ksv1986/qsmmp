@@ -1,15 +1,15 @@
-#include "playlistbar.h"
-#include "settings.h"
-
-#include <qmmpui/playlistmanager.h>
-
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
 
+#include <qmmpui/playlistmanager.h>
+
+#include "playlistbar.h"
+#include "settings.h"
+
 static PlayListManager* manager() { return PlayListManager::instance(); }
 
-PlaylistBar::PlaylistBar(QWidget *parent=0)
+PlaylistBar::PlaylistBar(QWidget *parent)
         : QTabBar(parent)
 {
     setTabsClosable(true);

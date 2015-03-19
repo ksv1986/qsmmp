@@ -17,45 +17,46 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include <QPushButton>
-#include <QHBoxLayout>
-#include <QSlider>
-#include <QLabel>
-#include <QFileSystemModel>
 #include <QDebug>
-#include <QKeyEvent>
-#include <QList>
-#include <QModelIndex>
 #include <QDockWidget>
-#include <QSettings>
+#include <QFileSystemModel>
+#include <QHBoxLayout>
 #include <QInputDialog>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QList>
+#include <QMenu>
 #include <QMessageBox>
+#include <QModelIndex>
+#include <QPushButton>
+#include <QSettings>
 #include <QSignalMapper>
+#include <QSlider>
 #include <QxtGlobalShortcut>
 
-#include <qmmp/soundcore.h>
 #include <qmmp/decoder.h>
 #include <qmmp/metadatamanager.h>
-#include <qmmpui/playlistparser.h>
-#include <qmmpui/playlistformat.h>
+#include <qmmp/soundcore.h>
+#include <qmmpui/configdialog.h>
 #include <qmmpui/filedialog.h>
-#include <qmmpui/playlistmodel.h>
+#include <qmmpui/mediaplayer.h>
+#include <qmmpui/playlistformat.h>
 #include <qmmpui/playlistitem.h>
 #include <qmmpui/playlistmanager.h>
-#include <qmmpui/mediaplayer.h>
+#include <qmmpui/playlistmodel.h>
+#include <qmmpui/playlistparser.h>
 #include <qmmpui/uihelper.h>
-#include <qmmpui/configdialog.h>
 
 #include "abstractplaylistmodel.h"
-#include "mainwindow.h"
-#include "settings.h"
-#include "volumetoolbutton.h"
-#include "visualmenu.h"
 #include "eqdialog.h"
-#include "trackslider.h"
 #include "extendedfilesystemmodel.h"
-#include "settingswidget.h"
+#include "mainwindow.h"
 #include "scrollingtrayicon.h"
+#include "settings.h"
+#include "settingswidget.h"
+#include "trackslider.h"
+#include "visualmenu.h"
+#include "volumetoolbutton.h"
 
 static const QString defaultTitle = "Qsmmp";
 
@@ -347,9 +348,9 @@ void MainWindow::removeFSItem()
     if (!index.isValid())
         return;
 
-    if (QMessageBox::Ok != QMessageBox::question(this, tr("Delete Files"),
-                                                 tr("Do you really want to delete this item?"),
-                                                 QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel))
+    if (QMessageBox::Yes != QMessageBox::question(this, tr("Delete Files"),
+                                                  tr("Do you really want to delete this item?"),
+                                                  QMessageBox::Yes | QMessageBox::No, QMessageBox::No))
         return;
 
     bool result = m_fsmodel->isDir(index)

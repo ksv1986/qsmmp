@@ -1,7 +1,7 @@
-#include <QWheelEvent>
+#include <QApplication>
 #include <QPainter>
 #include <QPalette>
-#include <QApplication>
+#include <QWheelEvent>
 
 #include <qmmp/qmmp.h>
 #include <qmmp/qmmpsettings.h>
@@ -11,8 +11,7 @@
 VolumeToolButton::VolumeToolButton(int volume, QWidget *parent, int min, int max) :
         QToolButton(parent), volume(volume), min(min), max(max), lastVolume(0)
 {
-    int newVolume = qMin(volume, max);
-    newVolume = qMax(volume, min);
+    int newVolume = limitVolume(volume);
     setVolume(newVolume, newVolume);
 
     if (volume == min)
@@ -30,15 +29,15 @@ VolumeToolButton::VolumeToolButton(int volume, QWidget *parent, int min, int max
     }
 }
 
+int VolumeToolButton::limitVolume(int volume) const
+{
+    return qMax(qMin(volume, max), min);
+}
+
 void VolumeToolButton::wheelEvent(QWheelEvent *event)
 {
     int d = event->delta()/12;
-    int newVolume = volume + d;
-    if (newVolume > max)
-        newVolume = max;
-    else if (newVolume < min)
-        newVolume = min;
-
+    int newVolume = limitVolume(volume + d);
     setVolume(newVolume, newVolume);
     event->accept();
 }

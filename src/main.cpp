@@ -1,7 +1,7 @@
 #include <QApplication>
-#include <QTranslator>
-#include <QLocale>
 #include <QLibraryInfo>
+#include <QLocale>
+#include <QTranslator>
 #include <qmmp/qmmp.h>
 #include <qmmpui/mediaplayer.h>
 #include <qmmpui/uihelper.h>

@@ -14,10 +14,10 @@
    along with Clementine.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "trackslider.h"
-
 #include <QMouseEvent>
 #include <QStyle>
+
+#include "trackslider.h"
 
 TrackSlider::TrackSlider(QWidget *parent) :
         QSlider(Qt::Horizontal, parent)

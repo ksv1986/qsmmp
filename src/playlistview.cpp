@@ -1,13 +1,13 @@
+#include <QAction>
+#include <QApplication>
+#include <QDebug>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
 #include <QDropEvent>
 #include <QEvent>
-#include <QDebug>
-#include <QUrl>
 #include <QHeaderView>
-#include <QAction>
 #include <QMap>
-#include <QApplication>
+#include <QUrl>
 
 #include <qmmpui/uihelper.h>
 
@@ -15,7 +15,7 @@
 #include "abstractplaylistmodel.h"
 #include "settings.h"
 
-PlaylistView::PlaylistView(QWidget *parent=0)
+PlaylistView::PlaylistView(QWidget *parent)
         : QTreeView(parent)
 {
     header()->setMovable(true);

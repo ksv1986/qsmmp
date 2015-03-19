@@ -8,6 +8,8 @@ class QStringList;
 
 class Settings
 {
+    Q_DISABLE_COPY(Settings)
+
     QString _rootFSCollectionDirectory;
     bool _startHidden;
     bool _hideOnClose;
@@ -17,10 +19,6 @@ class Settings
     QByteArray _playlistState;
 
     Settings();
-    Settings& operator=(Settings&) {
-        return *this;
-    }
-    Settings(Settings&) {}
 
     void load();
 public:
@@ -37,25 +35,25 @@ public:
     void setStartHidden(bool startHidden) {
         _startHidden = startHidden;
     }
-    bool startHidden() {
+    bool startHidden() const {
         return _startHidden;
     }
 
     void setHideOnClose(bool hideOnClose) {
         _hideOnClose = hideOnClose;
     }
-    bool hideOnClose() {
+    bool hideOnClose() const {
         return _hideOnClose;
     }
 
     void setUseStandardIcons(bool useStandardIcons){
         _useStandardIcons = useStandardIcons;
     }
-    bool useStandardIcons(){
+    bool useStandardIcons() const {
         return _useStandardIcons;
     }
 
-    QRect windowGeometry() {
+    QRect windowGeometry() const {
         return QRect(_pos, _size);
     }
     void setWindowGeometry(QRect val) {
@@ -63,7 +61,7 @@ public:
         _size = val.size();
     }
 
-    QByteArray playlistState() {
+    QByteArray playlistState() const {
         return _playlistState;
     }
     void setPlaylistState(QByteArray val) {

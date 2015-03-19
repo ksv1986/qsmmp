@@ -3,8 +3,8 @@
 
 #include <QTreeView>
 
-class QDragMoveEvent;
 class QDragEnterEvent;
+class QDragMoveEvent;
 class QDropEvent;
 class QMouseEvent;
 
@@ -12,7 +12,7 @@ class PlaylistView : public QTreeView
 {
     Q_OBJECT
 public:
-    PlaylistView(QWidget *parent);
+    PlaylistView(QWidget *parent = 0);
     virtual ~PlaylistView();
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dropEvent(QDropEvent *event);

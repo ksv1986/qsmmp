@@ -18,18 +18,18 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <QSettings>
 #include <QDir>
+#include <QSettings>
 
-#include <qmmp/inputsourcefactory.h>
+#include <qmmp/abstractengine.h>
 #include <qmmp/decoderfactory.h>
-#include <qmmp/outputfactory.h>
-#include <qmmp/visualfactory.h>
 #include <qmmp/effectfactory.h>
 #include <qmmp/effect.h>
-#include <qmmp/soundcore.h>
 #include <qmmp/enginefactory.h>
-#include <qmmp/abstractengine.h>
+#include <qmmp/inputsourcefactory.h>
+#include <qmmp/outputfactory.h>
+#include <qmmp/soundcore.h>
+#include <qmmp/visualfactory.h>
 #include <qmmpui/generalfactory.h>
 #include <qmmpui/general.h>
 

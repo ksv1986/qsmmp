@@ -1,11 +1,10 @@
 #ifndef EQDIALOG_H
 #define EQDIALOG_H
-#include "ui_eqdialog.h"
-#include <QMenu>
-#include <QAction>
-#include <QSettings>
-#include <QDebug>
 
+#include <QDialog>
+#include "ui_eqdialog.h"
+
+class QAction;
 class SoundCore;
 
 class EQDialog : public QDialog
@@ -14,14 +13,8 @@ class EQDialog : public QDialog
 public:
     EQDialog(SoundCore *soundCore, QWidget *parent = 0);
     ~EQDialog();
-    Ui::EQDialog ui;
-    QAction *actionLoadEQ;
-    QAction *actionSavePreloadEQ;
-    QAction *actionSaveAutoPreloadEQ;
-    QAction *actionImportEQ;
-    QAction *actionClearEQ;
-    void writeSettings();
 
+    void writeSettings();
 
 public slots:
     void onOffUiSlot(bool);
@@ -39,8 +32,15 @@ protected:
     void changeEvent(QEvent *e);
 
 private:
-    QMenu *presetsMenu;
     void readSettings();
+
+    Ui::EQDialog ui;
+    QAction *actionLoadEQ;
+    QAction *actionSavePreloadEQ;
+    QAction *actionSaveAutoPreloadEQ;
+    QAction *actionImportEQ;
+    QAction *actionClearEQ;
+    QMenu *presetsMenu;
     bool EQState;
     SoundCore *m_core;
 };

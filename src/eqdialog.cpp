@@ -1,5 +1,9 @@
-#include "eqdialog.h"
+#include <QAction>
+#include <QMenu>
+#include <QSettings>
+
 #include <qmmp/soundcore.h>
+#include "eqdialog.h"
 
 EQDialog::EQDialog(SoundCore *soundCore, QWidget *parent) :
         QDialog(parent)

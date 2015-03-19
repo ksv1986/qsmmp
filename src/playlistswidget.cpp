@@ -1,8 +1,8 @@
-#include "playlistswidget.h"
-
-#include <QMenu>
 #include <QAction>
 #include <QInputDialog>
+#include <QMenu>
+
+#include "playlistswidget.h"
 
 PlaylistsWidget::PlaylistsWidget(QWidget *parent) :
     QListWidget(parent)

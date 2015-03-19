@@ -21,34 +21,31 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QMenu>
 #include <QSystemTrayIcon>
-#include <qmmp/qmmp.h>
-#include <ui_mainwindow.h>
+#include "ui_mainwindow.h"
 
-class QLabel;
 class QFileSystemModel;
+class QLabel;
 class QSignalMapper;
 
-class PlayListModel;
 class MediaPlayer;
-class SoundCore;
-class VisualMenu;
 class PlayListManager;
-class TrackSlider;
-class UiHelper;
+class PlayListModel;
 class RecursiveSortFilterProxyModel;
 class ScrollingTrayIcon;
+class SoundCore;
+class TrackSlider;
+class UiHelper;
+class VisualMenu;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
+    ~MainWindow();
     virtual void resizeEvent(QResizeEvent *event);
     virtual void moveEvent(QMoveEvent *event);
-
-    ~MainWindow();
 
 private slots:
     void addFiles();
@@ -77,8 +74,8 @@ private:
     void createGlobalShortcut(const QString &key, const QObject *receiver, const char *member);
     void mapSortAction(QAction *action, int mode);
 
-    PlayListModel *m_model;
     Ui::MainWindow ui;
+    PlayListModel *m_model;
     MediaPlayer *m_player;
     TrackSlider *m_slider;
     QLabel *m_label;

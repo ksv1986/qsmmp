@@ -18,14 +18,14 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <QVBoxLayout>
+#include <QApplication>
 #include <QLabel>
-#include <QApplication>
-#include <QTimer>
 #include <QSettings>
-#include <QApplication>
-#include <qmmp/soundcore.h>
+#include <QTimer>
+#include <QVBoxLayout>
+
 #include <qmmp/metadatamanager.h>
+#include <qmmp/soundcore.h>
 #include <qmmpui/metadataformatter.h>
 #include <qmmpui/playlisttrack.h>
 

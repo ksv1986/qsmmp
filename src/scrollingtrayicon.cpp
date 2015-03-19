@@ -1,5 +1,5 @@
-#include "scrollingtrayicon.h"
 #include <QWheelEvent>
+#include "scrollingtrayicon.h"
 
 ScrollingTrayIcon::ScrollingTrayIcon(QObject *parent) :
     QSystemTrayIcon(parent)
