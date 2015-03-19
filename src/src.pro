@@ -53,14 +53,17 @@ FORMS += mainwindow.ui \
     eqdialog.ui \
     settingswidget.ui
 RESOURCES += stuff.qrc
-INCLUDEPATH += /usr/include/
 TRANSLATIONS = translations/qsmmp_ru.ts
 QMAKE_CXXFLAGS += \
     -Wall -Werror -Wextra \
 
 unix{
 isEmpty(LIB_DIR){
-    LIB_DIR = /usr/lib
+    !macx:contains(QMAKE_HOST.arch, x86_64) {
+        LIB_DIR = /usr/lib64
+    } else {
+        LIB_DIR = /usr/lib
+    }
 }
 target.path = $$LIB_DIR/qmmp/Ui
 INSTALLS += target
@@ -69,14 +72,3 @@ INSTALLS += target
 documentation.path = /usr/share/doc/qsmmp
 documentation.files = ../README ../COPYING
 INSTALLS += documentation
-
-
-
-
-
-
-
-
-
-
-
