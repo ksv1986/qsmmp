@@ -21,6 +21,7 @@
 #include <QApplication>
 #include <QChar>
 #include <QDebug>
+#include <QDesktopServices>
 #include <QFileInfo>
 #include <QFont>
 #include <QMimeData>
@@ -28,9 +29,20 @@
 #include <QSet>
 #include <QUrl>
 
+#include <qmmpui/playlistmodel.h>
 #include <qmmpui/playlisttrack.h>
 
 #include "abstractplaylistmodel.h"
+
+enum {
+    columnPlaying = 0,
+    columnTrack,
+    columnArtist,
+    columnTitle,
+    columnYear,
+    columnAlbum,
+    columnCount
+};
 
 AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, QObject *parent) : QAbstractListModel(parent)
 {
@@ -43,7 +55,7 @@ AbstractPlaylistModel::~AbstractPlaylistModel() {}
 
 int AbstractPlaylistModel::columnCount (const QModelIndex &) const
 {
-    return 5;
+    return ::columnCount;
 }
 
 void AbstractPlaylistModel::listChanged()
@@ -62,24 +74,23 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole && index.row () < m_pl->count())
     {
         PlayListTrack *item = m_pl->track(index.row ());
-        if (index.column() == 0)
+        switch (index.column()) {
+        case columnTrack:
             return (*item)[Qmmp::TRACK];
-        if (index.column() == 1)
+        case columnArtist:
             return (*item)[Qmmp::ARTIST];
-        if (index.column() == 2)
+        case columnTitle:
             return (*item)[Qmmp::TITLE].isEmpty() ? QFileInfo(item->url()).fileName() : (*item)[Qmmp::TITLE];
-        if (index.column() == 3)
+        case columnYear:
             return (*item)[Qmmp::YEAR];
-        if (index.column() == 4)
+        case columnAlbum:
             return (*item)[Qmmp::ALBUM];
+        }
     }
-    else if (role == Qt::BackgroundRole && index.row () == m_pl->currentIndex())
+    else if (role == Qt::DecorationRole && index.column() == columnPlaying &&
+                                           index.row () == m_pl->currentIndex())
     {
-        return QApplication::palette().brush(QPalette::Current, QPalette::Background);
-    }
-    else if (role == Qt::ForegroundRole && index.row () == m_pl->currentIndex())
-    {
-        return QApplication::palette().brush(QPalette::Current, QPalette::Foreground);
+        return QPixmap(":/images/play.png");
     }
     return QVariant();
 }
@@ -88,16 +99,18 @@ QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientat
 {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
     {
-        if (section == 0)
+        switch (section) {
+        case columnTrack:
             return tr("#");
-        if (section == 1)
+        case columnArtist:
             return tr("Artist");
-        if (section == 2)
+        case columnTitle:
             return tr("Title");
-        if (section == 3)
+        case columnYear:
             return tr("Year");
-        if (section == 4)
+        case columnAlbum:
             return tr("Album");
+        }
     }
     else if (role == Qt::DisplayRole)
     {
@@ -142,22 +155,23 @@ void AbstractPlaylistModel::sort(int column, Qt::SortOrder)
     int mode = 0;
     switch (column)
     {
-    case 0:
+    case columnTrack:
         mode = PlayListModel::TRACK;
         break;
-    case 1:
+    case columnArtist:
         mode = PlayListModel::ARTIST;
         break;
-    case 2:
+    case columnTitle:
         mode = PlayListModel::TITLE;
         break;
-    case 3:
+    case columnYear:
         mode = PlayListModel::DATE;
         break;
-    case 4:
+    case columnAlbum:
         mode = PlayListModel::ALBUM;
         break;
-
+    default:
+        return;
     }
 
     m_pl->sort(mode);
@@ -166,6 +180,25 @@ void AbstractPlaylistModel::sort(int column, Qt::SortOrder)
 void AbstractPlaylistModel::showDetails()
 {
     m_pl->showDetails();
+}
+
+PlayListTrack *AbstractPlaylistModel::selectedTrack() const
+{
+    int index = m_pl->firstSelectedLower(-1);
+    if (index < 0)
+        return NULL;
+    return m_pl->track(index);
+}
+
+void AbstractPlaylistModel::openDirectory()
+{
+    PlayListTrack *selected = selectedTrack();
+    if (!selected)
+        return;
+
+    QFileInfo info(selected->url());
+    if (info.exists())
+        QDesktopServices::openUrl(QUrl::fromLocalFile(info.absolutePath()));
 }
 
 Qt::ItemFlags AbstractPlaylistModel::flags(const QModelIndex &index) const

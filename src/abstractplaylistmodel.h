@@ -23,7 +23,9 @@
 
 #include <QAbstractListModel>
 
-#include <qmmpui/playlistmodel.h>
+class PlayListModel;
+class PlayListTrack;
+class SimpleSelection;
 
 class AbstractPlaylistModel : public QAbstractListModel
 {
@@ -66,6 +68,7 @@ signals:
 public slots:
     void listChanged();
     void showDetails();
+    void openDirectory();
     void currentPlayListChanged(PlayListModel *current, PlayListModel *previous);
 
 private slots:
@@ -73,6 +76,7 @@ private slots:
 
 private:
     QString formatTime(qint64 time) const;
+    PlayListTrack *selectedTrack() const;
 
     PlayListModel *m_pl;
     mutable QList<PlayListTrack*> itemsToMove;

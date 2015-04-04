@@ -50,10 +50,15 @@ void PlaylistView::setup()
     action->setShortcut(tr("Ctrl+I"));
     addAction( action );
 
+    QAction *openDir = new QAction( tr("Open Item Directory"), header() );
+    openDir->setShortcut(QKeySequence("Ctrl+D"));
+    addAction( openDir );
+
     addActions(UiHelper::instance()->actions(UiHelper::PLAYLIST_MENU));
 
     AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
     connect( action, SIGNAL(triggered()), playlist, SLOT(showDetails()));
+    connect(openDir, SIGNAL(triggered()), playlist, SLOT(openDirectory()));
     connect(playlist, SIGNAL(currentChanged(QModelIndex)), this, SLOT(scrollToIndex(QModelIndex)));
 }
 

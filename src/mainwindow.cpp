@@ -119,7 +119,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionClear, SIGNAL(triggered()),m_model, SLOT(clear()));
     connect(ui.actionShuffle, SIGNAL(triggered()), m_model, SLOT(randomizeList()));
     connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
-    connect(m_model, SIGNAL(currentChanged()), SLOT(currentChanged()));
+    connect(m_core, SIGNAL(metaDataChanged()), SLOT(currentChanged()));
     connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
     connect(ui.actionRemoveFSItem, SIGNAL(triggered()), SLOT(removeFSItem()));
     connect(ui.actionRenameFSItem, SIGNAL(triggered()), SLOT(renameFSItem()));
