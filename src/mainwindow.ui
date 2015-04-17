@@ -163,6 +163,7 @@
    <addaction name="actionPause"/>
    <addaction name="actionStop"/>
    <addaction name="actionNext"/>
+   <addaction name="actionRandom"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
    <property name="locale">
@@ -410,6 +411,14 @@
   <action name="actionSortByFilename">
    <property name="text">
     <string>Sort by File name</string>
+   </property>
+  </action>
+  <action name="actionRandom">
+   <property name="text">
+    <string>Random</string>
+   </property>
+   <property name="toolTip">
+    <string>Play random track in current playlist</string>
    </property>
   </action>
  </widget>

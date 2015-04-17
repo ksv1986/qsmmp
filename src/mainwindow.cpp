@@ -105,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionNext, SIGNAL(triggered()), m_player, SLOT(next()));
     connect(ui.actionPrevious, SIGNAL(triggered()), m_player, SLOT(previous()));
     connect(ui.actionStop, SIGNAL(triggered()), m_player, SLOT(stop()));
+    connect(ui.actionRandom, SIGNAL(triggered()), SLOT(playRandom()));
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
     connect(ui.clearButton, SIGNAL(clicked()), ui.actionClear, SLOT(trigger()));
     connect(ui.actionRemove, SIGNAL(triggered()), ui.playlistView, SLOT(removeSelected()));
@@ -236,6 +237,13 @@ MainWindow::~MainWindow()
 void MainWindow::addFiles()
 {
     m_uiHelper->addFile();
+}
+
+void MainWindow::playRandom()
+{
+    m_player->stop();
+    m_model->setCurrent(qrand() % m_model->count());
+    m_player->play();
 }
 
 void MainWindow::playSelected(const QModelIndex &i)

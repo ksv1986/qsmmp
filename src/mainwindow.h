@@ -49,6 +49,7 @@ public:
 
 private slots:
     void addFiles();
+    void playRandom();
     void playSelected(const QModelIndex &i);
     void updatePosition(qint64 pos);
     void seek();
