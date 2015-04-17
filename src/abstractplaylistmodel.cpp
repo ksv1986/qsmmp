@@ -196,7 +196,16 @@ void AbstractPlaylistModel::openDirectory()
     if (!selected)
         return;
 
-    QFileInfo info(selected->url());
+    QString path(selected->url());
+    if (path.contains(":///")) { //pseudo-protocol
+        path = QUrl(path).path();
+        path.replace(QString(QUrl::toPercentEncoding("#")), "#");
+        path.replace(QString(QUrl::toPercentEncoding("?")), "?");
+        path.replace(QString(QUrl::toPercentEncoding("%")), "%");
+    } else if (path.contains("://")) {
+        return;
+    }
+    QFileInfo info(path);
     if (info.exists())
         QDesktopServices::openUrl(QUrl::fromLocalFile(info.absolutePath()));
 }
