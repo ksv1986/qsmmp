@@ -140,6 +140,8 @@
     <addaction name="actionClear"/>
     <addaction name="actionSelectAll"/>
     <addaction name="actionRemove"/>
+    <addaction name="actionRemoveDuplicates"/>
+    <addaction name="actionRemoveInvalidTracks"/>
     <addaction name="actionShuffle"/>
     <addaction name="menuSort"/>
    </widget>
@@ -421,12 +423,23 @@
     <string>Play random track in current playlist</string>
    </property>
   </action>
+  <action name="actionRemoveInvalidTracks">
+   <property name="text">
+    <string>Remove invalid tracks</string>
+   </property>
+  </action>
+  <action name="actionRemoveDuplicates">
+   <property name="text">
+    <string>Remove duplicates</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QxtLabel</class>
    <extends>QFrame</extends>
    <header>QxtLabel</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>PlaylistView</class>

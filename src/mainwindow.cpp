@@ -109,6 +109,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionOpen, SIGNAL(triggered()),SLOT(addFiles()));
     connect(ui.clearButton, SIGNAL(clicked()), ui.actionClear, SLOT(trigger()));
     connect(ui.actionRemove, SIGNAL(triggered()), ui.playlistView, SLOT(removeSelected()));
+    connect(ui.actionRemoveDuplicates, SIGNAL(triggered()), m_model, SLOT(removeDuplicates()));
+    connect(ui.actionRemoveInvalidTracks, SIGNAL(triggered()), m_model, SLOT(removeInvalidTracks()));
     connect(ui.actionSettings, SIGNAL(triggered()), SLOT(showSettings()));
     connect(ui.actionSelectAll, SIGNAL(triggered()), ui.playlistView, SLOT(selectAll()));
     connect(ui.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
