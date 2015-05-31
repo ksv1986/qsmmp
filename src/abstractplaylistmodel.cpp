@@ -41,6 +41,8 @@ enum {
     columnTitle,
     columnYear,
     columnAlbum,
+    columnGenre,
+    columnLength,
     columnCount
 };
 
@@ -85,6 +87,10 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
             return (*item)[Qmmp::YEAR];
         case columnAlbum:
             return (*item)[Qmmp::ALBUM];
+        case columnGenre:
+            return (*item)[Qmmp::GENRE];
+        case columnLength:
+            return item->formattedLength();
         }
     }
     else if (role == Qt::DecorationRole && index.column() == columnPlaying &&
@@ -110,6 +116,10 @@ QVariant AbstractPlaylistModel::headerData(int section, Qt::Orientation orientat
             return tr("Year");
         case columnAlbum:
             return tr("Album");
+        case columnGenre:
+            return tr("Genre");
+        case columnLength:
+            return tr("Length");
         }
     }
     else if (role == Qt::DisplayRole)
