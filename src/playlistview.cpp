@@ -1,12 +1,14 @@
 #include <QAction>
 #include <QApplication>
 #include <QDebug>
+#include <QDrag>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
 #include <QDropEvent>
 #include <QEvent>
 #include <QHeaderView>
 #include <QMap>
+#include <QMimeData>
 #include <QUrl>
 
 #include <qmmpui/uihelper.h>
@@ -18,8 +20,8 @@
 PlaylistView::PlaylistView(QWidget *parent)
         : QTreeView(parent)
 {
-    header()->setMovable(true);
-    header()->setClickable(true);
+    header()->setSectionsMovable(true);
+    header()->setSectionsClickable(true);
     connect(header(), SIGNAL(sectionClicked(int)), this, SLOT(sectionClicked(int)));
 }
 
@@ -160,7 +162,7 @@ void PlaylistView::mousePressEvent(QMouseEvent *e)
             playlist->clearSelection();
 
         if (playlist->isSelected(row) && (e->modifiers() == Qt::NoModifier))
-            m_select_on_release = TRUE;
+            m_select_on_release = true;
 
         m_pressed_row = row;
         if ((Qt::ShiftModifier & e->modifiers()))

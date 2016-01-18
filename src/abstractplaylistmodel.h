@@ -23,15 +23,18 @@
 
 #include <QAbstractListModel>
 
+class PlayListManager;
 class PlayListModel;
 class PlayListTrack;
 class SimpleSelection;
+class SoundCore;
 
 class AbstractPlaylistModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    AbstractPlaylistModel(PlayListModel *pl, QObject *parent);
+    AbstractPlaylistModel(PlayListModel *pl, PlayListManager *manager, SoundCore *core,
+                          QObject *parent);
     ~AbstractPlaylistModel();
 
     virtual int columnCount (const QModelIndex &parent = QModelIndex()) const;
@@ -66,19 +69,19 @@ signals:
     void currentChanged(const QModelIndex& index);
 
 public slots:
-    void listChanged();
+    void listChanged(int flags);
     void showDetails();
     void openDirectory();
     void currentPlayListChanged(PlayListModel *current, PlayListModel *previous);
-
-private slots:
-    void currentChanged();
 
 private:
     QString formatTime(qint64 time) const;
     PlayListTrack *selectedTrack() const;
 
     PlayListModel *m_pl;
+    PlayListManager *m_pl_manager;
+    SoundCore *m_core;
+    int m_currentRow;
     mutable QList<PlayListTrack*> itemsToMove;
 };
 

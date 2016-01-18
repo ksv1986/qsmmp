@@ -32,7 +32,6 @@
 #include <QSettings>
 #include <QSignalMapper>
 #include <QSlider>
-#include <QxtGlobalShortcut>
 
 #include <qmmp/decoder.h>
 #include <qmmp/metadatamanager.h>
@@ -59,6 +58,7 @@
 #include "volumetoolbutton.h"
 
 static const QString defaultTitle = "Qsmmp";
+static const QString defaultTitleTemplate = "%if(%t,%t,%f)";
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -76,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_uiHelper = UiHelper::instance();
     m_model = m_manager->currentPlayList();
     m_sortMapper = new QSignalMapper(this);
+    m_titleTemplate = defaultTitleTemplate;
     createTrayIcon();
 
     //set geometry
@@ -121,7 +122,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionEqualizer, SIGNAL(triggered()), this, SLOT(showEQ()));
     connect(ui.actionClear, SIGNAL(triggered()),m_model, SLOT(clear()));
     connect(ui.actionShuffle, SIGNAL(triggered()), m_model, SLOT(randomizeList()));
-    connect(m_model, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     connect(m_core, SIGNAL(metaDataChanged()), SLOT(currentChanged()));
     connect(ui.shuffleButton, SIGNAL(clicked()), ui.actionShuffle, SLOT(trigger()));
     connect(ui.actionRemoveFSItem, SIGNAL(triggered()), SLOT(removeFSItem()));
@@ -136,13 +136,11 @@ MainWindow::MainWindow(QWidget *parent)
     mapSortAction(ui.actionSortByTrack,    PlayListModel::TRACK);
     connect(m_sortMapper, SIGNAL(mapped(int)), this, SLOT(sortBy(int)));
 
-    createGlobalShortcuts();
-
     m_visMenu = new VisualMenu(this);
     ui.actionVisualization->setMenu(m_visMenu);
     Visual::initialize(this, m_visMenu, SLOT(updateActions()));
 
-    AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, this);
+    AbstractPlaylistModel *m = new AbstractPlaylistModel(m_model, m_manager, m_core, this);
     ui.playlistView->setModel(m);
     ui.playlistView->setup();
 
@@ -322,7 +320,7 @@ void MainWindow::currentChanged()
 {
     QString title(defaultTitle);
     if (m_model->currentTrack())
-        title += " - " + m_model->currentTrack()->formattedTitle();
+        title += " - " + MetaDataFormatter(m_titleTemplate).format(m_model->currentTrack());
     setWindowTitle(title);
 }
 
@@ -333,12 +331,10 @@ void MainWindow::currentPlayListChanged(PlayListModel *current,PlayListModel *pr
     if (previous)
     {
         disconnect(ui.actionClear, SIGNAL(triggered()), previous, SLOT(clear()));
-        disconnect(previous, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
         disconnect(ui.actionShuffle, SIGNAL(triggered()), previous, SLOT(randomizeList()));
     }
 
     connect(ui.actionClear, SIGNAL(triggered()),current,SLOT(clear()));
-    connect(current, SIGNAL(listChanged()), ui.playlistView, SLOT(reset()));
     connect(ui.actionShuffle, SIGNAL(triggered()), current, SLOT(randomizeList()));
 }
 
@@ -423,24 +419,6 @@ void MainWindow::createTrayIcon()
     menu->addAction(ui.actionSettings);
     menu->addAction(ui.actionQuit);
     m_trayIcon->setContextMenu(menu);
-}
-
-void MainWindow::createGlobalShortcuts()
-{
-    createGlobalShortcut("Ctrl+Alt+Z", m_player, SLOT(previous()));
-    createGlobalShortcut("Ctrl+Alt+X", m_player, SLOT(play()));
-    createGlobalShortcut("Ctrl+Alt+C", m_core,   SLOT(pause()));
-    createGlobalShortcut("Ctrl+Alt+V", m_player, SLOT(stop()));
-    createGlobalShortcut("Ctrl+Alt+B", m_player, SLOT(next()));
-    createGlobalShortcut("Ctrl+Alt+Up",   this,  SLOT(volumeUp()));
-    createGlobalShortcut("Ctrl+Alt+Down", this,  SLOT(volumeDown()));
-}
-
-void MainWindow::createGlobalShortcut(const QString &key, const QObject *receiver, const char *member)
-{
-    QxtGlobalShortcut* shortcut = new QxtGlobalShortcut(this);
-    shortcut->setShortcut(QKeySequence(key));
-    connect(shortcut, SIGNAL(activated()), receiver, member);
 }
 
 void MainWindow::volumeDown()

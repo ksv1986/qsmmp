@@ -29,6 +29,8 @@
 #include <QSet>
 #include <QUrl>
 
+#include <qmmp/soundcore.h>
+#include <qmmpui/playlistmanager.h>
 #include <qmmpui/playlistmodel.h>
 #include <qmmpui/playlisttrack.h>
 
@@ -46,11 +48,15 @@ enum {
     columnCount
 };
 
-AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, QObject *parent) : QAbstractListModel(parent)
+AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, PlayListManager *manager,
+                                             SoundCore *core, QObject *parent)
+    : QAbstractListModel(parent)
+    , m_pl(pl)
+    , m_pl_manager(manager)
+    , m_core(core)
+    , m_currentRow(0)
 {
-    m_pl = pl;
-    connect(m_pl, SIGNAL(listChanged()), this, SLOT(listChanged()));
-    connect(m_pl, SIGNAL(currentChanged()), this, SLOT(currentChanged()));
+    connect(m_pl, SIGNAL(listChanged(int)), this, SLOT(listChanged(int)));
 }
 
 AbstractPlaylistModel::~AbstractPlaylistModel() {}
@@ -60,15 +66,23 @@ int AbstractPlaylistModel::columnCount (const QModelIndex &) const
     return ::columnCount;
 }
 
-void AbstractPlaylistModel::listChanged()
+void AbstractPlaylistModel::listChanged(int flags)
 {
-    reset();
-}
+    if (flags & PlayListModel::STRUCTURE) {
+        beginResetModel();
+        endResetModel();
+        return;
+    }
 
-void AbstractPlaylistModel::currentChanged()
-{
-    int row = m_pl->currentIndex();
-    currentChanged(index(row));
+    if (flags & PlayListModel::CURRENT) {
+        int row = m_pl->currentIndex();
+        QModelIndex previous(index(m_currentRow)), current(index(row));
+
+        m_currentRow = row;
+        emit dataChanged(previous, previous);
+        emit dataChanged(current, current);
+        emit currentChanged(current);
+    }
 }
 
 QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
@@ -82,7 +96,9 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
         case columnArtist:
             return (*item)[Qmmp::ARTIST];
         case columnTitle:
-            return (*item)[Qmmp::TITLE].isEmpty() ? QFileInfo(item->url()).fileName() : (*item)[Qmmp::TITLE];
+            return (*item)[Qmmp::TITLE].isEmpty()
+                    ? QFileInfo(item->url()).fileName()
+                    : (*item)[Qmmp::TITLE];
         case columnYear:
             return (*item)[Qmmp::YEAR];
         case columnAlbum:
@@ -92,11 +108,28 @@ QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
         case columnLength:
             return item->formattedLength();
         }
-    }
-    else if (role == Qt::DecorationRole && index.column() == columnPlaying &&
-                                           index.row () == m_pl->currentIndex())
+    } else
+    if (role == Qt::DecorationRole)
     {
-        return QPixmap(":/images/play.png");
+        if (!m_pl->currentTrack())
+            return QVariant();
+
+        if (m_pl != m_pl_manager->currentPlayList())
+            return QVariant();
+        if (index.column() == columnPlaying && index.row() == m_pl->currentIndex()) {
+            switch (m_core->state())
+            {
+            case Qmmp::Buffering:
+            case Qmmp::Playing:
+                return QPixmap(":/images/play.png");
+            case Qmmp::Paused:
+                return QPixmap(":/images/pause.png");
+            case Qmmp::Stopped:
+            case Qmmp::NormalError:
+            case Qmmp::FatalError:
+                return QPixmap(":/images/stop.png");
+            }
+        }
     }
     return QVariant();
 }
@@ -353,7 +386,7 @@ const SimpleSelection& AbstractPlaylistModel::getSelection(int row)
 void AbstractPlaylistModel::setPlaylist(PlayListModel *model)
 {
     m_pl = model;
-    listChanged();
+    listChanged(PlayListModel::STRUCTURE);
 }
 
 void AbstractPlaylistModel::currentPlayListChanged(PlayListModel *current, PlayListModel *previous)

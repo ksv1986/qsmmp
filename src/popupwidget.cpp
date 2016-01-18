@@ -95,7 +95,7 @@ void PopupWidget::prepare(PlayListTrack *item, QPoint pos)
     move(pos);
     QString title = m_template;
     MetaDataFormatter f(title);
-    title = f.parse(item);
+    title = f.format(item);
     m_label1->setText(title);
     qApp->processEvents();
     updateGeometry ();

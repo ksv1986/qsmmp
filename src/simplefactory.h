@@ -9,6 +9,7 @@ class QTranslator;
 class SimpleFactory : public QObject, public UiFactory
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qmmp.qmmpui.UiFactoryInterface.1.0")
     Q_INTERFACES(UiFactory)
 public:
     const UiProperties properties() const;

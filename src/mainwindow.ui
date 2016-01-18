@@ -217,7 +217,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QxtLabel" name="fsCollectionPathLabel">
+            <widget class="QLabel" name="fsCollectionPathLabel">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -225,7 +225,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>QxtLabel</string>
+              <string>fsCollectionPathLabel</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -435,12 +435,6 @@
   </action>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>QxtLabel</class>
-   <extends>QFrame</extends>
-   <header>QxtLabel</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>PlaylistView</class>
    <extends>QTreeView</extends>

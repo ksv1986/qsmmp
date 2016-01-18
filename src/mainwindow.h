@@ -71,8 +71,6 @@ private slots:
 
 private:
     void createTrayIcon();
-    void createGlobalShortcuts();
-    void createGlobalShortcut(const QString &key, const QObject *receiver, const char *member);
     void mapSortAction(QAction *action, int mode);
 
     Ui::MainWindow ui;
@@ -88,6 +86,7 @@ private:
     UiHelper *m_uiHelper;
     ScrollingTrayIcon *m_trayIcon;
     QSignalMapper *m_sortMapper;
+    QString m_titleTemplate;
 };
 
 #endif

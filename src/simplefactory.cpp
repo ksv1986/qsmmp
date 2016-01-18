@@ -32,5 +32,3 @@ QTranslator *SimpleFactory::createTranslator(QObject *parent)
     translator->load(QString(":/translations/qsmmp_") + locale);
     return translator;
 }
-
-Q_EXPORT_PLUGIN2(simple, SimpleFactory)

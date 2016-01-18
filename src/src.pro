@@ -1,3 +1,4 @@
+QT += widgets
 UI_DIR=./.build/ui/
 MOC_DIR=./.build/moc/
 OBJECTS_DIR=./.build/obj/
@@ -42,9 +43,8 @@ TEMPLATE = lib
 CONFIG += warn_on \
     thread \
     qt \
-    plugin \
-    qxt
-QXT += core gui
+    plugin
+
 TARGET = qsmmp
 LIBS += -lqmmp \
     -lqmmpui
