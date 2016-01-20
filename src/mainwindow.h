@@ -21,7 +21,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSystemTrayIcon>
 #include "ui_mainwindow.h"
 
 class QFileSystemModel;
@@ -32,7 +31,6 @@ class MediaPlayer;
 class PlayListManager;
 class PlayListModel;
 class RecursiveSortFilterProxyModel;
-class ScrollingTrayIcon;
 class SoundCore;
 class TrackSlider;
 class UiHelper;
@@ -65,12 +63,10 @@ private slots:
     void sortBy(int);
     void currentChanged();
     void currentPlayListChanged(PlayListModel*,PlayListModel*);
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void volumeUp();
     void volumeDown();
 
 private:
-    void createTrayIcon();
     void mapSortAction(QAction *action, int mode);
 
     Ui::MainWindow ui;
@@ -84,7 +80,6 @@ private:
     PlayListManager *m_manager;
     QString m_lastDir;
     UiHelper *m_uiHelper;
-    ScrollingTrayIcon *m_trayIcon;
     QSignalMapper *m_sortMapper;
     QString m_titleTemplate;
 };

@@ -20,8 +20,7 @@ SOURCES += \
     settingswidget.cpp \
     playlistswidget.cpp \
     playlistbar.cpp \
-    main.cpp \
-    scrollingtrayicon.cpp
+    main.cpp
 HEADERS += mainwindow.h \
     abstractplaylistmodel.h \
     settings.h \
@@ -37,8 +36,7 @@ HEADERS += mainwindow.h \
     simplefactory.h \
     settingswidget.h \
     playlistswidget.h \
-    playlistbar.h \
-    scrollingtrayicon.h
+    playlistbar.h
 TEMPLATE = lib
 CONFIG += warn_on \
     thread \

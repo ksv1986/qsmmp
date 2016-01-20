@@ -32,6 +32,7 @@
 #include <QSettings>
 #include <QSignalMapper>
 #include <QSlider>
+#include <QSystemTrayIcon>
 
 #include <qmmp/decoder.h>
 #include <qmmp/metadatamanager.h>
@@ -50,7 +51,6 @@
 #include "eqdialog.h"
 #include "extendedfilesystemmodel.h"
 #include "mainwindow.h"
-#include "scrollingtrayicon.h"
 #include "settings.h"
 #include "settingswidget.h"
 #include "trackslider.h"
@@ -77,7 +77,6 @@ MainWindow::MainWindow(QWidget *parent)
     m_model = m_manager->currentPlayList();
     m_sortMapper = new QSignalMapper(this);
     m_titleTemplate = defaultTitleTemplate;
-    createTrayIcon();
 
     //set geometry
     move(Settings::instance().windowGeometry().topLeft());
@@ -180,11 +179,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_manager, SIGNAL(currentPlayListChanged(PlayListModel*,PlayListModel*)), m, SLOT(currentPlayListChanged(PlayListModel*,PlayListModel*)));
 
     connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
-    connect(m_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-                this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
-    connect(m_trayIcon, SIGNAL(wheelScrolled(int)), m_core, SLOT(changeVolume(int)));
-
-    m_trayIcon->show();
     setVisible(!Settings::instance().startHidden() || !m_uiHelper->visibilityControl());
 }
 
@@ -404,23 +398,6 @@ void MainWindow::sortBy(int mode)
     m_model->sort(mode);
 }
 
-void MainWindow::createTrayIcon()
-{
-    m_trayIcon = new ScrollingTrayIcon(this);
-    m_trayIcon->setIcon(windowIcon());
-    QMenu *menu = new QMenu(this);
-    menu->addAction(ui.actionOpen);
-    menu->addAction(ui.actionPrevious);
-    menu->addAction(ui.actionPlay);
-    menu->addAction(ui.actionPause);
-    menu->addAction(ui.actionStop);
-    menu->addAction(ui.actionNext);
-    menu->addSeparator();
-    menu->addAction(ui.actionSettings);
-    menu->addAction(ui.actionQuit);
-    m_trayIcon->setContextMenu(menu);
-}
-
 void MainWindow::volumeDown()
 {
     m_core->changeVolume(-3);
@@ -429,19 +406,4 @@ void MainWindow::volumeDown()
 void MainWindow::volumeUp()
 {
     m_core->changeVolume( 3);
-}
-
-void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-    switch (reason) {
-    case QSystemTrayIcon::Trigger:
-        setVisible(!isVisible());
-        if (isVisible()) {
-            showNormal();
-            raise();
-        }
-        break;
-    default:
-        ;
-    }
 }
