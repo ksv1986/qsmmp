@@ -211,14 +211,8 @@ void PlaylistView::mouseMoveEvent(QMouseEvent *event)
 
 void PlaylistView::startDrag(Qt::DropActions supportedActions)
 {
-    AbstractPlaylistModel *playlist = qobject_cast<AbstractPlaylistModel*>(model());
-    QList<PlayListItem*> items;
-    foreach(QModelIndex index, selectedIndexes())
-    {
-        items.append(playlist->item(index.row()));
-    }
-
-    if (items.count())
+    QModelIndexList selection = selectedIndexes();
+    if (selection.count())
     {
         QMimeData *mimeData = model()->mimeData(selectedIndexes());
         QDrag *drag = new QDrag(this);

@@ -62,7 +62,7 @@ private slots:
     void renameFSItem();
     void sortBy(int);
     void currentChanged();
-    void currentPlayListChanged(PlayListModel*,PlayListModel*);
+    void selectedPlayListChanged(PlayListModel*,PlayListModel*);
     void volumeUp();
     void volumeDown();
 

@@ -54,9 +54,13 @@ AbstractPlaylistModel::AbstractPlaylistModel(PlayListModel *pl, PlayListManager 
     , m_pl(pl)
     , m_pl_manager(manager)
     , m_core(core)
-    , m_currentRow(0)
+    , m_previousRow(-1)
 {
-    connect(m_pl, SIGNAL(listChanged(int)), this, SLOT(listChanged(int)));
+    connect(m_pl, SIGNAL(listChanged(int)), SLOT(listChanged(int)));
+    if (m_pl)
+        m_previousRow = m_pl->currentIndex();
+    connect(m_pl_manager, SIGNAL(selectedPlayListChanged(PlayListModel*,PlayListModel*)), SLOT(selectedPlayListChanged(PlayListModel*,PlayListModel*)));
+    connect(m_core, SIGNAL(stateChanged(Qmmp::State)), SLOT(stateChanged(Qmmp::State)));
 }
 
 AbstractPlaylistModel::~AbstractPlaylistModel() {}
@@ -73,16 +77,17 @@ void AbstractPlaylistModel::listChanged(int flags)
         endResetModel();
         return;
     }
-
     if (flags & PlayListModel::CURRENT) {
-        int row = m_pl->currentIndex();
-        QModelIndex previous(index(m_currentRow)), current(index(row));
-
-        m_currentRow = row;
-        emit dataChanged(previous, previous);
-        emit dataChanged(current, current);
-        emit currentChanged(current);
+        emit dataChanged(index(m_previousRow, columnPlaying), index(m_previousRow, columnPlaying));
+        m_previousRow = m_pl->currentIndex();
+        emit dataChanged(index(m_previousRow, columnPlaying), index(m_previousRow, columnPlaying));
     }
+}
+
+void AbstractPlaylistModel::stateChanged(Qmmp::State)
+{
+    if (m_pl_manager->currentPlayList() == m_pl)
+        emit dataChanged(index(m_pl->currentIndex(), columnPlaying), index(m_pl->currentIndex(), columnPlaying));
 }
 
 QVariant AbstractPlaylistModel::data (const QModelIndex &index, int role) const
@@ -317,6 +322,7 @@ bool AbstractPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction a
     if (row == -1)
         row = rowCount() - 1;
 
+    beginResetModel();
     if(action == Qt::MoveAction && itemsToMove.count() > 0)
     {
         foreach(PlayListTrack *item, itemsToMove)
@@ -340,10 +346,11 @@ bool AbstractPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction a
         }
     }
     itemsToMove.clear();
+    endResetModel();
     return true;
 }
 
-PlayListTrack *AbstractPlaylistModel::item(int row)
+PlayListTrack *AbstractPlaylistModel::track(int row)
 {
     return m_pl->track(row);
 }
@@ -353,9 +360,9 @@ void AbstractPlaylistModel::removeAt(int row)
     m_pl->removeTrack(row);
 }
 
-void AbstractPlaylistModel::removeItem(PlayListTrack *item)
+void AbstractPlaylistModel::removeItem(PlayListTrack *track)
 {
-    m_pl->removeTrack(item);
+    m_pl->removeTrack(track);
 }
 
 void AbstractPlaylistModel::clearSelection()
@@ -385,11 +392,13 @@ const SimpleSelection& AbstractPlaylistModel::getSelection(int row)
 
 void AbstractPlaylistModel::setPlaylist(PlayListModel *model)
 {
+    disconnect(m_pl, SIGNAL(listChanged(int)), this, SLOT(listChanged(int)));
     m_pl = model;
     listChanged(PlayListModel::STRUCTURE);
+    connect(m_pl, SIGNAL(listChanged(int)), SLOT(listChanged(int)));
 }
 
-void AbstractPlaylistModel::currentPlayListChanged(PlayListModel *current, PlayListModel *previous)
+void AbstractPlaylistModel::selectedPlayListChanged(PlayListModel *current, PlayListModel *previous)
 {
     Q_UNUSED(previous)
     setPlaylist(current);

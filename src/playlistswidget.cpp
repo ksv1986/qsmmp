@@ -39,7 +39,6 @@ void PlaylistsWidget::setPlaylist(QModelIndex index)
 void PlaylistsWidget::setPlaylist(int index)
 {
     manager()->selectPlayList(index);
-    manager()->activatePlayList(manager()->selectedPlayList());
 }
 
 void PlaylistsWidget::updatePlaylists()
@@ -71,7 +70,7 @@ void PlaylistsWidget::removePlaylist()
 {
     int index = currentIndex().row();
     PlayListModel *model = manager()->playListAt(index);
-    bool needToSelectNewPlaylist = model == manager()->currentPlayList();
+    bool needToSelectNewPlaylist = model == manager()->selectedPlayList();
 
     manager()->removePlayList(model);
 

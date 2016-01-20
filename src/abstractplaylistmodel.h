@@ -22,6 +22,7 @@
 #define ABSTRACTPLAYLISTMODEL_H
 
 #include <QAbstractListModel>
+#include <qmmp/qmmp.h>
 
 class PlayListManager;
 class PlayListModel;
@@ -51,10 +52,7 @@ public:
     virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row,
                               int column, const QModelIndex &parent);
 
-    void addItem(const QString& path);
-    void insertItem(const QString& path, int row);
-    void removeItem(PlayListTrack *item);
-    PlayListTrack *item(int row);
+    PlayListTrack *track(int row);
     void removeAt(int row);
 
     void clearSelection();
@@ -63,16 +61,21 @@ public:
     void selectAll();
     const SimpleSelection& getSelection(int row);
 
+private:
+    void addItem(const QString& path);
+    void insertItem(const QString& path, int row);
+    void removeItem(PlayListTrack *item);
+
     void setPlaylist(PlayListModel *model);
 
-signals:
-    void currentChanged(const QModelIndex& index);
-
 public slots:
-    void listChanged(int flags);
     void showDetails();
     void openDirectory();
-    void currentPlayListChanged(PlayListModel *current, PlayListModel *previous);
+
+private slots:
+    void listChanged(int flags);
+    void selectedPlayListChanged(PlayListModel *current, PlayListModel *previous);
+    void stateChanged(Qmmp::State);
 
 private:
     QString formatTime(qint64 time) const;
@@ -81,7 +84,7 @@ private:
     PlayListModel *m_pl;
     PlayListManager *m_pl_manager;
     SoundCore *m_core;
-    int m_currentRow;
+    int m_previousRow;
     mutable QList<PlayListTrack*> itemsToMove;
 };
 

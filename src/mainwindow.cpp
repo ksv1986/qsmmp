@@ -74,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_core = SoundCore::instance();
     m_manager = PlayListManager::instance();
     m_uiHelper = UiHelper::instance();
-    m_model = m_manager->currentPlayList();
+    m_model = m_manager->selectedPlayList();
     m_sortMapper = new QSignalMapper(this);
     m_titleTemplate = defaultTitleTemplate;
 
@@ -175,8 +175,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui.toolBar->addWidget(m_label);
 
     connect(m_slider, SIGNAL(sliderReleased()), SLOT(seek()));
-    connect(m_manager, SIGNAL(currentPlayListChanged(PlayListModel*,PlayListModel*)), SLOT(currentPlayListChanged(PlayListModel*,PlayListModel*)));
-    connect(m_manager, SIGNAL(currentPlayListChanged(PlayListModel*,PlayListModel*)), m, SLOT(currentPlayListChanged(PlayListModel*,PlayListModel*)));
+    connect(m_manager, SIGNAL(selectedPlayListChanged(PlayListModel*,PlayListModel*)), SLOT(selectedPlayListChanged(PlayListModel*,PlayListModel*)));
 
     connect(m_uiHelper, SIGNAL(toggleVisibilityCalled()), SLOT(toggleVisibility()));
     setVisible(!Settings::instance().startHidden() || !m_uiHelper->visibilityControl());
@@ -235,14 +234,21 @@ void MainWindow::addFiles()
 
 void MainWindow::playRandom()
 {
+    PlayListModel * current = m_manager->currentPlayList();
+    if (!current)
+        return;
+    if (!current->count())
+        return;
+
     m_player->stop();
-    m_model->setCurrent(qrand() % m_model->count());
+    current->setCurrent(qrand() % current->count());
     m_player->play();
 }
 
 void MainWindow::playSelected(const QModelIndex &i)
 {
     m_player->stop();
+    m_manager->activatePlayList(m_model);
     m_model->setCurrent(i.row());
     m_player->play();
 }
@@ -279,6 +285,7 @@ void MainWindow::showState(Qmmp::State state)
         ui.statusbar->showMessage(tr("Stopped"));
         m_label->setText("--:--/--:--");
         m_slider->setValue(0);
+        setWindowTitle(defaultTitle);
         break;
     case Qmmp::Buffering:
         ui.statusbar->showMessage(tr("Buffering..."));
@@ -313,12 +320,14 @@ void MainWindow::showEQ()
 void MainWindow::currentChanged()
 {
     QString title(defaultTitle);
-    if (m_model->currentTrack())
-        title += " - " + MetaDataFormatter(m_titleTemplate).format(m_model->currentTrack());
+    PlayListModel *currentPlaylist = m_manager->currentPlayList();
+    PlayListTrack *currentTrack = currentPlaylist ? currentPlaylist->currentTrack() : NULL;
+    if (currentTrack)
+        title += " - " + MetaDataFormatter(m_titleTemplate).format(currentTrack);
     setWindowTitle(title);
 }
 
-void MainWindow::currentPlayListChanged(PlayListModel *current,PlayListModel *previous)
+void MainWindow::selectedPlayListChanged(PlayListModel *current,PlayListModel *previous)
 {
     m_model = current;
 

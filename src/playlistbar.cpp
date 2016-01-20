@@ -21,7 +21,6 @@ PlaylistBar::PlaylistBar(QWidget *parent)
 void PlaylistBar::setPlaylist(int index)
 {
     manager()->selectPlayList(index);
-    manager()->activatePlayList(index);
 }
 
 void PlaylistBar::updatePlaylists()
@@ -33,7 +32,7 @@ void PlaylistBar::updatePlaylists()
     foreach(PlayListModel *model, manager()->playLists())
         addTab(model->name());
 
-    setCurrentIndex(manager()->currentPlayListIndex());
+    setCurrentIndex(manager()->selectedPlayListIndex());
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(setPlaylist(int)));
 }
 
@@ -56,7 +55,7 @@ void PlaylistBar::removePlaylist(int index)
         return;
 
     PlayListModel *model = manager()->playListAt(index);
-    bool needToSelectNewPlaylist = model == manager()->currentPlayList();
+    bool needToSelectNewPlaylist = model == manager()->selectedPlayList();
 
     manager()->removePlayList(model);
     if (needToSelectNewPlaylist)
